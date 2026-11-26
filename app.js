@@ -66,7 +66,7 @@ function card(f,why){
   '<div class="sevbar sev-'+sv+'"><b>'+SEVT[sv][0]+' '+SEVL[sv]+'</b> '+SEVT[sv][1]+' <small>(تقييم تقريبي من التطبيق مش من الشركة)</small></div>'+
   '<span class="tag">'+esc(CATS[f.k]||CATS.other)+'</span>'+(why?'<span class="tag">'+esc(why)+'</span>':'')+
   '<div class="qtag">الخطوات دي منقولة من دليل الشركة وموجّهة لفني مؤهل فقط — مش تعليمات تنفّذها بنفسك.</div><ol>'+f.s.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ol>'+
-  '<div class="acts"><a class="sharebtn" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(shareTxt)+'">📤 واتساب</a><button class="sharebtn2" type="button" data-sh="'+esc(shareTxt)+'">🔗 مشاركة / نسخ</button><button class="linkbtn" type="button" data-fk="'+esc(fkey(f))+'">🔖 لينك الكارت</button><button class="cmpbtn" type="button" data-fk="'+esc(fkey(f))+'">⚖️ قارن</button><button class="imgbtn" type="button" data-fk="'+esc(fkey(f))+'">🖼️ صورة الكارت</button><button class="printbtn" type="button">🖨️ طباعة / PDF</button></div>'+
+  '<div class="acts"><a class="sharebtn" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(shareTxt)+'">📤 واتساب</a><button class="sharebtn2" type="button" data-sh="'+esc(shareTxt)+'">🔗 مشاركة / نسخ</button><button class="linkbtn" type="button" data-fk="'+esc(fkey(f))+'">🔖 لينك الكارت</button><button class="cmpbtn" type="button" data-fk="'+esc(fkey(f))+'">⚖️ قارن</button><button class="repbtn" type="button" data-fk="'+esc(fkey(f))+'">📄 تقرير PDF</button><button class="imgbtn" type="button" data-fk="'+esc(fkey(f))+'">🖼️ صورة الكارت</button><button class="printbtn" type="button">🖨️ طباعة / PDF</button></div>'+
   '<div class="muted">المصدر: '+esc(s.doc)+'<br><a href="'+esc(s.url)+'" target="_blank" rel="noopener">'+esc(s.url)+'</a></div></div>';
 }
 function mono(b){var n=(SRC[b].name||b).replace(/[^A-Za-z0-9 ]/g,'').trim().split(/\s+/);return (n[0]||b).slice(0,n.length>1&&n[0].length<3?3:2).toUpperCase()}
@@ -104,6 +104,17 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
   var c=cardImage(f);c.toBlob(function(bl){if(!bl){toast('معرفتش أعمل الصورة');return}var file=new File([bl],'inverter-fix-'+(f.c||'fault').replace(/[^A-Za-z0-9_-]/g,'')+'.png',{type:'image/png'});
     if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file]}).catch(function(){})}
     else{var a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=file.name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1500);toast('الصورة اتحمّلت 🖼️')}},'image/png')});
+function buildReport(list){
+  var d=new Date(),ds=d.toLocaleString('en-GB'),h='<h1>Inverter fault report / تقرير عطل إنفرتر</h1><p class="rmeta">Generated: '+esc(ds)+' · Faults: '+list.length+'</p>';
+  list.forEach(function(f,i){var s=SRC[f.b];
+    h+='<section class="rsec"><h2>'+(i+1)+'. '+esc((f.c?f.c+' - ':'')+f.n)+'</h2><p><b>Brand / model:</b> '+esc(s.name)+'</p><ol>'+f.s.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ol><p><b>Source:</b> '+esc(s.doc)+'<br>'+esc(s.url)+'</p><p><b>Verification:</b> text taken from the manufacturer document above. Not tested on a physical inverter. Page number not recorded.</p></section>'});
+  h+='<p class="rwarn">For a qualified technician only. This report does not replace the manufacturer manual. Do not open or repair the inverter yourself; DC voltage stays present while the sun shines.</p>';
+  var el=document.getElementById('rep');if(!el){el=document.createElement('div');el.id='rep';document.body.appendChild(el)}el.innerHTML=h;
+  document.body.classList.add('printrep');
+  var done=function(){document.body.classList.remove('printrep');window.removeEventListener('afterprint',done)};
+  window.addEventListener('afterprint',done);setTimeout(function(){window.print()},80);
+}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.repbtn');if(!b)return;var k=b.getAttribute('data-fk'),f=F.filter(function(x){return fkey(x)===k})[0];if(f)buildReport([f])});
 var lastText='';
 function show(d,ocrText){
   var o=$('out'),h='';

@@ -66,7 +66,7 @@ function card(f,why){
   '<div class="sevbar sev-'+sv+'"><b>'+SEVT[sv][0]+' '+SEVL[sv]+'</b> '+SEVT[sv][1]+' <small>(تقييم تقريبي من التطبيق مش من الشركة)</small></div>'+
   '<span class="tag">'+esc(CATS[f.k]||CATS.other)+'</span>'+(why?'<span class="tag">'+esc(why)+'</span>':'')+
   '<div class="qtag">الخطوات دي منقولة من دليل الشركة وموجّهة لفني مؤهل فقط — مش تعليمات تنفّذها بنفسك.</div><ol>'+f.s.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ol>'+
-  '<div class="acts"><a class="sharebtn" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(shareTxt)+'">📤 واتساب</a><button class="sharebtn2" type="button" data-sh="'+esc(shareTxt)+'">🔗 مشاركة / نسخ</button></div>'+
+  '<div class="acts"><a class="sharebtn" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(shareTxt)+'">📤 واتساب</a><button class="sharebtn2" type="button" data-sh="'+esc(shareTxt)+'">🔗 مشاركة / نسخ</button><button class="linkbtn" type="button" data-fk="'+esc(fkey(f))+'">🔖 لينك الكارت</button><button class="printbtn" type="button">🖨️ طباعة / PDF</button></div>'+
   '<div class="muted">المصدر: '+esc(s.doc)+'<br><a href="'+esc(s.url)+'" target="_blank" rel="noopener">'+esc(s.url)+'</a></div></div>';
 }
 function mono(b){var n=(SRC[b].name||b).replace(/[^A-Za-z0-9 ]/g,'').trim().split(/\s+/);return (n[0]||b).slice(0,n.length>1&&n[0].length<3?3:2).toUpperCase()}
@@ -172,6 +172,8 @@ try{(function(){var t=$('theme');function ap(){var d=document.documentElement.ge
 
 function toast(t){var e=$('toast');if(!e){e=document.createElement('div');e.id='toast';document.body.appendChild(e)}e.textContent=t;e.className='show';clearTimeout(toast._t);toast._t=setTimeout(function(){e.className=''},1800)}
 function bindCards(root){
+  Array.prototype.forEach.call(root.querySelectorAll('.linkbtn'),function(b){b.onclick=function(){var u=location.href.split('#')[0]+'#f='+encodeURIComponent(b.getAttribute('data-fk'));if(navigator.clipboard){navigator.clipboard.writeText(u).then(function(){toast('اتنسخ لينك الكارت ✅')},function(){toast(u)})}else toast(u)}});
+  Array.prototype.forEach.call(root.querySelectorAll('.printbtn'),function(b){b.onclick=function(){var c=b.closest('.res');document.body.classList.add('printone');Array.prototype.forEach.call(document.querySelectorAll('.res.pr'),function(x){x.classList.remove('pr')});c.classList.add('pr');setTimeout(function(){window.print()},50)}});
   Array.prototype.forEach.call(root.querySelectorAll('.fav'),function(b){b.onclick=function(){var k=b.getAttribute('data-fk'),a=favs(),i=a.indexOf(k);if(i>=0)a.splice(i,1);else a.unshift(k);try{localStorage.setItem('invfav',JSON.stringify(a.slice(0,30)))}catch(e){}renderFavs();Array.prototype.forEach.call(document.querySelectorAll('.fav'),function(x){if(x.getAttribute('data-fk')===k){var on=a.indexOf(k)>=0;x.className='fav'+(on?' on':'');x.textContent=on?'★':'☆'}});toast(i>=0?'اتشالت من المفضلة':'اتحفظت في المفضلة ⭐')}});
   Array.prototype.forEach.call(root.querySelectorAll('.sharebtn2'),function(b){b.onclick=function(){var t=b.getAttribute('data-sh');if(navigator.share){navigator.share({text:t}).catch(function(){})}else if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){toast('اتنسخ ✅')},function(){toast('النسخ مش متاح')})}else toast('المشاركة مش متاحة في المتصفح ده')}});
 }
@@ -310,5 +312,7 @@ Array.prototype.forEach.call(document.querySelectorAll('#asugg .chip'),function(
 window.__aiCheck2=aiCheck2;window.__aiAsk=aiAsk;
 window.__aiCheck=aiCheck;window.__chatSearch=chatSearch;
 window.__diagnose=diagnose;
+if(window.addEventListener)window.addEventListener('afterprint',function(){document.body.classList.remove('printone')});
+try{(function(){var m=/[#&]f=([^&]+)/.exec(location.hash);if(!m)return;var k=decodeURIComponent(m[1]),f=F.filter(function(x){return fkey(x)===k})[0],o=$('out');if(!f||!o){if(o)o.innerHTML='<div class="none">اللينك ده مش لاقي الكارت المطلوب في القاعدة.</div>';return}o.innerHTML='<div class="muted">كارت مفتوح من لينك مشاركة:</div>'+card(f,'');bindCards(o);setTimeout(function(){try{o.scrollIntoView()}catch(e){}},100)})()}catch(e){}
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){document.addEventListener('visibilitychange',function(){if(!document.hidden)r.update().catch(function(){})})}).catch(function(){});var rl=false;navigator.serviceWorker.addEventListener('controllerchange',function(){if(rl)return;rl=true;if(!window.__busy)location.reload()})}
 })();

@@ -216,7 +216,7 @@ function chatAsk(q){
 var ALLOWNUM=/[A-Za-z0-9\u0660-\u0669\-\.\/_]*[0-9\u0660-\u0669][A-Za-z0-9\u0660-\u0669\-\.\/_]*/g;
 function ar2en(t){return t.replace(/[\u0660-\u0669]/g,function(d){return String(d.charCodeAt(0)-1632)})}
 function aiCheck(reply,hits,q){
-  var allowed=ar2en((q+' '+hits.map(function(f){return [SRC[f.b].name,f.c,f.n,f.s.join(' ')].join(' ')}).join(' ')+' '+hits.map(function(f){return SRC[f.b].url}).join(' ')).toLowerCase());
+  var allowed=ar2en(('' +' '+hits.map(function(f){return [SRC[f.b].name,f.c,f.n,f.s.join(' ')].join(' ')}).join(' ')+' '+hits.map(function(f){return SRC[f.b].url}).join(' ')).toLowerCase());
   var bad=[];
   (ar2en(reply).match(ALLOWNUM)||[]).forEach(function(t){t=t.toLowerCase().replace(/^[\-\.\/_]+|[\-\.\/_]+$/g,'');if(t&&allowed.indexOf(t)<0&&bad.indexOf(t)<0)bad.push(t)});
   var urls=(reply.match(/https?:\/\/\S+|www\.\S+/gi)||[]).filter(function(u){return allowed.indexOf(u.toLowerCase().replace(/[).,،]+$/,''))<0});
@@ -249,6 +249,65 @@ async function aiExplain(box,q,hits){
 }
 $('cform').onsubmit=function(e){e.preventDefault();var v=$('cq').value;$('cq').value='';chatAsk(v)};
 Array.prototype.forEach.call(document.querySelectorAll('#sugg .chip'),function(b){b.onclick=function(){chatAsk(b.getAttribute('data-q'))}});
+
+// ===== conversational AI assistant (Puter) =====
+var aiHist=[];var aiLastHits=[];var aiBusy=false;
+var SAFE_BAD=/افتح\s*(ال)?(جهاز|انفرتر|إنفرتر|الغطاء)|فك\s|افصل\s*(ال)?(كابل|كابلات|سلك|اسلاك|أسلاك)|(لا)?مس\s*(ال)?(كابل|سلك|اسلاك|أسلاك)|تخطى|تجاوز\s*(ال)?(حماية|فيوز)|شغل\s*(ال)?(جهاز)?\s*بدون|open the (inverter|cover|case)|unplug|disconnect the|bypass|jumper|short[- ]?circuit the/i;
+function aiSplit(t){
+  var o='',u='',cur=null;
+  t.split('\n').forEach(function(line){
+    var m=line.match(/^\s*[\*#\-\s]*(الرسمي|رسمي|غير رسمي|غير الرسمي|OFFICIAL|UNOFFICIAL)\s*[:：]\s*(.*)$/i);
+    if(m){cur=/^(غير|UNOFF)/i.test(m[1])?'u':'o';if(cur==='u')u+=m[2]+'\n';else o+=m[2]+'\n'}
+    else if(cur==='o')o+=line+'\n';else if(cur==='u')u+=line+'\n';else u+=line+'\n';
+  });
+  return {o:o.trim(),u:u.trim()};
+}
+function aiAllowed(hits,extra){return ar2en((extra+' '+hits.map(function(f){return [SRC[f.b].name,f.c,f.n,f.s.join(' ')].join(' ')}).join(' ')+' '+hits.map(function(f){return SRC[f.b].url}).join(' ')).toLowerCase())}
+function aiCheck2(reply,hits,q,hist){
+  var sp=aiSplit(reply),bad=[];
+  var allowedO=aiAllowed(hits,'');
+  var allowedAll=aiAllowed(hits,q+' '+(hist||[]).filter(function(m){return m.role==='user'}).map(function(m){return m.content}).join(' '));
+  var norm_o=ar2en(sp.o);
+  (norm_o.match(ALLOWNUM)||[]).forEach(function(t){t=t.toLowerCase().replace(/^[\-\.\/_]+|[\-\.\/_]+$/g,'');if(t&&allowedO.indexOf(t)<0&&bad.indexOf(t)<0)bad.push(t)});
+  var un=ar2en(sp.u);
+  // unofficial: no fault-code-like tokens, no specific values with units, unless present in cards/question
+  (un.match(/\b[A-Za-z]{1,3}[\-_ ]?\d{1,4}[A-Za-z]?\b|\b\d{3,}\b|\b\d+(?:\.\d+)?\s?(?:(?:v|vdc|vac|a|ma|w|kw|hz|ohm|k ohm|°c|c|%)(?![A-Za-z])|فولت|أمبير|امبير|واط|هرتز|درجة|اوم|أوم)/gi)||[]).forEach(function(t){var k=t.toLowerCase().trim();if(allowedAll.indexOf(k)<0&&bad.indexOf(k)<0)bad.push(k)});
+  (reply.match(/https?:\/\/\S+|www\.\S+/gi)||[]).forEach(function(u){if(allowedAll.indexOf(u.toLowerCase().replace(/[).,،]+$/,''))<0)bad.push(u)});
+  if(SAFE_BAD.test(reply))bad.push('تعليمات غير آمنة');
+  if(reply.length>2500)bad.push('رد طويل');
+  return {ok:!bad.length,bad:bad,parts:sp};
+}
+function aiAdd(cls,html){var c=$('aichat'),e=document.createElement('div');e.className='cmsg '+cls;e.innerHTML=html;c.appendChild(e);e.scrollIntoView({block:'nearest',behavior:'smooth'});return e}
+async function aiAsk(q){
+  q=q.trim();if(!q||aiBusy)return;
+  if(!sessionStorage.getItem('aiok')){if(!confirm('المساعد الذكي بيبعت سؤالك ونص الكروت الرسمية المرتبطة بيه لخدمة Puter (طرف تالت) عشان يرد. ممكن يطلب منك تسجيل دخول بحساب Puter مجاني. الرد مش من دليل الشركة وبيتعلّم لو غير رسمي. تكمّل؟'))return;sessionStorage.setItem('aiok','1')}
+  aiBusy=true;$('asend').disabled=true;
+  aiAdd('me','<div class="bub"></div>').firstChild.textContent=q;
+  var hits=chatSearch(q);var carry=false;if(!hits.length&&aiLastHits.length){hits=aiLastHits;carry=true}else if(hits.length)aiLastHits=hits;
+  var wait=aiAdd('bot','<div class="bub aiwait">بفكّر...</div>');
+  var data=hits.map(function(f){return {brand:SRC[f.b].name,code:f.c,name:f.n,steps_from_official_manual:f.s,source:SRC[f.b].doc}});
+  var sys='You are an inverter and solar-system assistant answering in simple Egyptian Arabic (Latin letters allowed for technical terms). Answer any question about inverters, solar systems and batteries.\nOUTPUT FORMAT (strict): write one or two sections, each starting a new line with its label.\n"الرسمي:" = facts taken ONLY from the OFFICIAL DATA below (fault code, name, manual steps). Omit this section if DATA is empty or irrelevant.\n"غير رسمي:" = general knowledge from outside the DATA. Keep it general. Always end it with: تأكد من دليل المصنّع.\nHARD RULES: Never invent or guess a fault code, error number, parameter, setting value, voltage, current or threshold that is not in DATA. If you do not know, say you do not know and tell the user to check the manufacturer manual or call a qualified technician. Never recommend opening the inverter, touching or disconnecting DC/AC cables, bypassing protections or changing grid settings: say that only a qualified technician may do it. Keep it under 150 words.\nOFFICIAL DATA (may be empty): '+JSON.stringify(data);
+  var msgs=[{role:'system',content:sys}].concat(aiHist.slice(-6)).concat([{role:'user',content:q}]);
+  try{
+    await loadPuter();
+    var r=await puter.ai.chat(msgs,{normalize:true});
+    var t=puterText(r).trim();if(!t)throw new Error('empty');
+    var chk=aiCheck2(t,hits,q,aiHist);
+    var cardsHtml=hits.length?'<details class="aicards"><summary>الكروت الرسمية المرجعية ('+hits.length+')'+(carry?' (من السؤال اللي قبله)':'')+'</summary>'+hits.map(function(f){return card(f,'')}).join('')+'</details>':'<div class="muted">مفيش كروت رسمية مطابقة للسؤال ده، فالرد كله غير رسمي.</div>';
+    var h2='';
+    if(!chk.ok){h2='<div class="bub aibad">الرد اتلغى عشان فيه حاجة مش مضمونة ('+esc(chk.bad.slice(0,4).join('، '))+'). مش هعرضه عشان ماتعتمدش على معلومة ممكن تكون مألّفة. الكروت الرسمية تحت هي المرجع، أو اسأل بصيغة تانية.</div>'}
+    else{var p=chk.parts;h2='<div class="bub aiok">'+(p.o?'<div class="aio"><div class="aitag g">✅ من الكروت الرسمية</div><div class="aitxt" data-t="o"></div></div>':'')+(p.u?'<div class="aiu"><div class="aitag a">⚠️ غير رسمي، تأكد من دليل المصنّع</div><div class="aitxt" data-t="u"></div></div>':'')+'</div>';aiHist.push({role:'user',content:q},{role:'assistant',content:t});if(aiHist.length>12)aiHist=aiHist.slice(-12)}
+    wait.innerHTML=h2+cardsHtml;
+    if(chk.ok){var p2=chk.parts;var eo=wait.querySelector('[data-t=o]'),eu=wait.querySelector('[data-t=u]');if(eo)eo.textContent=p2.o;if(eu)eu.textContent=p2.u}
+    bindCards(wait);
+  }catch(e){
+    wait.innerHTML='<div class="bub aibad">'+((e&&e.message==='load')?'مقدرتش أحمّل خدمة Puter (محتاج إنترنت).':'المساعد الذكي مش متاح دلوقتي (ممكن تحتاج تسجّل دخول في Puter بحساب مجاني، أو الحد اليومي خلص).')+' استخدم الشات الرسمي اللي فوق.</div>';
+  }
+  aiBusy=false;$('asend').disabled=false;
+}
+$('aform').onsubmit=function(e){e.preventDefault();var v=$('aq').value;$('aq').value='';aiAsk(v)};
+Array.prototype.forEach.call(document.querySelectorAll('#asugg .chip'),function(b){b.onclick=function(){aiAsk(b.getAttribute('data-q'))}});
+window.__aiCheck2=aiCheck2;window.__aiAsk=aiAsk;
 window.__aiCheck=aiCheck;window.__chatSearch=chatSearch;
 window.__diagnose=diagnose;
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){document.addEventListener('visibilitychange',function(){if(!document.hidden)r.update().catch(function(){})})}).catch(function(){});var rl=false;navigator.serviceWorker.addEventListener('controllerchange',function(){if(rl)return;rl=true;if(!window.__busy)location.reload()})}

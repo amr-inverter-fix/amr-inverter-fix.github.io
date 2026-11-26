@@ -175,3 +175,6 @@ main:has(#favsec:not([hidden])) #favempty{display:none!important}
 .hsearch{box-shadow:0 10px 30px rgba(0,0,0,.22)}
 .warn{font-size:.8rem;padding:9px 12px}
 @media(prefers-reduced-motion:reduce){main>*{animation:none!important}}
+
+.offbar{position:fixed;inset-inline:12px;top:max(10px,env(safe-area-inset-top));z-index:40;background:#2b2410;color:#f0d88a;border:1px solid #6b5a1f;border-radius:14px;padding:9px 12px;font-size:.82rem;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+#qinst{background:#ffd166;color:#3b2a00;border:0;font-weight:800}

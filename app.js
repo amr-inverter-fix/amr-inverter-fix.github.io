@@ -60,7 +60,8 @@ function diagnose(text,brandSel,codeSel){
 function fkey(f){return f.b+'|'+f.c+'|'+f.n}
 function favs(){try{return JSON.parse(localStorage.getItem('invfav')||'[]')}catch(e){return []}}
 var SRC_THIRD={huawei:1,solax:1,sofar:1},SRC_UNCL={deye:1,steca:1,growatt:1};
-function srcStatus(b){if(SRC_THIRD[b])return '⚠️ نسخة مستضافة عند طرف تالت، والنسخة الرسمية لسه ما اتأكدتش';if(SRC_UNCL[b])return '⚠️ الاستضافة مش واضح إنها موقع الشركة الرئيسي، لسه بتتراجع';return '✔️ الملف على دومين الشركة (ده مش معناه إن الكود اتجرب على جهاز)'}
+var SRC_BROKEN={solark:1};
+function srcStatus(b){if(SRC_BROKEN[b])return '⚠️ الرابط ده ميت (404 يوم 27/11/2026) حتى في مكتبة مستندات الشركة نفسها. الخطوات من نسخة الدليل القديم ولسه مش متأكد منها';if(SRC_THIRD[b])return '⚠️ نسخة مستضافة عند طرف تالت، والنسخة الرسمية لسه ما اتأكدتش';if(SRC_UNCL[b])return '⚠️ الاستضافة مش واضح إنها موقع الشركة الرئيسي، لسه بتتراجع';return '✔️ الملف على دومين الشركة (ده مش معناه إن الكود اتجرب على جهاز)'}
 function card(f,why){
   var s=SRC[f.b],sv=SEV[f.k]||'m',isf=favs().indexOf(fkey(f))>=0;
   var shareTxt=s.name+' - '+(f.c?f.c+' - ':'')+f.n+'\n'+f.s.map(function(x,i){return (i+1)+'. '+x}).join('\n')+'\nالمصدر: '+s.url;

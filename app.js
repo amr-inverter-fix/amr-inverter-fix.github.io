@@ -71,12 +71,23 @@ function card(f,why){
 }
 function mono(b){var n=(SRC[b].name||b).replace(/[^A-Za-z0-9 ]/g,'').trim().split(/\s+/);return (n[0]||b).slice(0,n.length>1&&n[0].length<3?3:2).toUpperCase()}
 function bstyle(b){var h=0;for(var i=0;i<b.length;i++)h=(h*31+b.charCodeAt(i))%360;return 'background:linear-gradient(135deg,hsl('+h+',65%,42%),hsl('+((h+40)%360)+',70%,32%))'}
+function suggestHtml(q){
+  var tk=norm(q||'').split(' ').filter(function(w){return w.length>2});
+  if(!tk.length) return '';
+  var sc=[];
+  F.forEach(function(f){var t=' '+norm((f.c||'')+' '+f.n+' '+SRC[f.b].name)+' ',n=0;tk.forEach(function(w){if(t.indexOf(w)>=0)n++});if(n)sc.push([n,f])});
+  sc.sort(function(a,b){return b[0]-a[0]});
+  var top=sc.slice(0,4);
+  if(!top.length) return '<div class="muted">جرّب كلمات أبسط من الشاشة، زي "grid" أو "isolation" أو رقم الكود بس.</div>';
+  return '<div class="muted" style="margin-top:8px">يمكن تقصد:</div>'+top.map(function(x){var f=x[1],lab=SRC[f.b].name.split(' ')[0]+' '+(f.c?f.c+' · ':'')+f.n;if(lab.length>60)lab=lab.slice(0,58)+'…';return '<button type="button" class="chip sgg" data-q="'+esc(SRC[f.b].name.split(' ')[0]+' '+(f.c||f.n))+'">'+esc(lab)+'</button>'}).join('');
+}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.sgg');if(!b)return;var t=$('txt');if(!t)return;t.value=b.getAttribute('data-q');var g=$('go');if(g)g.click()});
 var lastText='';
 function show(d,ocrText){
   var o=$('out'),h='';
   if(ocrText!==undefined) h+='<div class="card"><b>النص اللي اتقرا:</b><div class="muted" dir="ltr" style="text-align:left">'+esc(ocrText.trim()||'(فاضي)')+'</div></div>';
   if(!d.res.length){
-    h+='<div class="none">مفيش تطابق في القاعدة'+(d.nums.length?' للأرقام '+d.nums.join('، '):'')+'. اختار الشركة واكتب الكود يدويًا، أو دوّر في القائمة تحت. لو الكود مش موجود، ارجع لدليل موديلك.</div>';
+    h+='<div class="none">مفيش تطابق في القاعدة'+(d.nums.length?' للأرقام '+d.nums.join('، '):'')+'. اختار الشركة واكتب الكود يدويًا، أو دوّر في القائمة تحت. لو الكود مش موجود، ارجع لدليل موديلك.</div>'+suggestHtml($('txt').value||lastText);
   } else {
     var multi=!d.brands.length;
     if(multi) h+='<div class="warn">الشركة مش معروفة، فالنتائج من أكتر من شركة. اختار الشركة من القائمة لتضييق النتيجة.</div>';

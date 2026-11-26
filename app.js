@@ -383,6 +383,12 @@ window.addEventListener('appinstalled',function(){if(bi)bi.hidden=true;toast('ا
 var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!st;if(ios&&$('iosHint'))$('iosHint').hidden=false;
 function off(){var b=$('offbar');if(b)b.hidden=navigator.onLine!==false}
 window.addEventListener('online',off);window.addEventListener('offline',off);off();
+function ost(){var f=document.querySelector('footer');if(!f)return;var e=$('offst');if(!e){e=document.createElement('p');e.id='offst';e.className='offst';f.insertBefore(e,f.firstChild)}
+ var on=navigator.onLine!==false,txt;
+ if(!('serviceWorker' in navigator)||!window.caches){e.textContent='⚪ الشغل بدون نت مش مدعوم في المتصفح ده';return}
+ caches.keys().then(function(ks){var k=ks.filter(function(x){return x.indexOf('inv-')===0})[0];if(!k){e.textContent=(on?'🟡 متصل — ':'🔴 بدون نت — ')+'التخزين للأوفلاين لسه ماجهزش، افتح التطبيق مرة تانية وانت متصل';return}
+  caches.open(k).then(function(c){return c.keys()}).then(function(r){e.textContent=(on?'🟢 متصل — ':'🟠 بدون نت — ')+'الأوفلاين جاهز: '+r.length+' ملف متخزّن ('+k+')'})}).catch(function(){})}
+window.addEventListener('online',ost);window.addEventListener('offline',ost);setTimeout(ost,2500);
 })()}catch(e){}
 
 try{(function(){

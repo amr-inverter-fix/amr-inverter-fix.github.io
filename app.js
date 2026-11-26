@@ -66,7 +66,7 @@ function card(f,why){
   '<div class="sevbar sev-'+sv+'"><b>'+SEVT[sv][0]+' '+SEVL[sv]+'</b> '+SEVT[sv][1]+' <small>(تقييم تقريبي من التطبيق مش من الشركة)</small></div>'+
   '<span class="tag">'+esc(CATS[f.k]||CATS.other)+'</span>'+(why?'<span class="tag">'+esc(why)+'</span>':'')+
   '<div class="qtag">الخطوات دي منقولة من دليل الشركة وموجّهة لفني مؤهل فقط — مش تعليمات تنفّذها بنفسك.</div><ol>'+f.s.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ol>'+
-  '<div class="acts"><a class="sharebtn" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(shareTxt)+'">📤 واتساب</a><button class="sharebtn2" type="button" data-sh="'+esc(shareTxt)+'">🔗 مشاركة / نسخ</button><button class="linkbtn" type="button" data-fk="'+esc(fkey(f))+'">🔖 لينك الكارت</button><button class="cmpbtn" type="button" data-fk="'+esc(fkey(f))+'">⚖️ قارن</button><button class="printbtn" type="button">🖨️ طباعة / PDF</button></div>'+
+  '<div class="acts"><a class="sharebtn" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(shareTxt)+'">📤 واتساب</a><button class="sharebtn2" type="button" data-sh="'+esc(shareTxt)+'">🔗 مشاركة / نسخ</button><button class="linkbtn" type="button" data-fk="'+esc(fkey(f))+'">🔖 لينك الكارت</button><button class="cmpbtn" type="button" data-fk="'+esc(fkey(f))+'">⚖️ قارن</button><button class="imgbtn" type="button" data-fk="'+esc(fkey(f))+'">🖼️ صورة الكارت</button><button class="printbtn" type="button">🖨️ طباعة / PDF</button></div>'+
   '<div class="muted">المصدر: '+esc(s.doc)+'<br><a href="'+esc(s.url)+'" target="_blank" rel="noopener">'+esc(s.url)+'</a></div></div>';
 }
 function mono(b){var n=(SRC[b].name||b).replace(/[^A-Za-z0-9 ]/g,'').trim().split(/\s+/);return (n[0]||b).slice(0,n.length>1&&n[0].length<3?3:2).toUpperCase()}
@@ -82,6 +82,28 @@ function suggestHtml(q){
   return '<div class="muted" style="margin-top:8px">يمكن تقصد:</div>'+top.map(function(x){var f=x[1],lab=SRC[f.b].name.split(' ')[0]+' '+(f.c?f.c+' · ':'')+f.n;if(lab.length>60)lab=lab.slice(0,58)+'…';return '<button type="button" class="chip sgg" data-q="'+esc(SRC[f.b].name.split(' ')[0]+' '+(f.c||f.n))+'">'+esc(lab)+'</button>'}).join('');
 }
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.sgg');if(!b)return;var t=$('txt');if(!t)return;t.value=b.getAttribute('data-q');var g=$('go');if(g)g.click()});
+function cardImage(f){
+  var s=SRC[f.b],W=1080,P=48,c=document.createElement('canvas'),x=c.getContext('2d');
+  var lines=[];
+  function wrap(t,font,w,col,ind){x.font=font;var words=String(t).split(' '),l='';words.forEach(function(wd){var tt=l?l+' '+wd:wd;if(x.measureText(tt).width>w&&l){lines.push([l,font,col,ind||0]);l=wd}else l=tt});if(l)lines.push([l,font,col,ind||0])}
+  wrap((f.c?f.c+'  ':'')+f.n,'bold 38px sans-serif',W-2*P,'#0b3d2e');
+  wrap(s.name,'28px sans-serif',W-2*P,'#44564e');
+  var sv=SEV[f.k]||'m';wrap('Severity (app estimate, not the manufacturer): '+({h:'high',m:'medium',l:'low'})[sv],'24px sans-serif',W-2*P,'#8a1f14');
+  lines.push(['','10px sans-serif','#000',0]);
+  f.s.forEach(function(st,i){wrap((i+1)+'. '+st,'28px sans-serif',W-2*P-20,'#17211d',20)});
+  lines.push(['','10px sans-serif','#000',0]);
+  wrap('Source: '+s.doc,'22px sans-serif',W-2*P,'#44564e');
+  wrap(s.url,'20px sans-serif',W-2*P,'#0f7a55');
+  wrap('For a qualified technician only. Not maintenance instructions.','22px sans-serif',W-2*P,'#8a1f14');
+  var H=P*2+lines.reduce(function(a,l){return a+(parseInt(l[1].replace(/\D+/g,' ').trim())||24)*1.35},0)+40;
+  c.width=W;c.height=Math.ceil(H);x.fillStyle='#fff';x.fillRect(0,0,W,c.height);x.fillStyle='#0f7a55';x.fillRect(0,0,W,14);
+  var y=P+20;lines.forEach(function(l){var sz=parseInt(l[1].replace(/\D+/g,' ').trim())||24;x.font=l[1];x.fillStyle=l[2];x.textBaseline='top';x.fillText(l[0],P+l[3],y);y+=sz*1.35});
+  return c;
+}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.imgbtn');if(!b)return;var k=b.getAttribute('data-fk'),f=F.filter(function(x){return fkey(x)===k})[0];if(!f)return;
+  var c=cardImage(f);c.toBlob(function(bl){if(!bl){toast('معرفتش أعمل الصورة');return}var file=new File([bl],'inverter-fix-'+(f.c||'fault').replace(/[^A-Za-z0-9_-]/g,'')+'.png',{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file]}).catch(function(){})}
+    else{var a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=file.name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1500);toast('الصورة اتحمّلت 🖼️')}},'image/png')});
 var lastText='';
 function show(d,ocrText){
   var o=$('out'),h='';

@@ -314,6 +314,23 @@ window.__aiCheck=aiCheck;window.__chatSearch=chatSearch;
 window.__diagnose=diagnose;
 
 try{(function(){
+var w=document.querySelector('.warn');
+if(w&&!w.querySelector('.wtxt')){var t=document.createElement('div');t.className='wtxt';t.innerHTML=w.innerHTML;w.innerHTML='';w.appendChild(t);var b=document.createElement('button');b.type='button';b.className='wtog';b.textContent='اقرأ باقي التحذير ▾';w.appendChild(b);w.classList.add('wc');b.onclick=function(){var c=w.classList.toggle('wc');b.textContent=c?'اقرأ باقي التحذير ▾':'إخفاء ▴'}}
+var cs=$('cats'),seen=false;try{seen=localStorage.getItem('onb2')}catch(e){}
+if(cs&&!seen){var o=document.createElement('section');o.id='onb';o.className='onb';o.setAttribute('data-tab','home');o.innerHTML='<button type="button" class="ox" aria-label="إغلاق">✕</button><b>ابدأ في 3 خطوات 👋</b><div class="osteps"><div><i>1</i><span>اكتب الكود أو نص العطل فوق</span></div><div><i>2</i><span>أو صوّر شاشة الإنفرتر من تاب "صوّر"</span></div><div><i>3</i><span>اقرأ الكارت: الخطورة + الخطوات من دليل الشركة</span></div></div>';cs.parentNode.insertBefore(o,cs);o.querySelector('.ox').onclick=function(){o.remove();try{localStorage.setItem('onb2','1')}catch(e){}}}
+})()}catch(e){}
+
+try{(function(){
+var dp=null,bi=$('qinst'),st=window.matchMedia&&matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(bi&&!st)bi.hidden=false});
+if(bi)bi.onclick=function(){if(!dp)return;dp.prompt();dp.userChoice.then(function(){dp=null;bi.hidden=true}).catch(function(){})};
+window.addEventListener('appinstalled',function(){if(bi)bi.hidden=true;toast('اتثبّت ✅')});
+var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!st;if(ios&&$('iosHint'))$('iosHint').hidden=false;
+function off(){var b=$('offbar');if(b)b.hidden=navigator.onLine!==false}
+window.addEventListener('online',off);window.addEventListener('offline',off);off();
+})()}catch(e){}
+
+try{(function(){
 var TABS=['home','cam','ask','browse','fav'];
 function setTab(t,noscroll){if(TABS.indexOf(t)<0)t='home';document.body.setAttribute('data-tab',t);Array.prototype.forEach.call(document.querySelectorAll('#tabbar button'),function(b){b.classList.toggle('on',b.getAttribute('data-go')===t)});try{sessionStorage.setItem('tab',t)}catch(e){}if(!noscroll)window.scrollTo({top:0,behavior:'smooth'})}
 window.__setTab=setTab;

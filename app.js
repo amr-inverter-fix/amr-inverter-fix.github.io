@@ -59,6 +59,8 @@ function diagnose(text,brandSel,codeSel){
 }
 function fkey(f){return f.b+'|'+f.c+'|'+f.n}
 function favs(){try{return JSON.parse(localStorage.getItem('invfav')||'[]')}catch(e){return []}}
+var SRC_THIRD={huawei:1,solax:1,sofar:1},SRC_UNCL={deye:1,steca:1,growatt:1};
+function srcStatus(b){if(SRC_THIRD[b])return '⚠️ نسخة مستضافة عند طرف تالت، والنسخة الرسمية لسه ما اتأكدتش';if(SRC_UNCL[b])return '⚠️ الاستضافة مش واضح إنها موقع الشركة الرئيسي، لسه بتتراجع';return '✔️ الملف على دومين الشركة (ده مش معناه إن الكود اتجرب على جهاز)'}
 function card(f,why){
   var s=SRC[f.b],sv=SEV[f.k]||'m',isf=favs().indexOf(fkey(f))>=0;
   var shareTxt=s.name+' - '+(f.c?f.c+' - ':'')+f.n+'\n'+f.s.map(function(x,i){return (i+1)+'. '+x}).join('\n')+'\nالمصدر: '+s.url;
@@ -67,7 +69,7 @@ function card(f,why){
   '<span class="tag">'+esc(CATS[f.k]||CATS.other)+'</span>'+(why?'<span class="tag">'+esc(why)+'</span>':'')+
   '<div class="qtag">الخطوات دي منقولة من دليل الشركة وموجّهة لفني مؤهل فقط — مش تعليمات تنفّذها بنفسك.</div><ol>'+f.s.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ol>'+
   '<div class="acts"><a class="sharebtn" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(shareTxt)+'">📤 واتساب</a><button class="sharebtn2" type="button" data-sh="'+esc(shareTxt)+'">🔗 مشاركة / نسخ</button><button class="linkbtn" type="button" data-fk="'+esc(fkey(f))+'">🔖 لينك الكارت</button><button class="cmpbtn" type="button" data-fk="'+esc(fkey(f))+'">⚖️ قارن</button><button class="repbtn" type="button" data-fk="'+esc(fkey(f))+'">📄 تقرير PDF</button><button class="imgbtn" type="button" data-fk="'+esc(fkey(f))+'">🖼️ صورة الكارت</button><button class="printbtn" type="button">🖨️ طباعة / PDF</button></div>'+
-  '<div class="muted">المصدر: '+esc(s.doc)+'<br><a href="'+esc(s.url)+'" target="_blank" rel="noopener">'+esc(s.url)+'</a></div></div>';
+  '<div class="muted">المصدر: '+esc(s.doc)+'<br><b class="srcst">'+srcStatus(f.b)+'</b><br><a href="'+esc(s.url)+'" target="_blank" rel="noopener">'+esc(s.url)+'</a></div></div>';
 }
 function mono(b){var n=(SRC[b].name||b).replace(/[^A-Za-z0-9 ]/g,'').trim().split(/\s+/);return (n[0]||b).slice(0,n.length>1&&n[0].length<3?3:2).toUpperCase()}
 function bstyle(b){var h=0;for(var i=0;i<b.length;i++)h=(h*31+b.charCodeAt(i))%360;return 'background:linear-gradient(135deg,hsl('+h+',65%,42%),hsl('+((h+40)%360)+',70%,32%))'}
@@ -92,7 +94,7 @@ function cardImage(f){
   lines.push(['','10px sans-serif','#000',0]);
   f.s.forEach(function(st,i){wrap((i+1)+'. '+st,'28px sans-serif',W-2*P-20,'#17211d',20)});
   lines.push(['','10px sans-serif','#000',0]);
-  wrap('Source: '+s.doc,'22px sans-serif',W-2*P,'#44564e');
+  wrap('Source: '+s.doc,'22px sans-serif',W-2*P,'#44564e');if(SRC_THIRD[f.b])wrap('Note: third-party hosted copy, official version not yet verified.','22px sans-serif',W-2*P,'#8a1f14');
   wrap(s.url,'20px sans-serif',W-2*P,'#0f7a55');
   wrap('For a qualified technician only. Not maintenance instructions.','22px sans-serif',W-2*P,'#8a1f14');
   var H=P*2+lines.reduce(function(a,l){return a+(parseInt(l[1].replace(/\D+/g,' ').trim())||24)*1.35},0)+40;
@@ -110,7 +112,7 @@ function buildReport(list){
   if(pv&&!pv.hidden&&pv.src)h+='<p><b>Uploaded image:</b><br><img class="rimg" src="'+esc(pv.src)+'" alt=""></p>';
   h+='<p><b>Assessment:</b> matched in the app\'s fault database built from manufacturer documents. No AI model was used for this report. Confidence is not scored; verify against the manual.</p>';
   list.forEach(function(f,i){var s=SRC[f.b];
-    h+='<section class="rsec"><h2>'+(i+1)+'. '+esc((f.c?f.c+' - ':'')+f.n)+'</h2><p><b>Brand / model:</b> '+esc(s.name)+'</p><ol>'+f.s.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ol><p><b>Source:</b> '+esc(s.doc)+'<br>'+esc(s.url)+'</p><p><b>Verification:</b> text taken from the manufacturer document above. Not tested on a physical inverter. Page number not recorded.</p></section>'});
+    h+='<section class="rsec"><h2>'+(i+1)+'. '+esc((f.c?f.c+' - ':'')+f.n)+'</h2><p><b>Brand / model:</b> '+esc(s.name)+'</p><ol>'+f.s.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ol><p><b>Source:</b> '+esc(s.doc)+(SRC_THIRD[f.b]?' (third-party hosted copy, official version not yet verified)':'')+'<br>'+esc(s.url)+'</p><p><b>Verification:</b> text taken from the manufacturer document above. Not tested on a physical inverter. Page number not recorded.</p></section>'});
   h+='<p class="rwarn">For a qualified technician only. This report does not replace the manufacturer manual. Do not open or repair the inverter yourself; DC voltage stays present while the sun shines.</p>';
   var el=document.getElementById('rep');if(!el){el=document.createElement('div');el.id='rep';document.body.appendChild(el)}el.innerHTML=h;
   document.body.classList.add('printrep');

@@ -312,6 +312,21 @@ Array.prototype.forEach.call(document.querySelectorAll('#asugg .chip'),function(
 window.__aiCheck2=aiCheck2;window.__aiAsk=aiAsk;
 window.__aiCheck=aiCheck;window.__chatSearch=chatSearch;
 window.__diagnose=diagnose;
+
+try{(function(){
+var TABS=['home','cam','ask','browse','fav'];
+function setTab(t,noscroll){if(TABS.indexOf(t)<0)t='home';document.body.setAttribute('data-tab',t);Array.prototype.forEach.call(document.querySelectorAll('#tabbar button'),function(b){b.classList.toggle('on',b.getAttribute('data-go')===t)});try{sessionStorage.setItem('tab',t)}catch(e){}if(!noscroll)window.scrollTo({top:0,behavior:'smooth'})}
+window.__setTab=setTab;
+var tb=$('tabbar');if(tb)tb.onclick=function(e){var b=e.target.closest('button');if(b)setTab(b.getAttribute('data-go'))};
+function seg(v){document.body.setAttribute('data-seg',v);$('segoff').classList.toggle('on',v==='off');$('segai').classList.toggle('on',v==='ai')}
+if($('segoff')){$('segoff').onclick=function(){seg('off')};$('segai').onclick=function(){seg('ai')}}
+var ca=$('cats');if(ca){var ic={grid:'🔌',insulation:'⚡',pvdc:'☀️',temp:'🌡️',fan:'🌀',arc:'🔥',internal:'🧩',comm:'📡',battery:'🔋',load:'📈',other:'❔'};ca.innerHTML='<div class="ct">اختار نوع العطل</div><div class="cgrid">'+Object.keys(CATS).map(function(k){return '<button type="button" class="ctile" data-k="'+k+'"><i>'+(ic[k]||'•')+'</i><span>'+esc(CATS[k].split(' (')[0].split(' /')[0])+'</span></button>'}).join('')+'</div>';ca.onclick=function(e){var b=e.target.closest('.ctile');if(!b)return;$('fcat').value=b.getAttribute('data-k');$('fbrand').value='';$('filter').value='';renderList('');setTab('browse')}}
+var nv=$('chips');if(nv)nv.addEventListener('click',function(e){if(e.target.closest('.chipb')&&document.body.getAttribute('data-tab')==='home')setTab('browse')});
+var q1=$('qcam'),q2=$('qupl');if(q1)q1.addEventListener('click',function(){setTab('cam',true)});if(q2)q2.addEventListener('click',function(){setTab('cam',true)});
+var hf=$('hform');if(hf)hf.addEventListener('submit',function(){setTab('home',true)});
+var g=$('go');if(g)g.addEventListener('click',function(){setTab('home',true)});
+var m=/[#&]t=([a-z]+)/.exec(location.hash);if(m)setTab(m[1],true);
+})()}catch(e){}
 if(window.addEventListener)window.addEventListener('afterprint',function(){document.body.classList.remove('printone')});
 try{(function(){var m=/[#&]f=([^&]+)/.exec(location.hash);if(!m)return;var k=decodeURIComponent(m[1]),f=F.filter(function(x){return fkey(x)===k})[0],o=$('out');if(!f||!o){if(o)o.innerHTML='<div class="none">اللينك ده مش لاقي الكارت المطلوب في القاعدة.</div>';return}o.innerHTML='<div class="muted">كارت مفتوح من لينك مشاركة:</div>'+card(f,'');bindCards(o);setTimeout(function(){try{o.scrollIntoView()}catch(e){}},100)})()}catch(e){}
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){document.addEventListener('visibilitychange',function(){if(!document.hidden)r.update().catch(function(){})})}).catch(function(){});var rl=false;navigator.serviceWorker.addEventListener('controllerchange',function(){if(rl)return;rl=true;if(!window.__busy)location.reload()})}

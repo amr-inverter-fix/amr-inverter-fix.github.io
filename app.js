@@ -101,12 +101,12 @@ renderHist();
 $('code').addEventListener('keydown',function(e){if(e.key==='Enter')$('go').click()});
 function renderList(q){
   q=norm(q||'');var fb=$('fbrand').value,fk=$('fcat').value;
-  var items=F.filter(function(f){return (!fb||f.b===fb)&&(!fk||f.k===fk)&&(!q||norm(f.c+' '+f.n+' '+SRC[f.b].name).indexOf(q)>=0)}).slice(0,400);
+  var items=F.filter(function(f){return (!fb||f.b===fb)&&(!fk||f.k===fk)&&(!q||norm(f.c+' '+f.n+' '+SRC[f.b].name).indexOf(q)>=0)}); if($('fsort')&&$('fsort').value==='sev'){var o={h:0,m:1,l:2};items=items.map(function(f,i){return [f,i]}).sort(function(a,b){return (o[SEV[a[0].k]||'m']-o[SEV[b[0].k]||'m'])||(a[1]-b[1])}).map(function(x){return x[0]})} items=items.slice(0,400);
   $('lcount').textContent=items.length+' نتيجة'+(items.length>=400?' (أول 400)':'');
-  $('list').innerHTML=items.map(function(f){return '<details><summary><b>'+esc(SRC[f.b].name)+'</b> '+(f.c?esc(f.c)+' · ':'')+esc(f.n)+'</summary><div class="qtag">الخطوات دي منقولة من دليل الشركة وموجّهة لفني مؤهل فقط — مش تعليمات تنفّذها بنفسك.</div><ol>'+f.s.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ol></details>'}).join('')||'<div class="muted">مفيش نتائج</div>';
+  $('list').innerHTML=items.map(function(f){return '<details class="sv-'+(SEV[f.k]||'m')+'"><summary><span class="svdot">'+SEVT[SEV[f.k]||'m'][0]+'</span> <b>'+esc(SRC[f.b].name)+'</b> '+(f.c?esc(f.c)+' · ':'')+esc(f.n)+'</summary><div class="qtag">الخطوات دي منقولة من دليل الشركة وموجّهة لفني مؤهل فقط — مش تعليمات تنفّذها بنفسك.</div><ol>'+f.s.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ol></details>'}).join('')||'<div class="muted">مفيش نتائج</div>';
 }
 var fbs=$('fbrand'),fcs=$('fcat');Object.keys(SRC).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=SRC[k].name;fbs.appendChild(op)});Object.keys(CATS).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=CATS[k];fcs.appendChild(op)});
-$('filter').oninput=function(){renderList(this.value)};fbs.onchange=fcs.onchange=function(){renderList($('filter').value)};renderList('');
+$('filter').oninput=function(){renderList(this.value)};fbs.onchange=fcs.onchange=($('fsort')||{}).onchange=function(){renderList($('filter').value)};renderList('');
 (function(){var f=$('foot'),n=Object.keys(SRC).map(function(k){return SRC[k].name});f.textContent='';var p=document.createElement('p');p.textContent='القاعدة: '+F.length+' عطل من '+n.length+' شركات. البحث بالكود بيشتغل من غير إنترنت بعد أول فتح. قراءة الصورة (OCR) بتحتاج إنترنت.';var d=document.createElement('details');d.className='brl';var sm=document.createElement('summary');sm.textContent='📋 الشركات والموديلات ('+n.length+')';d.appendChild(sm);var q=document.createElement('p');q.textContent=n.join(' · ');d.appendChild(q);f.appendChild(p);f.appendChild(d)})();
 // OCR
 var worker=null;

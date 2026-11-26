@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b3d2e">
+<link rel="manifest" href="manifest.webmanifest">
+<title data-id="th-modified">مشخّص أعطال الإنفرتر</title>
+<link rel="stylesheet" href="style.css">
+<meta property="og:title" content="مشخّص أعطال الإنفرتر" data-id="th-modified" ><meta name="description" content="1-inverter-site-v9" data-id="th-modified" ><meta property="og:description" content="1-inverter-site-v9" data-id="th-modified" ><meta property="og:image" content="https://tiiny.host/assets/logo-purple-bg.png" data-id="th-modified" ><meta property="og:image:width" content="1501" data-id="th-modified" ><meta property="og:image:height" content="1501" data-id="th-modified" ><meta property="og:image:type" content="image/png" data-id="th-modified" ><meta property="og:url" content="https://solar-inverter-fix.tiiny.site/" data-id="th-modified" ><meta property="og:type" content="website" data-id="th-modified" ><script defer data-domain="solar-inverter-fix.tiiny.site" src="https://analytics.tiiny.net/js/plausible.js"></script><script type="text/javascript" src="https://tiiny.host/ad-script.js"></script></head>
+<body>
+<header><h1>☀️ مشخّص أعطال الإنفرتر</h1><p>صوّر شاشة الإنفرتر أو اكتب كود الخطأ</p></header>
+<main>
+<div class="warn">⚠️ <b>للاسترشاد فقط — مش تعليمات صيانة.</b> الإنفرتر فيه جهد عالي مميت. ممنوع تفتح الإنفرتر، وممنوع تفصل أي موصلات أو كابلات أو تشتغل على معدات كهرباء فيها تيار — قوس الـ DC بيتكوّن تحت الحمل. صوّر شاشة العرض من بره بس، ولو ده آمن. أكّد موديل جهازك بالظبط قبل ما تعتمد على أي نتيجة. أي عطل لازم يتعامل معاه فني مؤهل فقط — راجع دليل SMA: <span dir="ltr">https://manuals.sma.de/STPTL-20/en-US/388638859.html</span>.</div>
+
+<section class="card">
+  <h2>1) صورة الشاشة</h2>
+  <button id="live" class="btn" type="button">📷 افتح الكاميرا وصوّر</button>
+  <label class="btn alt" for="shot">📱 صوّر بكاميرا الموبايل</label>
+  <input id="shot" type="file" accept="image/*" capture="environment" hidden>
+  <label class="btn alt" for="cam">🖼️ اختار صورة من الجهاز</label>
+  <input id="cam" type="file" accept="image/*" hidden>
+  <div id="camerr" class="muted"></div>
+  <div id="camwrap" hidden><video id="vid" autoplay playsinline muted></video><div class="row"><button id="snap" class="btn" type="button">📸 التقط</button><button id="stopcam" class="btn alt" type="button">إلغاء</button></div></div>
+  <img id="prev" alt="" hidden>
+  <div id="ocrstat" class="muted"></div>
+</section>
+
+<section class="card">
+  <h2>2) أو اكتب الخطأ</h2>
+  <div class="row">
+    <select id="brand"><option value="">الشركة (اختياري)</option></select>
+    <input id="code" inputmode="text" placeholder="الكود مثلاً 039 أو 2062" autocomplete="off">
+  </div>
+  <textarea id="txt" rows="3" placeholder="أو الصق/اكتب نص الخطأ زي: Grid Overvoltage، PV Isolation Low"></textarea>
+  <button id="go" class="btn" type="button">🔍 شخّص</button>
+  <div id="hist"></div>
+</section>
+
+<section id="out"></section>
+
+<section class="card">
+  <h2>تصفح كل الأعطال</h2>
+  <div class="row"><select id="fbrand"><option value="">كل الشركات</option></select><select id="fcat"><option value="">كل الأنواع</option></select></div>
+  <input id="filter" placeholder="ابحث في القاعدة (كود أو اسم)">
+  <div id="lcount" class="muted"></div>
+  <div id="list"></div>
+</section>
+<footer id="foot"></footer>
+</main>
+<script>window.LITE=true</script><script src="data.js"></script>
+<script src="tesseract.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

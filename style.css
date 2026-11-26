@@ -222,3 +222,8 @@ html[data-theme=dark] .res ol>li{background:var(--surface2)}
 html[data-theme=dark] .warn{box-shadow:none}
 .tabbar{box-shadow:0 10px 30px rgba(8,30,22,.28),0 0 0 1px var(--line)}
 @media(prefers-reduced-motion:reduce){.res ol>li,.sevbar b::after,.skel{animation:none!important}}
+.brl{margin:10px auto 0;max-width:640px;text-align:start}
+.brl summary{cursor:pointer;font-weight:700;padding:10px 14px;border-radius:12px;background:var(--card,rgba(255,255,255,.06));border:1px solid rgba(128,128,128,.25);list-style:none}
+.brl summary::-webkit-details-marker{display:none}
+.brl p{margin:8px 4px 0;line-height:1.9;font-size:.78rem;opacity:.85}
+#foot p{margin:0}

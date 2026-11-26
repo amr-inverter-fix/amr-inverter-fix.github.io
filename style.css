@@ -138,3 +138,7 @@ html[data-theme=dark] .aitag{color:#c4a1ff}
 html[data-theme=dark] .aitag.g{color:#8be8c4}html[data-theme=dark] .aitag.a{color:#ffd58a}
 details.aicards{margin-top:6px;border:1px solid var(--line);border-radius:12px;padding:6px 10px;background:var(--surface)}
 details.aicards summary{padding:6px 0;font-weight:700;direction:rtl;text-align:right}
+
+@media print{body.printone header,body.printone main>*:not(#out),body.printone footer,body.printone .acts,body.printone .fav,body.printone #toast{display:none!important}body.printone #out .res:not(.pr){display:none!important}body{background:#fff}}
+.linkbtn,.printbtn{display:inline-block;margin:8px 6px 0 0;padding:8px 12px;border-radius:10px;background:#fff;color:#0b3d2e;border:1.5px solid #0f7a55;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+@media print{*{animation:none!important;transition:none!important}body.printone .chips,body.printone header{display:none!important}body.printone #out .res.pr{opacity:1!important;transform:none!important;box-shadow:none}}

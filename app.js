@@ -348,6 +348,21 @@ window.addEventListener('online',off);window.addEventListener('offline',off);off
 })()}catch(e){}
 
 try{(function(){
+function renderDash(){
+  var box=$('dash');if(!box)return;
+  var cnt={};F.forEach(function(f){cnt[f.b]=(cnt[f.b]||0)+1});
+  var arr=Object.keys(cnt).map(function(k){return [k,cnt[k]]}).sort(function(a,b){return b[1]-a[1]}).slice(0,6);
+  var mx=arr.length?arr[0][1]:1;
+  var cats={};F.forEach(function(f){cats[f.k]=(cats[f.k]||0)+1});
+  var nc=Object.keys(cats).length;
+  var h='<h2>📊 لوحة القاعدة</h2><div class="sub">أرقام حقيقية من القاعدة المحمّلة على جهازك: '+F.length+' عطل، '+Object.keys(SRC).length+' شركة، '+nc+' نوع عطل.</div><div class="sub">أكتر 6 شركات من حيث عدد الكروت (دوس للتصفح):</div>';
+  h+=arr.map(function(x){return '<button type="button" class="bar" data-b="'+esc(x[0])+'"><span class="n">'+esc(SRC[x[0]].name.split(' ')[0])+'</span><i style="width:'+Math.max(4,Math.round(x[1]/mx*100))+'%"></i><b>'+x[1]+'</b></button>'}).join('');
+  var hist=[];try{hist=JSON.parse(localStorage.getItem('invhist')||'[]')}catch(e){}
+  if(hist.length)h+='<div class="sub" style="margin-top:8px">آخر بحث عندك: '+esc(String(hist[0]&&(hist[0].c||hist[0].t)||'').slice(0,40))+' (المحفوظ في سجل البحث: '+hist.length+')</div>';
+  box.innerHTML=h;
+}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#dash .bar');if(!b)return;var fb=$('fbrand');if(!fb)return;fb.value=b.getAttribute('data-b');$('fcat').value='';$('filter').value='';renderList('');setTab('browse')});
+try{renderDash()}catch(e){}
 var TABS=['home','cam','ask','browse','fav'];
 function setTab(t,noscroll){if(TABS.indexOf(t)<0)t='home';document.body.setAttribute('data-tab',t);Array.prototype.forEach.call(document.querySelectorAll('#tabbar button'),function(b){b.classList.toggle('on',b.getAttribute('data-go')===t)});try{sessionStorage.setItem('tab',t)}catch(e){}if(!noscroll)window.scrollTo({top:0,behavior:'smooth'})}
 window.__setTab=setTab;

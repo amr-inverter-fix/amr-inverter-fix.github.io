@@ -26,3 +26,9 @@ Status labels: COMPLETE AND TESTED / IMPLEMENTED NOT FULLY TESTED / PARTIAL / BL
 
 ## Not tested
 No test on a real phone, no real inverter, no accessibility audit, no formal security audit (code read-through for XSS only; user text is escaped before display).
+
+## Database quality audit (2026-11-27)
+Machine-readable: db_quality_report.json. 1507 records: 53 VERIFIED AGAINST OFFICIAL MANUAL (4 cards, extracted from the official-domain PDF, not independently re-reviewed), 138 THIRD-PARTY COPY - OFFICIAL VERSION UNCONFIRMED, 12 DUPLICATE-CONFLICT (10 Axpert Fault/Warning numbers that share a code, 2 SolarEdge 2xE entries needing a manual check), 1304 SOURCE NEEDS VERIFICATION. Source classes: 29 official domain, 3 official domain but 403 to automated check, 3 third-party, 3 unverified host, 1 broken (Sol-Ark, 404). Nothing was deleted or edited. Page numbers and document versions are not recorded yet.
+
+## Tests
+Offline regression: 62/62. The one earlier failure was a badly written negative test (it expected a SolaX result for an unknown vendor and could never pass); it is now an explicit "must not return SolaX" check, not a data fix. The matching engine itself was not changed.

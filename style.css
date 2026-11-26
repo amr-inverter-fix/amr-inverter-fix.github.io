@@ -107,3 +107,22 @@ html[data-theme=dark] .sevbar.sev-h{color:#ffb4b0}html[data-theme=dark] .sevbar.
 @keyframes glow{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.15)}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media(max-width:380px){.hero .big{font-size:1.25rem}.bmark{width:34px;height:34px}}
+
+/* chat */
+#chat{margin-top:10px}
+.cmsg{margin:10px 0;animation:fadeUp .35s both}
+.cmsg.me{display:flex;justify-content:flex-start}
+.cmsg .bub{display:inline-block;max-width:88%;padding:10px 14px;border-radius:16px;line-height:1.55}
+.cmsg.me .bub{background:var(--brand);color:var(--brandtxt);border-end-start-radius:4px;font-weight:600}
+.cmsg.bot .bub{background:var(--surface2);border:1px solid var(--line);border-end-end-radius:4px}
+.cmsg .cards .res{margin:8px 0}
+.aibtn{display:block;width:100%;margin-top:6px;border:1.5px dashed var(--brand);background:transparent;color:var(--brand);border-radius:12px;padding:11px;font:inherit;font-weight:800;cursor:pointer}
+.aibtn:disabled{opacity:.6}
+.aiout{margin-top:8px;border-radius:12px;font-size:.92rem}
+.aiout.wait,.aiout.bad{padding:10px 12px;background:var(--surface2);border:1px solid var(--line);color:var(--muted)}
+.aiout.ok{padding:12px;background:linear-gradient(135deg,rgba(124,58,237,.10),rgba(43,191,138,.10));border:1px solid rgba(124,58,237,.35)}
+.aitag{font-size:.76rem;font-weight:800;color:#7c3aed;margin-bottom:6px}
+html[data-theme=dark] .aitag{color:#c4a1ff}
+.aitxt{white-space:pre-line}
+.cform{display:flex;gap:8px;margin-top:10px}.cform .btn{width:auto;margin-top:0;padding:12px 20px}
+#sugg{margin:6px 0 4px}

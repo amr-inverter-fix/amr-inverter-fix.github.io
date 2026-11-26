@@ -27,7 +27,7 @@ function diagnose(text,brandSel,codeSel){
     if(!f.a||(brands.length&&brands.indexOf(f.b)<0)) return;
     f.a.forEach(function(al){
       var A=al.toUpperCase().replace(/[_\s]+/g,' ').replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-      if(new RegExp('(^|[^A-Z0-9])'+A+'($|[^0-9])').test(UP)) add(f,'code '+al,4);
+      if(new RegExp('(^|[^A-Z0-9])'+A+'($|[^0-9])').test(UP)) add(f,'code '+al,String(f.c).toUpperCase()===al.toUpperCase()?4.5:4);
     });
   });
   var nt=' '+norm(full)+' ';

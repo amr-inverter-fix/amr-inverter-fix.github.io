@@ -248,3 +248,4 @@ html[dir=ltr] body{text-align:left}html[dir=ltr] .warn,html[dir=ltr] .camtips,ht
 #fsz,#lng,#theme{width:36px;height:36px;border-radius:10px;font-size:14px;margin-inline-end:3px}#theme{font-size:17px}
 .hwrap h1,.hwrap .ttl{min-width:0}
 .hwrap{gap:6px}.hwrap .logo{width:38px;height:38px;flex:none}.hwrap h1{font-size:1.1rem}
+.srclist .srow{padding:8px 0;border-bottom:1px solid var(--line,#ddd);font-size:.85rem;text-align:start}.srclist .srow a{font-size:.8rem}

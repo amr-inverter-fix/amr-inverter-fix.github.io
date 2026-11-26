@@ -107,7 +107,7 @@ function renderList(q){
 }
 var fbs=$('fbrand'),fcs=$('fcat');Object.keys(SRC).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=SRC[k].name;fbs.appendChild(op)});Object.keys(CATS).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=CATS[k];fcs.appendChild(op)});
 $('filter').oninput=function(){renderList(this.value)};fbs.onchange=fcs.onchange=function(){renderList($('filter').value)};renderList('');
-$('foot').textContent='القاعدة: '+F.length+' عطل من '+Object.keys(SRC).length+' شركات ('+Object.keys(SRC).map(function(k){return SRC[k].name}).join(', ')+'). البحث بالكود بيشتغل من غير إنترنت بعد أول فتح. قراءة الصورة (OCR) بتحتاج إنترنت.';
+(function(){var f=$('foot'),n=Object.keys(SRC).map(function(k){return SRC[k].name});f.textContent='';var p=document.createElement('p');p.textContent='القاعدة: '+F.length+' عطل من '+n.length+' شركات. البحث بالكود بيشتغل من غير إنترنت بعد أول فتح. قراءة الصورة (OCR) بتحتاج إنترنت.';var d=document.createElement('details');d.className='brl';var sm=document.createElement('summary');sm.textContent='📋 الشركات والموديلات ('+n.length+')';d.appendChild(sm);var q=document.createElement('p');q.textContent=n.join(' · ');d.appendChild(q);f.appendChild(p);f.appendChild(d)})();
 // OCR
 var worker=null;
 function getWorker(){

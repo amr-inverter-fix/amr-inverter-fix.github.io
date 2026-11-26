@@ -183,6 +183,73 @@ renderFavs();
 $('hform').onsubmit=function(e){e.preventDefault();var q=$('hq').value.trim();if(!q)return;if(/^[A-Za-z0-9\-\.\/]{1,14}$/.test(q)){$('code').value=q;$('txt').value=''}else{$('txt').value=q;$('code').value=''}$('go').click()};
 $('qcam').onclick=function(){$('live').click();$('live').scrollIntoView({behavior:'smooth',block:'center'})};
 $('qupl').onclick=function(){$('cam').click()};
+
+// ===== chat (database only) + optional AI explain =====
+var ARM=[[/جهد.{0,6}الشبك|الشبكه|شبكة/,'grid','grid'],[/عالي|عاليه|زياد|ارتفاع|اوفر|over/i,'over high',''],[/واطي|واطى|منخفض|نقص|under|low/i,'under low',''],[/تردد/,'frequency','grid'],[/عزل|تسرب|ارضي|أرضي|تأريض|ارضى|جراوند|ground/i,'insulation isolation leakage ground earth','insulation'],[/حرار|سخن|سخونه|ساخن|temperature/i,'temperature over temp','temp'],[/مروح|فان/,'fan','fan'],[/بطاري|بطاريه|battery/i,'battery','battery'],[/حمل زائد|حمل زايد|اوفر لود|overload/i,'overload','load'],[/قوس|شرار|arc/i,'arc','arc'],[/الواح|ألواح|بانل|panel|pv/i,'pv input','pvdc'],[/اتصال|communication/i,'communication','comm']];
+function chatSearch(q){
+  var kset={},extra='';ARM.forEach(function(m){if(m[0].test(q)){extra+=' '+m[1];if(m[2])kset[m[2]]=1}});
+  var full=q+' '+extra,brands=detectBrands(full);
+  var d=diagnose(q,'','');var out=[],seen={};
+  function put(f,sc){var k=fkey(f);if(seen[k]){if(sc>seen[k].sc)seen[k].sc=sc;return}seen[k]={f:f,sc:sc};out.push(seen[k])}
+  d.res.forEach(function(r){put(r.f,100+r.score)});
+  var tk=norm(full).split(' ').filter(function(w){return w.length>2&&!/^(the|and|for|with|what|error|fault|code|inverter)$/.test(w)});
+  if(tk.length){F.forEach(function(f){
+    if(brands.length&&brands.indexOf(f.b)<0)return;
+    var nt=norm(f.n+' '+(CATS[f.k]||'')).split(' '),sc=0;
+    tk.forEach(function(w){if(nt.indexOf(w)>=0)sc+=2;else if(w.length>4&&nt.some(function(x){return x.indexOf(w)===0}))sc+=1});
+    if(Object.keys(kset).length&&kset[f.k])sc+=2;
+    if(sc>=3||(sc>=2&&tk.length<=2))put(f,sc)})}
+  out.sort(function(a,b){return b.sc-a.sc});
+  return out.slice(0,3).map(function(x){return x.f});
+}
+function cadd(cls,html){var c=$('chat'),e=document.createElement('div');e.className='cmsg '+cls;e.innerHTML=html;c.appendChild(e);e.scrollIntoView({block:'nearest',behavior:'smooth'});return e}
+var lastQ='',lastHits=[],hist2=[];
+function chatAsk(q){
+  q=q.trim();if(!q)return;lastQ=q;
+  cadd('me','<div class="bub"></div>').firstChild.textContent=q;
+  var hits=chatSearch(q);lastHits=hits;
+  if(!hits.length){cadd('bot','<div class="bub">مالقيتش في القاعدة الرسمية حاجة مطابقة لسؤالك. اكتب الكود أو نص الخطأ زي ما بيظهر على الشاشة، أو اختار الشركة من الشريط اللي فوق.</div>');return}
+  var e=cadd('bot','<div class="bub">لقيت '+hits.length+' نتيجة من القاعدة الرسمية (الكروت دي هي المرجع):</div><div class="cards">'+hits.map(function(f){return card(f,'')}).join('')+'</div><button type="button" class="aibtn">✨ اشرح بالذكاء الاصطناعي</button><div class="aiout"></div>');
+  bindCards(e);
+  e.querySelector('.aibtn').onclick=function(){aiExplain(e,q,hits)};
+}
+var ALLOWNUM=/[A-Za-z0-9\u0660-\u0669\-\.\/_]*[0-9\u0660-\u0669][A-Za-z0-9\u0660-\u0669\-\.\/_]*/g;
+function ar2en(t){return t.replace(/[\u0660-\u0669]/g,function(d){return String(d.charCodeAt(0)-1632)})}
+function aiCheck(reply,hits,q){
+  var allowed=ar2en((q+' '+hits.map(function(f){return [SRC[f.b].name,f.c,f.n,f.s.join(' ')].join(' ')}).join(' ')+' '+hits.map(function(f){return SRC[f.b].url}).join(' ')).toLowerCase());
+  var bad=[];
+  (ar2en(reply).match(ALLOWNUM)||[]).forEach(function(t){t=t.toLowerCase().replace(/^[\-\.\/_]+|[\-\.\/_]+$/g,'');if(t&&allowed.indexOf(t)<0&&bad.indexOf(t)<0)bad.push(t)});
+  var urls=(reply.match(/https?:\/\/\S+|www\.\S+/gi)||[]).filter(function(u){return allowed.indexOf(u.toLowerCase().replace(/[).,،]+$/,''))<0});
+  urls.forEach(function(u){bad.push(u)});
+  if(/افتح\s*(ال)?(جهاز|انفرتر|إنفرتر|الغطاء)|فك\s|افصل\s*(ال)?(كابل|كابلات|سلك|اسلاك|أسلاك)|(لا)?مس\s*(ال)?(كابل|سلك|اسلاك|أسلاك)|open the (inverter|cover)|unplug|disconnect the/i.test(reply))bad.push('تعليمات غير آمنة');
+  if(reply.length>1500)bad.push('رد طويل');
+  return {ok:!bad.length,bad:bad};
+}
+function puterText(r){if(!r)return'';if(typeof r==='string')return r;var m=r.message||r;var c=m.content!==undefined?m.content:m;if(typeof c==='string')return c;if(Array.isArray(c))return c.map(function(x){return typeof x==='string'?x:(x&&x.text)||''}).join('');return String(c||'')}
+var puterP=null;
+function loadPuter(){if(window.puter)return Promise.resolve();if(puterP)return puterP;puterP=new Promise(function(ok,no){var s=document.createElement('script');s.src='https://js.puter.com/v2/';s.onload=ok;s.onerror=function(){puterP=null;no(new Error('load'))};document.head.appendChild(s)});return puterP}
+async function aiExplain(box,q,hits){
+  var out=box.querySelector('.aiout'),btn=box.querySelector('.aibtn');
+  if(!out.dataset.agreed&&!confirm('الزرار ده بيبعت سؤالك ونص الكروت الظاهرة لخدمة Puter (طرف تالت) عشان تشرحهم، وممكن يطلب منك تسجيل دخول بحساب Puter مجاني. الشرح مش من دليل الشركة. تكمّل؟'))return;
+  out.dataset.agreed='1';btn.disabled=true;out.className='aiout wait';out.textContent='بجهّز الشرح...';
+  var data=hits.map(function(f){return {brand:SRC[f.b].name,code:f.c,name:f.n,steps_from_official_manual:f.s,source:SRC[f.b].doc}});
+  var prompt='You explain inverter faults to a non-expert in simple Egyptian Arabic, in at most 120 words.\nRules: use ONLY the DATA below. Never add any fault code, number, setting, step, brand or link that is not in DATA. If DATA does not answer the question, say so. Never tell the user to open the inverter or touch wiring or DC cables; repairs are for a qualified technician. Do not give a diagnosis beyond DATA.\nDATA: '+JSON.stringify(data)+'\nUSER QUESTION: '+q;
+  try{
+    await loadPuter();
+    var r=await puter.ai.chat(prompt,{normalize:true});
+    var t=puterText(r).trim(),chk=aiCheck(t,hits,q);
+    if(!t){throw new Error('empty')}
+    if(!chk.ok){out.className='aiout bad';out.textContent='الرد اتلغى لأنه فيه أرقام أو أكواد مش موجودة في الكروت الرسمية ('+chk.bad.slice(0,4).join('، ')+'). الكروت الرسمية اللي فوق هي المرجع.';}
+    else{out.className='aiout ok';out.innerHTML='<div class="aitag">شرح بالذكاء الاصطناعي (مش من دليل الشركة) راجع الكروت اللي فوق</div><div class="aitxt"></div>';out.querySelector('.aitxt').textContent=t}
+  }catch(e){
+    out.className='aiout bad';
+    out.textContent=(e&&e.message==='load')?'مقدرتش أحمّل خدمة Puter (محتاج إنترنت). الكروت الرسمية اللي فوق كافية.':'الشرح بالذكاء الاصطناعي مش متاح دلوقتي (ممكن تكون محتاج تسجّل دخول في Puter بحساب مجاني، أو الحد اليومي خلص). الكروت الرسمية اللي فوق هي المرجع.';
+  }
+  btn.disabled=false;
+}
+$('cform').onsubmit=function(e){e.preventDefault();var v=$('cq').value;$('cq').value='';chatAsk(v)};
+Array.prototype.forEach.call(document.querySelectorAll('#sugg .chip'),function(b){b.onclick=function(){chatAsk(b.getAttribute('data-q'))}});
+window.__aiCheck=aiCheck;window.__chatSearch=chatSearch;
 window.__diagnose=diagnose;
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){document.addEventListener('visibilitychange',function(){if(!document.hidden)r.update().catch(function(){})})}).catch(function(){});var rl=false;navigator.serviceWorker.addEventListener('controllerchange',function(){if(rl)return;rl=true;if(!window.__busy)location.reload()})}
 })();

@@ -254,3 +254,5 @@ html[dir=ltr] body{text-align:left}html[dir=ltr] .warn,html[dir=ltr] .camtips,ht
 @media print{body.printrep>*:not(#rep){display:none!important}body.printrep #rep{display:block!important;color:#000;font:14px/1.5 sans-serif;padding:16px}#rep h1{font-size:20px}#rep h2{font-size:16px;margin:14px 0 4px}#rep .rsec{break-inside:avoid;border-top:1px solid #999;padding-top:6px}#rep .rwarn{margin-top:16px;border:1px solid #000;padding:8px;font-weight:700}#rep .rmeta{color:#444}}
 
 .offst{font-size:.82rem;color:#44564e;margin:6px 0}
+
+@media print{#rep .rbrand{background:#0b3d2e;color:#fff;padding:8px 12px;font-weight:700;margin-bottom:10px}#rep .rimg{max-width:320px;max-height:240px;border:1px solid #999}}

@@ -237,3 +237,4 @@ html[data-theme=dark] .warn{box-shadow:none}
 @media(min-width:760px){.cmpcols{grid-template-columns:1fr 1fr}}
 #totop{position:fixed;inset-inline-start:16px;bottom:96px;width:44px;height:44px;border-radius:50%;border:0;background:#2fbf8f;color:#04140d;font-size:20px;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.35);opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .2s,transform .2s;z-index:40}
 #totop.show{opacity:1;transform:none;pointer-events:auto}
+.svdot{font-size:.9em}#fsort{width:100%}

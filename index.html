@@ -45,6 +45,13 @@
 <section id="out"></section>
 <section id="favsec" class="card" hidden><h2>⭐ المفضلة</h2><div id="favs"></div></section>
 
+<section class="card" id="chatsec">
+  <h2>💬 اسأل التطبيق</h2>
+  <div class="muted" style="margin-top:-6px">بيجاوب من قاعدة أدلة الشركات بس. مفيش كود بيتألّف.</div>
+  <div id="sugg"><button type="button" class="chip" data-q="الإنفرتر بيطلع عطل عزل وتسرب أرضي">عزل وتسرب أرضي</button><button type="button" class="chip" data-q="جهد الشبكة عالي">جهد الشبكة عالي</button><button type="button" class="chip" data-q="الإنفرتر سخن زيادة درجة الحرارة">حرارة عالية</button><button type="button" class="chip" data-q="خطأ في البطارية">البطارية</button></div>
+  <div id="chat" aria-live="polite"></div>
+  <form id="cform" class="cform" autocomplete="off"><input id="cq" placeholder="اكتب سؤالك أو الكود، مثلاً: E36 كاكو" aria-label="سؤالك"><button type="submit" class="btn" id="csend">إرسال</button></form>
+</section>
 <section class="card">
   <h2>تصفح كل الأعطال</h2>
   <div class="row"><select id="fbrand"><option value="">كل الشركات</option></select><select id="fcat"><option value="">كل الأنواع</option></select></div>

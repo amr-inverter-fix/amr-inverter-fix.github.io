@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b3d2e">
+<meta name="theme-color" content="#0b3d2e"><script>try{var t=localStorage.getItem("invtheme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <title>مشخّص أعطال الإنفرتر</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header><h1>☀️ مشخّص أعطال الإنفرتر</h1><p>صوّر شاشة الإنفرتر أو اكتب كود الخطأ</p></header>
+<header><div class="hwrap"><div class="logo">☀️</div><div class="hgrow"><h1>مشخّص أعطال الإنفرتر</h1><p>صوّر شاشة الإنفرتر أو اكتب كود الخطأ</p></div><button id="theme" type="button" aria-label="الوضع الليلي">🌙</button></div><div class="stats"><div class="stat"><b id="sn1">-</b>عطل</div><div class="stat"><b id="sn2">-</b>شركة</div><div class="stat"><b>رسمي</b>من أدلة الشركات</div></div></header>
 <main>
 <div class="warn">⚠️ <b>للاسترشاد فقط — مش تعليمات صيانة.</b> الإنفرتر فيه جهد عالي مميت. ممنوع تفتح الإنفرتر، وممنوع تفصل أي موصلات أو كابلات أو تشتغل على معدات كهرباء فيها تيار — قوس الـ DC بيتكوّن تحت الحمل. صوّر شاشة العرض من بره بس، ولو ده آمن. أكّد موديل جهازك بالظبط قبل ما تعتمد على أي نتيجة. أي عطل لازم يتعامل معاه فني مؤهل فقط — راجع دليل SMA: <span dir="ltr">https://manuals.sma.de/STPTL-20/en-US/388638859.html</span>.</div>
 
@@ -48,7 +48,7 @@
 </section>
 <footer id="foot"></footer>
 </main>
-<script>window.LITE=true</script><script src="data.js"></script>
+<script>window.LITE=true</script><script src="data.js"></script><script src="data2.js"></script>
 <script src="tesseract.min.js"></script>
 <script src="app.js"></script>
 </body>

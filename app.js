@@ -314,6 +314,16 @@ window.__aiCheck=aiCheck;window.__chatSearch=chatSearch;
 window.__diagnose=diagnose;
 
 try{(function(){
+var dp=null,bi=$('qinst'),st=window.matchMedia&&matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(bi&&!st)bi.hidden=false});
+if(bi)bi.onclick=function(){if(!dp)return;dp.prompt();dp.userChoice.then(function(){dp=null;bi.hidden=true}).catch(function(){})};
+window.addEventListener('appinstalled',function(){if(bi)bi.hidden=true;toast('اتثبّت ✅')});
+var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!st;if(ios&&$('iosHint'))$('iosHint').hidden=false;
+function off(){var b=$('offbar');if(b)b.hidden=navigator.onLine!==false}
+window.addEventListener('online',off);window.addEventListener('offline',off);off();
+})()}catch(e){}
+
+try{(function(){
 var TABS=['home','cam','ask','browse','fav'];
 function setTab(t,noscroll){if(TABS.indexOf(t)<0)t='home';document.body.setAttribute('data-tab',t);Array.prototype.forEach.call(document.querySelectorAll('#tabbar button'),function(b){b.classList.toggle('on',b.getAttribute('data-go')===t)});try{sessionStorage.setItem('tab',t)}catch(e){}if(!noscroll)window.scrollTo({top:0,behavior:'smooth'})}
 window.__setTab=setTab;

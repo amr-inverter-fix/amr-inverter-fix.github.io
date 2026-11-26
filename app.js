@@ -105,7 +105,10 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
     if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file]}).catch(function(){})}
     else{var a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=file.name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1500);toast('الصورة اتحمّلت 🖼️')}},'image/png')});
 function buildReport(list){
-  var d=new Date(),ds=d.toLocaleString('en-GB'),h='<h1>Inverter fault report / تقرير عطل إنفرتر</h1><p class="rmeta">Generated: '+esc(ds)+' · Faults: '+list.length+'</p>';
+  var d=new Date(),ds=d.toLocaleString('en-GB'),p2=function(n){return (n<10?'0':'')+n},ref='IF-'+d.getFullYear()+p2(d.getMonth()+1)+p2(d.getDate())+'-'+p2(d.getHours())+p2(d.getMinutes())+p2(d.getSeconds()),pv=$('prev');
+  var h='<div class="rbrand">Inverter Fix · مشخّص أعطال الإنفرتر</div><h1>Inverter fault report / تقرير عطل إنفرتر</h1><p class="rmeta">Reference: '+ref+' · Generated: '+esc(ds)+' · Faults: '+list.length+'</p>';
+  if(pv&&!pv.hidden&&pv.src)h+='<p><b>Uploaded image:</b><br><img class="rimg" src="'+esc(pv.src)+'" alt=""></p>';
+  h+='<p><b>Assessment:</b> matched in the app\'s fault database built from manufacturer documents. No AI model was used for this report. Confidence is not scored; verify against the manual.</p>';
   list.forEach(function(f,i){var s=SRC[f.b];
     h+='<section class="rsec"><h2>'+(i+1)+'. '+esc((f.c?f.c+' - ':'')+f.n)+'</h2><p><b>Brand / model:</b> '+esc(s.name)+'</p><ol>'+f.s.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ol><p><b>Source:</b> '+esc(s.doc)+'<br>'+esc(s.url)+'</p><p><b>Verification:</b> text taken from the manufacturer document above. Not tested on a physical inverter. Page number not recorded.</p></section>'});
   h+='<p class="rwarn">For a qualified technician only. This report does not replace the manufacturer manual. Do not open or repair the inverter yourself; DC voltage stays present while the sun shines.</p>';

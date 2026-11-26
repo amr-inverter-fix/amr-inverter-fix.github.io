@@ -168,6 +168,7 @@ $('snap').onclick=function(){
   c.toBlob(function(b){stopCam();if(b)handleFile(new File([b],'capture.jpg',{type:'image/jpeg'}))},'image/jpeg',0.92);
 };
 
+try{(function(){var z=$('fsz');if(z){var fs=0;try{fs=+localStorage.getItem('invfs')||0}catch(e){}function afs(){document.body.className=document.body.className.replace(/\bfs[12]\b/g,'').trim();if(fs)document.body.classList.add('fs'+fs);z.setAttribute('data-s',fs);z.setAttribute('aria-label','حجم الخط: '+['عادي','كبير','كبير جدًا'][fs])}afs();z.onclick=function(){fs=(fs+1)%3;try{localStorage.setItem('invfs',fs)}catch(e){}afs();toast(['الخط عادي','الخط كبير','الخط كبير جدًا'][fs])}}})()}catch(e){}
 try{(function(){var t=$('theme');function ap(){var d=document.documentElement.getAttribute('data-theme')==='dark';t.textContent=d?'☀️':'🌙'}ap();t.onclick=function(){var d=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',d);try{localStorage.setItem('invtheme',d)}catch(e){}ap()};$('sn1').textContent=F.length;$('sn2').textContent=Object.keys(SRC).length})()}catch(e){}
 
 function toast(t){var e=$('toast');if(!e){e=document.createElement('div');e.id='toast';document.body.appendChild(e)}e.textContent=t;e.className='show';clearTimeout(toast._t);toast._t=setTimeout(function(){e.className=''},1800)}

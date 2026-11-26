@@ -139,7 +139,7 @@ function show(d,ocrText){
 // UI
 var bs=$('brand');Object.keys(SRC).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=SRC[k].name;bs.appendChild(op)});
 function hist(){try{return JSON.parse(localStorage.getItem('invhist')||'[]')}catch(e){return []}}
-function saveHist(b,c,t){if(!(c||t))return;try{var h=hist().filter(function(x){return !(x.b===b&&x.c===c&&x.t===t)});h.unshift({b:b,c:c,t:t});localStorage.setItem('invhist',JSON.stringify(h.slice(0,6)));renderHist()}catch(e){}}
+function saveHist(b,c,t){if(!(c||t))return;try{try{var lg=JSON.parse(localStorage.getItem('invlog')||'[]');lg.push({b:b||'',c:c||'',t:t?1:0,ts:Date.now()});localStorage.setItem('invlog',JSON.stringify(lg.slice(-500)))}catch(e){}var h=hist().filter(function(x){return !(x.b===b&&x.c===c&&x.t===t)});h.unshift({b:b,c:c,t:t});localStorage.setItem('invhist',JSON.stringify(h.slice(0,6)));renderHist()}catch(e){}}
 function renderHist(){var h=hist(),e=$('hist');if(!h.length){e.innerHTML='';return}e.innerHTML='<div class="muted">آخر بحث (على جهازك بس):</div>'+h.map(function(x,i){return '<button class="chip" data-i="'+i+'" type="button">'+esc((x.b&&SRC[x.b]?SRC[x.b].name+' ':'')+(x.c||x.t).slice(0,24))+'</button>'}).join('')+'<button class="chip" id="clrh" type="button">مسح ✖</button>';
   Array.prototype.forEach.call(e.querySelectorAll('[data-i]'),function(b){b.onclick=function(){var x=h[+b.getAttribute('data-i')];bs.value=x.b||'';$('code').value=x.c||'';$('txt').value=x.t||'';$('go').click()}});
   $('clrh').onclick=function(){localStorage.removeItem('invhist');renderHist()}}
@@ -406,9 +406,26 @@ function renderDash(){
   h+=arr.map(function(x){return '<button type="button" class="bar" data-b="'+esc(x[0])+'"><span class="n">'+esc(SRC[x[0]].name.split(' ')[0])+'</span><i style="width:'+Math.max(4,Math.round(x[1]/mx*100))+'%"></i><b>'+x[1]+'</b></button>'}).join('');
   var hist=[];try{hist=JSON.parse(localStorage.getItem('invhist')||'[]')}catch(e){}
   if(hist.length)h+='<div class="sub" style="margin-top:8px">آخر بحث عندك: '+esc(String(hist[0]&&(hist[0].c||hist[0].t)||'').slice(0,40))+' (المحفوظ في سجل البحث: '+hist.length+')</div>';
+  h+='<button type="button" class="q" id="anbtn" style="margin-top:8px">📈 تحليلات بحثك</button><div id="anbox" hidden></div>';
   box.innerHTML=h;
 }
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#dash .bar');if(!b)return;var fb=$('fbrand');if(!fb)return;fb.value=b.getAttribute('data-b');$('fcat').value='';$('filter').value='';renderList('');setTab('browse')});
+function top(o,n){return Object.keys(o).map(function(k){return [k,o[k]]}).sort(function(a,b){return b[1]-a[1]}).slice(0,n)}
+function barsH(a,lab){var mx=a.length?a[0][1]:1;return a.map(function(x){return '<div class="bar"><span class="n">'+esc(lab?lab(x[0]):x[0])+'</span><i style="width:'+Math.max(4,Math.round(x[1]/mx*100))+'%"></i><b>'+x[1]+'</b></div>'}).join('')}
+function renderAn(){var bx=$('anbox');if(!bx)return;var lg=[];try{lg=JSON.parse(localStorage.getItem('invlog')||'[]')}catch(e){}
+  var h='<div class="sub">كل الأرقام دي من بحثك على جهازك بس (بتتخزّن محليًا، ومبتتبعتش لأي مكان). آخر '+lg.length+' بحث متسجّل (الحد 500).</div>';
+  if(!lg.length){bx.innerHTML=h+'<div class="sub">لسه مفيش بحث متسجّل. ابحث عن كود وارجع هنا.</div>';return}
+  var codes={},br={},days={},dn=[];lg.forEach(function(x){if(x.c)codes[x.c.toUpperCase()]=(codes[x.c.toUpperCase()]||0)+1;if(x.b)br[x.b]=(br[x.b]||0)+1;var d=new Date(x.ts).toISOString().slice(0,10);days[d]=(days[d]||0)+1});
+  for(var i=6;i>=0;i--){var dd=new Date(Date.now()-i*864e5).toISOString().slice(0,10);dn.push([dd.slice(5),days[dd]||0])}
+  var mxd=Math.max.apply(null,dn.map(function(x){return x[1]}))||1;
+  h+='<h3>أكتر أكواد بحثت عنها</h3>'+(Object.keys(codes).length?barsH(top(codes,5)):'<div class="sub">مفيش أكواد، بحثك كان بنص.</div>');
+  h+='<h3>أكتر شركات</h3>'+(Object.keys(br).length?barsH(top(br,5),function(k){return SRC[k]?SRC[k].name.split(' ')[0]:k}):'<div class="sub">مفيش شركة محدّدة في بحثك.</div>');
+  h+='<h3>النشاط آخر 7 أيام (UTC)</h3>'+dn.map(function(x){return '<div class="bar"><span class="n">'+x[0]+'</span><i style="width:'+Math.max(x[1]?4:0,Math.round(x[1]/mxd*100))+'%"></i><b>'+x[1]+'</b></div>'}).join('');
+  var cats={};F.forEach(function(f){cats[f.k]=(cats[f.k]||0)+1});
+  h+='<h3>توزيع أنواع الأعطال في القاعدة ('+F.length+')</h3>'+barsH(top(cats,12),function(k){return CATS[k]||CATS.other});
+  h+='<button type="button" class="q" id="anclr">🗑️ امسح سجل التحليلات</button>';
+  bx.innerHTML=h}
+document.addEventListener('click',function(e){var t=e.target;if(!t.closest)return;if(t.closest('#anbtn')){var bx=$('anbox');bx.hidden=!bx.hidden;if(!bx.hidden)renderAn()}else if(t.closest('#anclr')){try{localStorage.removeItem('invlog')}catch(x){}renderAn()}});
 try{renderDash()}catch(e){}
 
 (function(){

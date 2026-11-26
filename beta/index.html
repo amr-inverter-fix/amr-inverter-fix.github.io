@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b3d2e"><script>try{var t=localStorage.getItem("invtheme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="manifest" href="../manifest.webmanifest">
+<title>مشخّص أعطال الإنفرتر</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-tab="home" data-seg="off">
+<header><div class="hwrap"><div class="logo" aria-hidden="true"><svg viewBox="0 0 48 48" width="30" height="30"><circle cx="24" cy="24" r="9" fill="#ffd166"/><g stroke="#ffd166" stroke-width="3" stroke-linecap="round"><path d="M24 4v6M24 38v6M4 24h6M38 24h6M9.9 9.9l4.2 4.2M33.9 33.9l4.2 4.2M9.9 38.1l4.2-4.2M33.9 14.1l4.2-4.2"/></g></svg></div><div class="hgrow"><h1>مشخّص أعطال الإنفرتر</h1><p>من أدلة الشركات الرسمية، بدون تخمين</p></div><button id="theme" type="button" aria-label="الوضع الليلي">🌙</button></div>
+<div class="hero" data-tab="home"><h2 class="big">إنفرترك وقف؟ <span>اكتب الكود أو صوّر الشاشة</span></h2>
+<form id="hform" class="hsearch" autocomplete="off"><input id="hq" type="search" inputmode="text" placeholder="مثلاً: 039 أو E36 أو Grid Overvoltage" aria-label="ابحث عن عطل"><button type="submit" id="hgo" aria-label="ابحث">🔍</button></form>
+<div class="quick"><button type="button" class="q" id="qcam">📷 صوّر الشاشة</button><button type="button" class="q" id="qupl">🖼️ صورة من الجهاز</button></div>
+<div class="stats"><div class="stat"><b id="sn1">-</b>عطل</div><div class="stat"><b id="sn2">-</b>شركة</div><div class="stat"><b>رسمي</b>من أدلة الشركات</div></div></div></header>
+<nav id="chips" data-tab="home browse" class="chips" aria-label="الشركات"></nav>
+<main>
+<div class="warn" data-tab="home cam ask browse">⚠️ <b>للاسترشاد فقط — مش تعليمات صيانة.</b> الإنفرتر فيه جهد عالي مميت. ممنوع تفتح الإنفرتر، وممنوع تفصل أي موصلات أو كابلات أو تشتغل على معدات كهرباء فيها تيار — قوس الـ DC بيتكوّن تحت الحمل. صوّر شاشة العرض من بره بس، ولو ده آمن. أكّد موديل جهازك بالظبط قبل ما تعتمد على أي نتيجة. أي عطل لازم يتعامل معاه فني مؤهل فقط — راجع دليل SMA: <span dir="ltr">https://manuals.sma.de/STPTL-20/en-US/388638859.html</span>.</div>
+
+<section class="card" data-tab="cam">
+  <h2>📷 صوّر شاشة الإنفرتر</h2>
+  <button id="live" class="btn" type="button">📷 افتح الكاميرا وصوّر</button>
+  <label class="btn alt" for="shot">📱 صوّر بكاميرا الموبايل</label>
+  <input id="shot" type="file" accept="image/*" capture="environment" hidden>
+  <label class="btn alt" for="cam">🖼️ اختار صورة من الجهاز</label>
+  <input id="cam" type="file" accept="image/*" hidden>
+  <div id="camerr" class="muted"></div>
+  <div id="camwrap" hidden><video id="vid" autoplay playsinline muted></video><div class="row"><button id="snap" class="btn" type="button">📸 التقط</button><button id="stopcam" class="btn alt" type="button">إلغاء</button></div></div>
+  <img id="prev" alt="" hidden>
+  <div id="ocrstat" class="muted"></div>
+</section>
+
+<section class="cats" id="cats" data-tab="home" aria-label="أنواع الأعطال"></section>
+<section class="card" data-tab="home">
+  <h2>🔎 بحث متقدم</h2>
+  <div class="row">
+    <select id="brand"><option value="">الشركة (اختياري)</option></select>
+    <input id="code" inputmode="text" placeholder="الكود مثلاً 039 أو 2062" autocomplete="off">
+  </div>
+  <textarea id="txt" rows="3" placeholder="أو الصق/اكتب نص الخطأ زي: Grid Overvoltage، PV Isolation Low"></textarea>
+  <button id="go" class="btn" type="button">🔍 شخّص</button>
+  <div id="hist"></div>
+</section>
+
+<section id="out" data-tab="home"></section>
+<div id="favempty" class="empty" data-tab="fav"><div class="ei">⭐</div><b>لسه مفيش مفضلة</b><span>دوس على ☆ في أي كارت عطل عشان يتحفظ هنا على جهازك.</span></div>
+<section id="favsec" data-tab="fav" class="card" hidden><h2>⭐ المفضلة</h2><div id="favs"></div></section>
+
+<div class="seg" data-tab="ask"><button type="button" id="segoff" class="on">💬 رسمي</button><button type="button" id="segai">🤖 ذكاء اصطناعي</button></div>
+<section class="card" id="chatsec" data-tab="ask">
+  <h2>💬 اسأل التطبيق</h2>
+  <div class="muted" style="margin-top:-6px">بيجاوب من قاعدة أدلة الشركات بس. مفيش كود بيتألّف.</div>
+  <div id="sugg"><button type="button" class="chip" data-q="الإنفرتر بيطلع عطل عزل وتسرب أرضي">عزل وتسرب أرضي</button><button type="button" class="chip" data-q="جهد الشبكة عالي">جهد الشبكة عالي</button><button type="button" class="chip" data-q="الإنفرتر سخن زيادة درجة الحرارة">حرارة عالية</button><button type="button" class="chip" data-q="خطأ في البطارية">البطارية</button></div>
+  <div id="chat" aria-live="polite"></div>
+  <form id="cform" class="cform" autocomplete="off"><input id="cq" placeholder="اكتب سؤالك أو الكود، مثلاً: E36 كاكو" aria-label="سؤالك"><button type="submit" class="btn" id="csend">إرسال</button></form>
+</section>
+<section class="card" id="aisec" data-tab="ask">
+  <h2>🤖 مساعد ذكي (تجريبي)</h2>
+  <div class="muted" style="margin-top:-6px">بيرد على أي سؤال في الإنفرترات بالذكاء الاصطناعي (Puter، مجاني). الجزء الرسمي بيتاخد من الكروت بس، وأي معلومة عامة بتتعلّم "غير رسمي". الأسئلة بتتبعت لخدمة Puter وممكن تطلب تسجيل دخول مجاني.</div>
+  <div id="asugg"><button type="button" class="chip" data-q="إيه الفرق بين إنفرتر on-grid و hybrid؟">on-grid ولا hybrid؟</button><button type="button" class="chip" data-q="إنفرتر Kaco بيطلع E36 يعني إيه وأعمل إيه؟">E36 كاكو</button><button type="button" class="chip" data-q="ليه الإنفرتر بيسخن في الصيف؟">ليه بيسخن؟</button></div>
+  <div id="aichat" aria-live="polite"></div>
+  <form id="aform" class="cform" autocomplete="off"><input id="aq" placeholder="اسأل أي سؤال عن الإنفرتر..." aria-label="سؤالك للمساعد الذكي"><button type="submit" class="btn" id="asend">إرسال</button></form>
+</section>
+<section class="card" data-tab="browse">
+  <h2>📚 تصفح كل الأعطال</h2>
+  <div class="row"><select id="fbrand"><option value="">كل الشركات</option></select><select id="fcat"><option value="">كل الأنواع</option></select></div>
+  <input id="filter" placeholder="ابحث في القاعدة (كود أو اسم)">
+  <div id="lcount" class="muted"></div>
+  <div id="list"></div>
+</section>
+<footer id="foot"></footer>
+</main>
+<nav id="tabbar" class="tabbar" aria-label="التنقل"><button type="button" data-go="home" class="on"><i>🏠</i><span>الرئيسية</span></button><button type="button" data-go="cam"><i>📷</i><span>صوّر</span></button><button type="button" data-go="ask"><i>💬</i><span>اسأل</span></button><button type="button" data-go="browse"><i>📚</i><span>تصفح</span></button><button type="button" data-go="fav"><i>⭐</i><span>مفضلة</span></button></nav>
+<script>window.LITE=true</script><script src="../data.js"></script><script src="data2.js"></script><script src="data3.js"></script>
+<script src="../tesseract.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

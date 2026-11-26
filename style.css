@@ -126,3 +126,15 @@ html[data-theme=dark] .aitag{color:#c4a1ff}
 .aitxt{white-space:pre-line}
 .cform{display:flex;gap:8px;margin-top:10px}.cform .btn{width:auto;margin-top:0;padding:12px 20px}
 #sugg{margin:6px 0 4px}
+
+/* ai assistant */
+.bub.aiwait{color:var(--muted)}
+.bub.aibad{background:rgba(229,72,77,.1);border:1px solid rgba(229,72,77,.35);color:inherit}
+.bub.aiok{background:transparent;border:0;padding:0;max-width:100%;display:block}
+.aio,.aiu{border-radius:14px;padding:11px 13px;margin-bottom:8px;line-height:1.6}
+.aio{background:rgba(43,191,138,.12);border:1px solid rgba(43,191,138,.4)}
+.aiu{background:rgba(245,165,36,.13);border:1px dashed rgba(245,165,36,.65)}
+.aitag.g{color:#0b6b48}.aitag.a{color:#8a5a00}
+html[data-theme=dark] .aitag.g{color:#8be8c4}html[data-theme=dark] .aitag.a{color:#ffd58a}
+details.aicards{margin-top:6px;border:1px solid var(--line);border-radius:12px;padding:6px 10px;background:var(--surface)}
+details.aicards summary{padding:6px 0;font-weight:700;direction:rtl;text-align:right}

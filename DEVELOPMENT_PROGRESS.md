@@ -21,7 +21,7 @@ Status labels: COMPLETE AND TESTED / IMPLEMENTED NOT FULLY TESTED / PARTIAL / BL
 | Arabic / English toggle with RTL | PARTIAL | static UI strings only; fault text stays in the manual's English |
 | Offline / PWA, cache status badge | IMPLEMENTED NOT FULLY TESTED | cache count verified in browser; airplane-mode run on a phone not done |
 | AI assistant (third-party Puter service, user confirms first) | PARTIAL | not grounded by retrieval over manuals |
-| Staging API (Cloudflare Pages Function, same engine, no AI, no DB, not used by the site) | IMPLEMENTED NOT FULLY TESTED | curl tests pass; database inside is the older 1507-fault copy |
+| Staging API (Cloudflare Pages Function, same engine, no AI, no DB, not used by the site) | IMPLEMENTED NOT FULLY TESTED | curl tests pass; database inside is the current 1684-fault copy (redeployed) |
 | Backend API (Node/TypeScript), PostgreSQL, vector search over manuals, AI provider key, user accounts, admin panel, server analytics | BLOCKED BY EXTERNAL DEPENDENCY | needs hosting, a database and an AI key; none is free-and-account-free. Not built, not faked |
 | Live inverter monitoring (Modbus) | NOT IMPLEMENTED | needs hardware and a gateway |
 

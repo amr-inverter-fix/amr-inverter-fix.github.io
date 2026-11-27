@@ -16,6 +16,7 @@ function diagnose(text,brandSel,codeSel){
   var brands=brandSel?[brandSel]:detectBrands(full);
   var nums=(full.match(brands.length?/\b\d{2,4}\b/g:/\b\d{3,4}\b/g)||[]).map(Number);
   if(brands.length&&/^\s*\d\s*$/.test(codeSel||''))nums.push(+codeSel);
+  if(brands.length&&!nums.length&&!/\d/.test(brandSel?'':'')){var tt=(text||'').trim(),m1=tt.match(/(?:^|\s)(\d)\s*$/);if(m1&&(tt.match(/\d/g)||[]).length===1&&nums.indexOf(+m1[1])<0)nums.push(+m1[1])}
   var seen={},res=[];
   function add(f,why,score){var k=f.b+'|'+f.c+'|'+f.n;if(seen[k]){if(score>seen[k].score)seen[k].score=score;return}seen[k]={f:f,why:why,score:score};res.push(seen[k])}
   F.forEach(function(f){

@@ -1,0 +1,27 @@
+{
+ "generated": "2026-11-27",
+ "method": "Rank of the expected record in the full result list, local matching engine, no AI. Set A: hand-written cases, all authored by the developer (no independent review). Set B: synthetic, one query per coded record, \"<brand> <code>\"; it measures code lookup only and is easier than real photos or free text. Not evidence of accuracy on real inverter screens.",
+ "set_A_handwritten": {
+  "n": 72,
+  "P_at_1": 0.958,
+  "Hit_at_3": 1,
+  "Hit_at_5": 1,
+  "MRR": 0.979,
+  "not_found": 0
+ },
+ "set_A_negative_cases": {
+  "n": 1,
+  "false_positive": 0
+ },
+ "set_B_synthetic_code_lookup": {
+  "n": 1364,
+  "P_at_1": 0.993,
+  "Hit_at_3": 1,
+  "Hit_at_5": 1,
+  "MRR": 0.996,
+  "not_found": 0
+ },
+ "set_B_brands_below_0_9_hit_at_3": [],
+ "records": 1684,
+ "brands": 41
+}

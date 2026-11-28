@@ -186,7 +186,7 @@ function show(d,ocrText){
   o.innerHTML=h;
   if($('wa')){$('wa').onclick=function(){window.open('https://wa.me/?text='+encodeURIComponent(lastText),'_blank')};$('cp').onclick=function(){var b=this;(navigator.clipboard?navigator.clipboard.writeText(lastText):Promise.reject()).then(function(){b.textContent='✅ اتنسخ'},function(){b.textContent='النسخ مش متاح في المتصفح ده'})}}
   bindCards(o);
-  o.scrollIntoView({behavior:'smooth'});
+  try{setTab('home',true)}catch(e){}o.scrollIntoView({behavior:'smooth'});
 }
 // UI
 var bs=$('brand');Object.keys(SRC).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=SRC[k].name;bs.appendChild(op)});
@@ -208,7 +208,7 @@ function renderList(q){
 }
 var fbs=$('fbrand'),fcs=$('fcat');Object.keys(SRC).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=SRC[k].name;fbs.appendChild(op)});Object.keys(CATS).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=CATS[k];fcs.appendChild(op)});
 $('filter').oninput=function(){renderList(this.value)};fbs.onchange=fcs.onchange=($('fsort')||{}).onchange=function(){renderList($('filter').value)};renderList('');
-(function(){var f=$('foot'),n=Object.keys(SRC).map(function(k){return SRC[k].name});f.textContent='';var bm=document.createElement('p');bm.textContent='build 2026-11-28-r8 (sw inv-v67)';bm.className='muted';var p=document.createElement('p');p.textContent='القاعدة: '+F.length+' عطل من '+n.length+' شركات. البحث بالكود بيشتغل من غير إنترنت بعد أول فتح. قراءة الصورة (OCR) بتحتاج إنترنت.';var d=document.createElement('details');d.className='brl';var sm=document.createElement('summary');sm.textContent='📋 الشركات والمصادر الرسمية ('+n.length+')';d.appendChild(sm);var q=document.createElement('div');q.className='srclist';Object.keys(SRC).forEach(function(k){var r=document.createElement('div');r.className='srow';var b=document.createElement('b');b.textContent=SRC[k].name+' ('+F.filter(function(x){return x.b===k}).length+')';var m=document.createElement('div');m.className='muted';m.textContent=SRC[k].doc;var a=document.createElement('a');a.href=SRC[k].url;a.target='_blank';a.rel='noopener';a.textContent='فتح الدليل الرسمي';r.appendChild(b);r.appendChild(m);r.appendChild(a);q.appendChild(r)});d.appendChild(q);f.appendChild(p);f.appendChild(bm);f.appendChild(d)})();
+(function(){var f=$('foot'),n=Object.keys(SRC).map(function(k){return SRC[k].name});f.textContent='';var bm=document.createElement('p');bm.textContent='build 2026-11-28-r9 (sw inv-v68)';bm.className='muted';var p=document.createElement('p');p.textContent='القاعدة: '+F.length+' عطل من '+n.length+' شركات. البحث بالكود بيشتغل من غير إنترنت بعد أول فتح. قراءة الصورة (OCR) بتحتاج إنترنت.';var d=document.createElement('details');d.className='brl';var sm=document.createElement('summary');sm.textContent='📋 الشركات والمصادر الرسمية ('+n.length+')';d.appendChild(sm);var q=document.createElement('div');q.className='srclist';Object.keys(SRC).forEach(function(k){var r=document.createElement('div');r.className='srow';var b=document.createElement('b');b.textContent=SRC[k].name+' ('+F.filter(function(x){return x.b===k}).length+')';var m=document.createElement('div');m.className='muted';m.textContent=SRC[k].doc;var a=document.createElement('a');a.href=SRC[k].url;a.target='_blank';a.rel='noopener';a.textContent='فتح الدليل الرسمي';r.appendChild(b);r.appendChild(m);r.appendChild(a);q.appendChild(r)});d.appendChild(q);f.appendChild(p);f.appendChild(bm);f.appendChild(d)})();
 
 function ocrAmb(t){var out=[];(t.match(/[A-Za-z0-9]{2,}/g)||[]).forEach(function(w){if(/[0-9]/.test(w)&&/[A-Za-z]/.test(w)||/^[0-9OIlSBZ]{2,}$/.test(w)&&/[OIlSBZ]/.test(w)){var m=w.match(/[OoIlSsBZz01258]/g);if(m)out.push(w)}});return out.filter(function(v,i,a){return a.indexOf(v)===i}).slice(0,8)}
 function ocrConfirm(txt,bs,src,meta){
@@ -232,7 +232,7 @@ function ocrConfirm(txt,bs,src,meta){
   h+='<textarea id="ocrfix" dir="ltr" rows="4" style="width:100%;text-align:left">'+esc(txt.trim())+'</textarea><button id="ocrok" class="btn" type="button">✅ النص صح، شخّص</button></div>';
   o.innerHTML=h;
   $('ocrok').onclick=function(){var t=$('ocrfix').value;saveHist(bs.value,'',t.replace(/\s+/g,' ').trim().slice(0,60));show(diagnose(t,bs.value,''),t)};
-  try{o.scrollIntoView({behavior:'smooth'})}catch(e){}
+  try{setTab('home',true)}catch(e){}try{o.scrollIntoView({behavior:'smooth'})}catch(e){}
 }
 // OCR
 var worker=null;
@@ -309,7 +309,7 @@ function aiPanelChooser(p,bs){
   h+='</div></div>';
   var o=$('out');o.innerHTML=h;$('ocrstat').textContent='';
   Array.prototype.forEach.call(o.querySelectorAll('[data-pv]'),function(b){b.onclick=function(){var v=p.fields[+b.getAttribute('data-pv')].value;ocrConfirm(v,bs,'ai',{conf:'low',code:v,model:'gemini (اختيار المستخدم)',others:[]})}});
-  try{o.scrollIntoView({behavior:'smooth'})}catch(e){}
+  try{setTab('home',true)}catch(e){}try{o.scrollIntoView({behavior:'smooth'})}catch(e){}
 }
 function aiVisionRead(f,enh,retried){
   if(aivBusy||!f)return;
@@ -319,8 +319,8 @@ function aiVisionRead(f,enh,retried){
     return blobToB64(small).then(function(b64){
       var ac=(typeof AbortController!=='undefined')?new AbortController():null;
       var tm=setTimeout(function(){if(ac)ac.abort()},30000);
-      return fetch(AIW_URL,{method:'POST',headers:{'Content-Type':'application/json'},signal:ac?ac.signal:undefined,
-        body:JSON.stringify({image:b64,mime:small.type||'image/jpeg'})}).then(function(r){clearTimeout(tm);return r},function(e){clearTimeout(tm);var x=new Error((e&&e.name==='AbortError')?'TIMEOUT':'NETFAIL');x.detail=String(e&&e.message||e);throw x});
+      var t0f=Date.now();return fetch(AIW_URL,{method:'POST',headers:{'Content-Type':'application/json'},signal:ac?ac.signal:undefined,
+        body:JSON.stringify({image:b64,mime:small.type||'image/jpeg'})}).then(function(r){clearTimeout(tm);dbg('http '+r.status+' '+(Date.now()-t0f)+'ms');return r},function(e){clearTimeout(tm);dbg('fetch fail '+(e&&e.name)+' '+(Date.now()-t0f)+'ms '+(e&&e.message));var x=new Error((e&&e.name==='AbortError')?'TIMEOUT':'NETFAIL');x.detail=String(e&&e.message||e);throw x});
     }).then(function(res){
       return res.json().catch(function(){return {error:'bad_reply'}}).then(function(j){
         if(!res.ok||j.error){
@@ -373,6 +373,7 @@ async function handleFile(f){
   window.__busy=false;
   aiVisionRead(f);
 }
+(function(){var a=$('aiv');if(!a||$('hping'))return;var b=document.createElement('button');b.id='hping';b.type='button';b.className='btn alt';b.textContent='🔌 اختبار الاتصال بالخادم';b.onclick=function(){var t=Date.now();$('ocrstat').textContent='⏳ بختبر الاتصال...';var ac=new AbortController(),tm=setTimeout(function(){ac.abort()},15000);fetch(AIW_URL.replace('/read','/health'),{signal:ac.signal}).then(function(r){clearTimeout(tm);return r.text().then(function(x){var ms=Date.now()-t;dbg('health '+r.status+' '+ms+'ms');$('ocrstat').textContent=r.ok?('✅ الخادم متاح ('+ms+' ms)'):('⚠️ الخادم ردّ HTTP '+r.status)})}).catch(function(e){var ms=Date.now()-t;dbg('health fail '+(e&&e.name)+' '+ms+'ms');$('ocrstat').textContent='❌ ما قدرتش أوصل للخادم من شبكتك ('+(e&&e.name==='AbortError'?'مفيش رد بعد 15 ثانية':'خطأ شبكة')+'). جرّب واي فاي أو داتا تانية.'})};a.parentNode.insertBefore(b,a.nextSibling)})();
 var aiAuto=false;
 var aivb=$('aiv');if(aivb)aivb.onclick=function(){if(!lastImg){aiAuto=true;$('ocrstat').textContent='اختار أو صوّر الصورة، وهقراها بالذكاء الاصطناعي على طول...';$('shot').click();return}aiConsent().then(function(ok){if(ok)aiVisionRead(lastImg)})};
 $('cam').onchange=function(){var f=this.files[0];this.value='';handleFile(f)};

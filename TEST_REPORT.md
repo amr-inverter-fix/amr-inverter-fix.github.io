@@ -47,3 +47,6 @@ Real-phone verification of the print dialog and paper size; Deye W-codes missing
 
 ## r21 usage counter (local + live Worker, 2026-11-28)
 Run: 7 checks, 6 passed, 1 failed and fixed (the open ping was skipped by an onLine check). Worker logic with fake KV (devices, sessions, diagnoses, bad id, bad event, wrong origin, no store) pass; live Worker /ping and /stats with the allowed origin pass, wrong origin rejected (403); headless Chrome on the dev files: one "open" per session, one "diag" per diagnosis, device ID 32 hex, no page errors, pass. Not tested: real phone, real inverter, concurrent writes.
+
+## r22 Deye US/AM2 series (local, 2026-11-28)
+7 run, 7 passed, 0 failed: db_check OK (1810 records, 44 brands, 1 real duplicate group); syntax check app.js and sw.js; 28 codes in data5.js equal the 28 codes in the manual table (none missing, none extra); headless Chrome: US/AM2 + F55 gives BAT1_VoltHigh_Fault, Deye (EU) + F55 unchanged, Deye (EU) + F52 not found and suggests the US/AM2 entry, US/AM2 + F99 shows not found. Not tested: real phone, real inverter, text translation to Arabic for the new steps.

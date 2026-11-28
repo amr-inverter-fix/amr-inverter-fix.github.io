@@ -221,7 +221,7 @@ function ocrConfirm(txt,bs,src,meta){
       if(mc)h+='<div class="okline">الكود <span dir="ltr">'+esc(meta.code)+'</span> موجود في قاعدة الأدلة ('+esc(SRC[mc.b].name)+').</div>';
       else{
         var nr=codeNear(meta.code);
-        if(nr.length)h+='<div class="warn">الكود <span dir="ltr">'+esc(meta.code)+'</span> مش مطابق بالحرف لكود في القاعدة. أقرب كود موجود: <span dir="ltr">'+nr.map(function(x){return esc(x.c)}).join(' ، ')+'</span> ('+nr.map(function(x){return esc(SRC[x.b].name)}).join(' ، ')+'). راجع الشاشة وعدّل النص.</div>';
+        if(nr.length)h+='<div class="warn">الكود <span dir="ltr">'+esc(meta.code)+'</span> مش موجود بالحرف في القاعدة. فيه كود برقم قريب في ماركات تانية (مش بالضرورة نفس عطل ماركتك، ما تعتمدش عليه كتشخيص): <span dir="ltr">'+nr.map(function(x){return esc(x.c)}).join(' ، ')+'</span> ('+nr.map(function(x){return esc(SRC[x.b].name)}).join(' ، ')+'). راجع الشاشة وعدّل النص.</div>';
         else h+='<div class="warn">الكود <span dir="ltr">'+esc(meta.code)+'</span> مش موجود في قاعدة الأدلة ('+F.length+' عطل). لو الشاشة بتقول كده فعلًا، التطبيق مش هيلاقي تشخيص — صحّح الرقم أو اكتب الكود يدويًا.</div>';
       }
     }
@@ -246,7 +246,7 @@ function prep(img,invert){
   var max=1800,sc=Math.min(2,max/Math.max(img.naturalWidth,img.naturalHeight));
   if(img.naturalWidth*sc<1000) sc=Math.min(3,1000/img.naturalWidth);
   var c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*sc);c.height=Math.round(img.naturalHeight*sc);
-  var x=c.getContext('2d');x.drawImage(img,0,0,c.width,c.height);
+  var x=c.getContext('2d');if(enh&&'filter' in x)x.filter='grayscale(1) contrast(1.5) brightness(1.1)';x.drawImage(img,0,0,c.width,c.height);
   var d=x.getImageData(0,0,c.width,c.height),p=d.data,lo=255,hi=0,i,g;
   for(i=0;i<p.length;i+=4){g=.299*p[i]+.587*p[i+1]+.114*p[i+2];p[i]=g;if(g<lo)lo=g;if(g>hi)hi=g}
   var r=Math.max(1,hi-lo);
@@ -254,13 +254,13 @@ function prep(img,invert){
   x.putImageData(d,0,0);return c;
 }
 var lastImg=null,aivBusy=false,aiWanted=false,ocrSeq=0;
-function shrinkForAI(f){
+function shrinkForAI(f,enh){
   return new Promise(function(res){
     try{
       var img=new Image(),u=URL.createObjectURL(f);
       img.onload=function(){
         try{
-          var max=1280,sc=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+          var max=enh?1600:1280,sc=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
           var c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*sc);c.height=Math.round(img.naturalHeight*sc);
           var x=c.getContext('2d');x.drawImage(img,0,0,c.width,c.height);
           c.toBlob(function(b){try{URL.revokeObjectURL(u)}catch(e){};if(!b){res(f);return}res(new File([b],'shot.jpg',{type:'image/jpeg'}))},'image/jpeg',0.88);
@@ -304,11 +304,11 @@ function codeNear(code){
 function aiConsent(){return Promise.resolve(true)}
 var AIW_URL='https://inverter-vision.amr-abdelhamid-engineer.workers.dev/read';
 function blobToB64(b){return new Promise(function(ok,no){var r=new FileReader();r.onload=function(){ok(String(r.result).split(',')[1]||'')};r.onerror=function(){no(new Error('read_failed'))};r.readAsDataURL(b)})}
-function aiVisionRead(f){
+function aiVisionRead(f,enh,retried){
   if(aivBusy||!f)return;
   aivBusy=true;aiWanted=true;$('ocrstat').textContent='🤖 بجهّز الصورة وببعتها لـGemini...';
   var used='';
-  shrinkForAI(f).then(function(small){
+  shrinkForAI(f,enh).then(function(small){
     return blobToB64(small).then(function(b64){
       var ac=(typeof AbortController!=='undefined')?new AbortController():null;
       var tm=setTimeout(function(){if(ac)ac.abort()},45000);
@@ -328,6 +328,7 @@ function aiVisionRead(f){
     aivBusy=false;$('ocrstat').textContent='';
     var j=aiParse(raw);
     if(!j||j.readable===false||(!j.code&&!j.message)){
+      if(!retried){aivBusy=false;$('ocrstat').textContent='🔁 مش واضحة، بحاول تاني بتحسين التباين...';setTimeout(function(){aiVisionRead(f,true,true)},7000);return}
       $('ocrstat').innerHTML='<b>'+esc(j&&j.readable===false?'الصورة مش واضحة كفاية (أو مش شاشة إنفرتر). صوّر الشاشة من مسافة قريبة وبدون انعكاس، أو اكتب الكود يدويًا.':'مقدرتش أقرا كود واضح في الصورة. جرّب صورة أوضح، أو اكتب الكود يدويًا.')+'</b>';
       return;
     }

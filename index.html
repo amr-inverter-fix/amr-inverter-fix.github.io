@@ -23,9 +23,11 @@
   <button id="live" class="btn" type="button">📷 افتح الكاميرا وصوّر</button>
   <label class="btn alt" for="shot">📱 صوّر بكاميرا الموبايل</label>
   <input id="shot" type="file" accept="image/*" capture="environment" hidden>
+  <button id="aiv" class="btn" type="button" hidden>🤖 اقراها بالذكاء الاصطناعي (أدق)</button>
   <label class="btn alt" for="cam">🖼️ اختار صورة من الجهاز</label>
   <input id="cam" type="file" accept="image/*" hidden>
-  <div id="camerr" class="muted"></div>
+  <div class="muted" style="font-size:.78rem;margin-top:6px">القراءة بالـAI بتبعت الصورة لخدمة Puter المجانية. الـOCR العادي بيشتغل على جهازك بعد أول تحميل.</div>
+<div id="camerr" class="muted"></div>
   <div id="camwrap" hidden><video id="vid" autoplay playsinline muted></video><div class="row"><button id="snap" class="btn" type="button">📸 التقط</button><button id="stopcam" class="btn alt" type="button">إلغاء</button></div></div>
   <img id="prev" alt="" hidden>
   <div id="ocrstat" class="muted"></div>

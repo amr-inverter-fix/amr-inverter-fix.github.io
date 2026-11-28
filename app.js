@@ -210,9 +210,22 @@ $('filter').oninput=function(){renderList(this.value)};fbs.onchange=fcs.onchange
 (function(){var f=$('foot'),n=Object.keys(SRC).map(function(k){return SRC[k].name});f.textContent='';var p=document.createElement('p');p.textContent='القاعدة: '+F.length+' عطل من '+n.length+' شركات. البحث بالكود بيشتغل من غير إنترنت بعد أول فتح. قراءة الصورة (OCR) بتحتاج إنترنت.';var d=document.createElement('details');d.className='brl';var sm=document.createElement('summary');sm.textContent='📋 الشركات والمصادر الرسمية ('+n.length+')';d.appendChild(sm);var q=document.createElement('div');q.className='srclist';Object.keys(SRC).forEach(function(k){var r=document.createElement('div');r.className='srow';var b=document.createElement('b');b.textContent=SRC[k].name+' ('+F.filter(function(x){return x.b===k}).length+')';var m=document.createElement('div');m.className='muted';m.textContent=SRC[k].doc;var a=document.createElement('a');a.href=SRC[k].url;a.target='_blank';a.rel='noopener';a.textContent='فتح الدليل الرسمي';r.appendChild(b);r.appendChild(m);r.appendChild(a);q.appendChild(r)});d.appendChild(q);f.appendChild(p);f.appendChild(d)})();
 
 function ocrAmb(t){var out=[];(t.match(/[A-Za-z0-9]{2,}/g)||[]).forEach(function(w){if(/[0-9]/.test(w)&&/[A-Za-z]/.test(w)||/^[0-9OIlSBZ]{2,}$/.test(w)&&/[OIlSBZ]/.test(w)){var m=w.match(/[OoIlSsBZz01258]/g);if(m)out.push(w)}});return out.filter(function(v,i,a){return a.indexOf(v)===i}).slice(0,8)}
-function ocrConfirm(txt,bs){
-  var o=$('out'),amb=ocrAmb(txt),h='<div class="card"><b>راجع النص قبل التشخيص</b>';
-  h+='<div class="muted">القراءة الآلية ممكن تغلط. صحّح النص لو فيه غلط، وبعدين اضغط تأكيد. مفيش حرف بيتغيّر تلقائيًا.</div>';
+function ocrConfirm(txt,bs,src,meta){
+  var o=$('out'),amb=ocrAmb(txt),h='<div class="card"><b>راجع النص قبل التشخيص'+(src==='ai'?' (قراءة الذكاء الاصطناعي)':'')+'</b>';
+  if(src==='ai'){
+    var cf=meta&&meta.conf||'medium',cfT=cf==='high'?'عالية':(cf==='low'?'منخفضة':'متوسطة');
+    h+='<div class="'+(cf==='high'?'okline':'warn')+'">ثقة القراءة: '+cfT+(cf==='high'?'':' — مش متأكد، راجع النص على الشاشة قبل التشخيص')+'</div>';
+    var mc=codeMatch(meta&&meta.code);
+    if(meta&&meta.code){
+      if(mc)h+='<div class="okline">الكود <span dir="ltr">'+esc(meta.code)+'</span> موجود في قاعدة الأدلة ('+esc(SRC[mc.b].name)+').</div>';
+      else{
+        var nr=codeNear(meta.code);
+        if(nr.length)h+='<div class="warn">الكود <span dir="ltr">'+esc(meta.code)+'</span> مش مطابق بالحرف لكود في القاعدة. أقرب كود موجود: <span dir="ltr">'+nr.map(function(x){return esc(x.c)}).join(' ، ')+'</span> ('+nr.map(function(x){return esc(SRC[x.b].name)}).join(' ، ')+'). راجع الشاشة وعدّل النص.</div>';
+        else h+='<div class="warn">الكود <span dir="ltr">'+esc(meta.code)+'</span> مش موجود في قاعدة الأدلة ('+F.length+' عطل). لو الشاشة بتقول كده فعلًا، التطبيق مش هيلاقي تشخيص — صحّح الرقم أو اكتب الكود يدويًا.</div>';
+      }
+    }
+  }
+  h+='<div class="muted">'+(src==='ai'?'الذكاء الاصطناعي بيقرا الكود من الصورة وممكن يغلط. النص اللي تحت هو اللي هيتم التشخيص عليه — صحّحه لو مش مطابق للشاشة، ولو الكود مش موجود في القاعدة اكتبه يدويًا.':'القراءة الآلية ممكن تغلط. صحّح النص لو فيه غلط، وبعدين اضغط تأكيد. مفيش حرف بيتغيّر تلقائيًا.')+'</div>';
   if(amb.length)h+='<div class="warn">حروف/أرقام ممكن تتلخبط (O/0، I/1، S/5، B/8، Z/2) في: <span dir="ltr">'+amb.map(esc).join(' ، ')+'</span>. اتأكد منها على الشاشة.</div>';
   h+='<textarea id="ocrfix" dir="ltr" rows="4" style="width:100%;text-align:left">'+esc(txt.trim())+'</textarea><button id="ocrok" class="btn" type="button">✅ النص صح، شخّص</button></div>';
   o.innerHTML=h;
@@ -239,6 +252,85 @@ function prep(img,invert){
   for(i=0;i<p.length;i+=4){g=(p[i]-lo)*255/r;if(invert)g=255-g;p[i]=p[i+1]=p[i+2]=g}
   x.putImageData(d,0,0);return c;
 }
+var lastImg=null,aivBusy=false;
+function shrinkForAI(f){
+  return new Promise(function(res){
+    try{
+      var img=new Image(),u=URL.createObjectURL(f);
+      img.onload=function(){
+        try{
+          var max=1280,sc=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+          var c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*sc);c.height=Math.round(img.naturalHeight*sc);
+          var x=c.getContext('2d');x.drawImage(img,0,0,c.width,c.height);
+          c.toBlob(function(b){try{URL.revokeObjectURL(u)}catch(e){};if(!b){res(f);return}res(new File([b],'shot.jpg',{type:'image/jpeg'}))},'image/jpeg',0.88);
+        }catch(e){res(f)}
+      };
+      img.onerror=function(){try{URL.revokeObjectURL(u)}catch(e){};res(f)};
+      img.src=u;
+    }catch(e){res(f)}
+  });
+}
+function aiParse(raw){
+  if(!raw)return null;
+  var t=String(raw).replace(/```[a-z]*\s*/gi,'').trim();
+  var i=t.indexOf('{'),k=t.lastIndexOf('}');
+  if(i<0||k<=i)return null;
+  var o=null;
+  try{o=JSON.parse(t.slice(i,k+1))}catch(e){
+    try{o=JSON.parse(t.slice(i,k+1).replace(/,\s*([}\]])/g,'$1').replace(/'/g,'"'))}catch(e2){return null}
+  }
+  if(!o||typeof o!=='object')return null;
+  var c=String(o.code==null?'':o.code).replace(/["'`]/g,'').replace(/\s+/g,' ').trim();
+  var m=String(o.message==null?'':o.message).replace(/["'`]/g,'').replace(/\s+/g,' ').trim();
+  var cf=String(o.confidence==null?'':o.confidence).toLowerCase();
+  var conf=cf.indexOf('high')>=0||cf.indexOf('عالي')>=0?'high':(cf.indexOf('low')>=0||cf.indexOf('منخفض')>=0?'low':'medium');
+  if(c.length>40)c=c.slice(0,40);
+  if(m.length>200)m=m.slice(0,200);
+  return {readable:o.readable!==false,code:c,message:m,conf:conf};
+}
+function normCode(x){return String(x||'').toUpperCase().replace(/[^A-Z0-9]/g,'')}
+function codeMatch(code){
+  var n=normCode(code);if(!n)return null;
+  for(var i=0;i<F.length;i++){if(F[i].c&&normCode(F[i].c)===n)return F[i]}
+  return null;
+}
+function codeNear(code){
+  var n=normCode(code).replace(/^[A-Z]+/,'');if(n.length<2)return [];
+  var out=[];
+  for(var i=0;i<F.length&&out.length<2;i++){if(F[i].c&&normCode(F[i].c).replace(/^[A-Z]+/,'')===n)out.push(F[i])}
+  return out;
+}
+function aiConsent(){
+  try{if(localStorage.getItem('aivconsent')==='1')return Promise.resolve(true)}catch(e){}
+  return new Promise(function(res){
+    var o=$('out');o.innerHTML='<div class="card"><b>🤖 قراءة الصورة بالذكاء الاصطناعي</b><div class="muted" style="margin-top:6px">هيتبعت الصورة لخدمة Puter (مجانية، وممكن تطلب تسجيل دخول مجاني أول مرة) عشان تقرا الكود اللي على الشاشة. الصورة مش بتتخزن عندنا. القراءة بترجع نص بس، والتشخيص بيتعمل من قاعدة الأدلة.</div><div class="row" style="margin-top:10px"><button type="button" class="btn" id="aivok">موافق، اقرا الصورة</button><button type="button" class="btn alt" id="aivno">إلغاء</button></div></div>';
+    $('aivok').onclick=function(){try{localStorage.setItem('aivconsent','1')}catch(e){}res(true)};
+    $('aivno').onclick=function(){res(false)};
+    try{o.scrollIntoView({behavior:'smooth'})}catch(e){}
+  });
+}
+function aiVisionRead(f){
+  if(aivBusy||!f)return;
+  aivBusy=true;$('ocrstat').textContent='🤖 بجهّز الصورة وببعتها لـPuter...';
+  var prompt='You read photos of solar inverter display screens. Reply with JSON only, no prose, no code fences. Schema: {"readable":true or false,"code":"the exact fault or error code shown, or an empty string","message":"the exact message text shown, or an empty string","confidence":"high" or "medium" or "low"}. Rules: copy the characters exactly as displayed, character by character. Never guess, complete or correct a code from your own knowledge. If any character of the code is unclear, or the image is not an inverter display, set readable to false. No translation, no commentary.';
+  shrinkForAI(f).then(function(small){
+    return loadPuter().then(function(){return puter.ai.chat(prompt,small,{model:'google/gemini-3.8-flash',temperature:0,max_tokens:120})});
+  }).then(function(r){
+    var raw=puterText(r).trim();
+    aivBusy=false;$('ocrstat').textContent='';
+    var j=aiParse(raw);
+    if(!j||j.readable===false||(!j.code&&!j.message)){
+      $('ocrstat').innerHTML='<b>'+esc(j&&j.readable===false?'الصورة مش واضحة كفاية (أو مش شاشة إنفرتر). صوّر الشاشة من مسافة قريبة وبدون انعكاس، أو اكتب الكود يدويًا تحت.':'مقدرتش أقرا كود واضح في الصورة. جرّب صورة أوضح، أو اكتب الكود يدويًا.')+'</b>';
+      return;
+    }
+    var txt=((j.code||'')+' '+(j.message||'')).replace(/\s+/g,' ').trim();
+    ocrConfirm(txt,bs,'ai',{conf:j.conf,code:j.code});
+  }).catch(function(e){
+    aivBusy=false;
+    var m=(e&&(e.message||(e.error&&e.error.message)))||'';
+    $('ocrstat').textContent=/auth|sign|login|permission|token/i.test(m)?'محتاج تسجيل دخول مجاني في Puter عشان القراءة بالـAI. اضغط الزرار تاني وسجّل الدخول، أو استخدم الـOCR العادي.':'القراءة بالـAI مش متاحة دلوقتي ('+(m||'خطأ في الاتصال')+'). جرّب الـOCR العادي أو اكتب الكود يدويًا.';
+  });
+}
 async function handleFile(f){
   if(!f)return;
   var ok=/^image\/(jpeg|png|webp|gif|bmp)$/.test(f.type||'');
@@ -246,6 +338,7 @@ async function handleFile(f){
   if(f.size>15*1024*1024){$('ocrstat').textContent='الصورة كبيرة قوي (أكتر من 15 ميجا). صغّرها أو صوّر تاني.';return}
   window.__busy=true;
   var url=URL.createObjectURL(f),img=$('prev');img.src=url;img.hidden=false;
+  lastImg=f;var ab=$('aiv');if(ab)ab.hidden=false;
   var loaded=await new Promise(function(r){img.onload=function(){r(true)};img.onerror=function(){r(false)}});
   if(!loaded){window.__busy=false;img.hidden=true;try{URL.revokeObjectURL(url)}catch(e){}$('ocrstat').textContent='الصورة دي تالفة أو مش بتتفتح. جرّب صورة تانية.';return}
   $('ocrstat').textContent='بقرا الصورة... (أول مرة بتاخد ثواني)';
@@ -261,6 +354,7 @@ async function handleFile(f){
     ocrConfirm(best.t,bs);
   }catch(e){$('ocrstat').textContent='فشل الـ OCR: '+(e&&e.message||e)+'\nاكتب الكود يدويًا.'}
 }
+var aivb=$('aiv');if(aivb)aivb.onclick=function(){if(!lastImg){$('ocrstat').textContent='اختار صورة الأول.';return}aiConsent().then(function(ok){if(ok)aiVisionRead(lastImg)})};
 $('cam').onchange=function(){var f=this.files[0];this.value='';handleFile(f)};
 $('shot').onchange=function(){var f=this.files[0];this.value='';handleFile(f)};
 var stream=null;

@@ -18,6 +18,8 @@ main{max-width:680px;margin:0 auto;padding:6px 14px 10px}
 .card h2{margin:0 0 12px;font-size:1.02rem;font-weight:800;display:flex;align-items:center;gap:8px}
 .warn{background:var(--warnbg);border:1px solid var(--warnline);color:var(--warntxt);border-radius:14px;padding:12px 14px;font-size:.85rem;margin:14px 0}
 .warn a{color:inherit;font-weight:700}
+.okline{background:rgba(15,122,85,.10);border:1px solid rgba(15,122,85,.35);color:var(--text);border-radius:14px;padding:10px 14px;font-size:.85rem;margin:12px 0}
+html[data-theme=dark] .okline{background:rgba(43,191,138,.12);border-color:rgba(43,191,138,.4)}
 .btn{display:block;width:100%;text-align:center;background:var(--brand);color:var(--brandtxt);border:0;border-radius:14px;padding:14px;font:inherit;font-size:1rem;font-weight:700;cursor:pointer;margin-top:10px;transition:transform .08s,background .15s}
 .btn:active{transform:scale(.98);background:var(--brand2)}
 .btn.alt{background:transparent;color:var(--brand);border:1.5px solid var(--brand)}

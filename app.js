@@ -301,21 +301,7 @@ function codeNear(code){
   for(var i=0;i<F.length&&out.length<2;i++){if(F[i].c&&normCode(F[i].c).replace(/^[A-Z]+/,'')===n)out.push(F[i])}
   return out;
 }
-function aiConsent(){
-  try{if(localStorage.getItem('aivconsent2')==='1')return Promise.resolve(true)}catch(e){}
-  return new Promise(function(res){
-    var ov=document.createElement('div');ov.id='aicons';ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');
-    ov.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:14px';
-    ov.innerHTML='<div class="card" style="max-width:520px;max-height:90vh;overflow:auto;margin:0"><b>🤖 قبل ما تبعت لأي ذكاء اصطناعي / Before you send to AI</b>'
-    +'<div style="margin-top:8px;font-size:.92rem;line-height:1.7" dir="rtl">الصورة أو السؤال بيتبعت لخدمة Google Gemini عن طريق سيرفر وسيط. على النسخة المجانية، جوجل ممكن تستخدم المدخلات والمخرجات لتحسين منتجاتها، ومراجعين بشر ممكن يقروها. <b>متبعتش بيانات حساسة:</b> سيريال نمبر، اسم عميل أو موقع، أو أي شخص ظاهر في الصورة. التطبيق مش بيحتفظ بالصورة. الأفضل تصوّر شاشة العرض بس. بديل من غير ذكاء اصطناعي: الـOCR العادي على جهازك أو كتابة الكود يدويًا.</div>'
-    +'<div style="margin-top:8px;font-size:.88rem;line-height:1.6;opacity:.9" dir="ltr">Your image or question is sent to Google Gemini through a relay server. On the free tier Google may use inputs and outputs to improve its products, and human reviewers may read them. <b>Do not send sensitive data:</b> serial numbers, customer names or locations, or people visible in the photo. This app does not store the image. Photograph the display only. Alternative without AI: the on-device OCR or typing the code by hand.</div>'
-    +'<div class="row" style="margin-top:12px"><button type="button" class="btn" id="aivok">موافق / I agree</button><button type="button" class="btn alt" id="aivno">لا، استخدم OCR / No, use OCR</button></div></div>';
-    document.body.appendChild(ov);
-    function done(v){try{ov.remove()}catch(e){}if(v){try{localStorage.setItem('aivconsent2','1')}catch(e){}}res(v)}
-    $('aivok').onclick=function(){done(true)};$('aivno').onclick=function(){done(false)};
-    try{$('aivok').focus()}catch(e){}
-  });
-}
+function aiConsent(){return Promise.resolve(true)}
 var AIW_URL='https://inverter-vision.amr-abdelhamid-engineer.workers.dev/read';
 function blobToB64(b){return new Promise(function(ok,no){var r=new FileReader();r.onload=function(){ok(String(r.result).split(',')[1]||'')};r.onerror=function(){no(new Error('read_failed'))};r.readAsDataURL(b)})}
 function aiVisionRead(f){

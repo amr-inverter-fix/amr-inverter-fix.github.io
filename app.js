@@ -331,7 +331,7 @@ function aiVisionRead(f,enh,retried){
     var j=aiParse(raw);
     if(!j||j.readable===false||(!j.code&&!j.message)){
       if(!retried){aivBusy=false;$('ocrstat').textContent='🔁 مش واضحة، بحاول تاني بتحسين التباين...';setTimeout(function(){aiVisionRead(f,true,true)},7000);return}
-      $('ocrstat').innerHTML='<b>'+esc(j&&j.readable===false?'الصورة مش واضحة كفاية (أو مش شاشة إنفرتر). صوّر الشاشة من مسافة قريبة وبدون انعكاس، أو اكتب الكود يدويًا.':'مقدرتش أقرا كود واضح في الصورة. جرّب صورة أوضح، أو اكتب الكود يدويًا.')+'</b>';
+      $('ocrstat').innerHTML='<b>'+esc(j&&j.readable===false?(j.message&&/FAULT/i.test(j.message)?'مفيش مؤشر FAULT منوّر على الشاشة، لكن فيه رقم تحت كلمة FAULT ('+j.message.replace(/[^0-9A-Za-z .()\-]/g,'').replace(/^.*label\s*/i,'').slice(0,30)+'). مش متأكد إنه كود عطل ومش هشخّص من تخمين. لو إنت شايفه عطل اكتبه في خانة الكود وشخّص.':'ما لقيتش كود عطل واضح على الشاشة (ممكن مفيش عطل ظاهر، أو الرقم مش واضح، أو دي مش شاشة إنفرتر). لو شايف كود اكتبه يدويًا في خانة الكود.'):'مقدرتش أقرا كود واضح في الصورة. جرّب صورة أوضح، أو اكتب الكود يدويًا.')+'</b>';
       return;
     }
     var txt=((j.code||'')+' '+(j.message||'')).replace(/\s+/g,' ').trim();

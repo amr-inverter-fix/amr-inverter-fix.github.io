@@ -2,6 +2,9 @@
 
 Newest first. A line is added only for a real change that was tested. Older session notes: INVERTER_FIX_CHANGELOG.md.
 
+## Release 1.1 (2026-11-28, build r21)
+- r21: anonymous usage counter. The app sends a random device ID (made in the browser, stored in localStorage) once per session ("open") and once per diagnosis ("diag"). The Worker keeps counts only (devices, sessions, diagnoses, photo reads, last 14 days) in a free Cloudflare KV store. No IP, name, email or image is stored. Shown live on dev.html. No visible change in the app.
+
 ## Release 1.0 (2026-11-28, build r20)
 - r7: removed the on-device OCR library; every picked or captured image goes straight to the AI read. Diagnostics line under the image (steps, status, ms), global error capture, 30 s fetch timeout, 25 MB file limit.
 - r8-r12: result and brand chooser now show inside the Capture tab (the result element was hidden on that tab, the root cause of "no response"). Server connection test added (hidden again in r17).

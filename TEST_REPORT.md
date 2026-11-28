@@ -44,3 +44,6 @@ hidden result element on the camera tab; prompt regression reading the wrong num
 
 ## Open
 Real-phone verification of the print dialog and paper size; Deye W-codes missing from the database; 237 records without a code and 6 duplicate brand+code groups (see audit); verification statuses (Phase 3) not started.
+
+## r21 usage counter (local + live Worker, 2026-11-28)
+Run: 7 checks, 6 passed, 1 failed and fixed (the open ping was skipped by an onLine check). Worker logic with fake KV (devices, sessions, diagnoses, bad id, bad event, wrong origin, no store) pass; live Worker /ping and /stats with the allowed origin pass, wrong origin rejected (403); headless Chrome on the dev files: one "open" per session, one "diag" per diagnosis, device ID 32 hex, no page errors, pass. Not tested: real phone, real inverter, concurrent writes.

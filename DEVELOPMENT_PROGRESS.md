@@ -1,6 +1,6 @@
 # Inverter Fix: development progress
 
-Last updated: 2026-11-28 15:30 (Cairo). Live: https://amr-inverter-fix.github.io/ . Static site (GitHub Pages), no backend, free hosting only.
+Last updated: 2026-11-28 15:40 (Cairo). Live: https://amr-inverter-fix.github.io/ . Static site (GitHub Pages), no backend, free hosting only.
 
 Status labels: COMPLETE AND TESTED / IMPLEMENTED NOT FULLY TESTED / PARTIAL / BLOCKED BY EXTERNAL DEPENDENCY / NOT IMPLEMENTED.
 
@@ -11,6 +11,12 @@ Status labels: COMPLETE AND TESTED / IMPLEMENTED NOT FULLY TESTED / PARTIAL / BL
 - Before 2026-11-28: 1684 fault entries, 41 brand/series cards (new official cards then: SolaX X3-PRO G2, SOFAR HYD 3-6K-EP). manufacturer_registry.json lists the document, URL and source class for each card. Each card lists the manual name and link. Entries come only from official manufacturer manual text; codes and steps are never invented.
 - Per-brand source status is shown on every result card. Huawei, SolaX and SOFAR currently link to third-party hosted copies (official version NOT yet verified). Deye, Steca and Growatt (TL/MTL) hosts are unclear and under review. Source URL check on 2026-11-26: Sol-Ark legacy 12K link returned 404 to curl; Enphase, SolarEdge and Schneider returned 403 to curl (bot blocking, not verified in a browser).
 - Not in the data: per-fault manual page numbers and per-fault verification dates. The report says "page not recorded".
+
+## UI (v57, 2026-11-28)
+- Fault card rebuilt for small screens: compact header (brand badge, code, name, severity as a pill instead of a full-width banner), steps as one tight numbered list instead of separate boxes, two primary actions (WhatsApp, card link) with the rest behind a "..." menu, and the source/manual link collapsed under the source heading. Card height on a 390 px wide viewport drops by roughly a third.
+- Arabic renderings of recurring manual steps: 85 exact phrases plus 6 sentence patterns in steps-ar.js. Coverage measured over the whole database: 1403 of 4448 steps (31.5%) show an Arabic line; 141 cards are fully Arabic and 600 partly. Every translated step keeps the manual's English text underneath, and the card says the Arabic is our translation. Steps with no translation are shown in English exactly as before - nothing is machine-composed.
+- Match reason tags are Arabic now ("code 39" shows as "الكود 39").
+- Not tested on a real phone; checked at a 390x844 mobile viewport in a desktop Chrome.
 
 ## Features
 | Feature | Status | Notes |

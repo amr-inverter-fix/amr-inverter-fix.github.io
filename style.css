@@ -262,3 +262,39 @@ html[dir=ltr] body{text-align:left}html[dir=ltr] .warn,html[dir=ltr] .camtips,ht
 #symp .q{flex:0 0 auto;color:var(--text);background:var(--surface2);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:.85rem;font-weight:700;backdrop-filter:none}
 #symp .q:hover{background:var(--line)}
 #symp .q:active{transform:scale(.96)}
+
+/* ===== v57: tighter fault card, Arabic steps, mobile-first actions ===== */
+.res{padding:14px 14px 12px}
+.rt{min-width:0;flex:1}
+.rt h3{font-size:1rem;margin:0 0 5px}
+.rsub{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.8rem;color:var(--muted);direction:rtl;text-align:right}
+.rsub b{color:var(--text)}
+.sevpill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 9px;font-size:.76rem;font-weight:800;border:1px solid transparent}
+.sevpill.sev-h{background:rgba(229,72,77,.14);color:#b42318;border-color:rgba(229,72,77,.3)}
+.sevpill.sev-m{background:rgba(245,165,36,.16);color:#8a5a00;border-color:rgba(245,165,36,.35)}
+.sevpill.sev-l{background:rgba(43,191,138,.15);color:#0b6b48;border-color:rgba(43,191,138,.35)}
+html[data-theme=dark] .sevpill.sev-h{color:#ffb4b0}
+html[data-theme=dark] .sevpill.sev-m{color:#ffd58a}
+html[data-theme=dark] .sevpill.sev-l{color:#8be8c4}
+.sevnote{font-size:.82rem;color:var(--muted);margin:7px 0 2px;line-height:1.6}
+.sevnote small{opacity:.8}
+.res .steps{list-style:none;margin:8px 0 0;padding:0;direction:rtl;text-align:right;counter-reset:st}
+.res .steps li{counter-increment:st;position:relative;padding:9px 34px 9px 0;border-top:1px solid var(--line)}
+.res .steps li:first-child{border-top:0}
+.res .steps li::before{content:counter(st);position:absolute;right:0;top:10px;width:23px;height:23px;border-radius:50%;background:var(--brand);color:var(--brandtxt);font-size:.75rem;font-weight:800;display:flex;align-items:center;justify-content:center}
+.sar{font-size:.95rem;line-height:1.8;color:var(--text)}
+.sen{font-size:.76rem;color:var(--muted);line-height:1.5;margin-top:4px;text-align:left}
+.sen.only{font-size:.88rem;color:var(--text);margin-top:0}
+.trnote{font-size:.74rem;color:var(--muted);margin-top:6px}
+.cnote{font-size:.78rem;color:#8a5a00;background:rgba(245,165,36,.1);border-radius:10px;padding:6px 9px;margin-top:8px}
+html[data-theme=dark] .cnote{color:#ffd58a}
+.cacts{display:flex;gap:8px;margin-top:10px;align-items:stretch;flex-wrap:nowrap}
+.cacts .sharebtn{flex:1 1 auto;margin:0;display:flex;align-items:center;justify-content:center;min-height:44px}
+.cacts .linkbtn{flex:1 1 auto;margin:0;display:flex;align-items:center;justify-content:center;min-height:44px}
+.cacts .more{flex:0 0 auto}
+.cacts .more summary{list-style:none;cursor:pointer;min-height:44px;min-width:44px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--line);border-radius:12px;background:var(--surface2);font-weight:800;font-size:1.1rem;color:var(--text)}
+.cacts .more summary::-webkit-details-marker{display:none}
+.morebox{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.csrc{margin-top:10px;font-size:.8rem}
+.csrc summary{cursor:pointer;color:var(--brand);font-weight:700;min-height:38px;display:flex;align-items:center}
+@media (max-width:430px){.sar{font-size:.97rem}.res .steps li{padding-right:32px}.warn{font-size:.8rem}}

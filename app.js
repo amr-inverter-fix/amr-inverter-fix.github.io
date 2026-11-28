@@ -100,15 +100,25 @@ function favs(){try{return JSON.parse(localStorage.getItem('invfav')||'[]')}catc
 var SRC_THIRD={huawei:1,solax:1,sofar:1},SRC_UNCL={deye:1,steca:1,growatt:1};
 var SRC_BROKEN={solark:1};
 function srcStatus(b){if(SRC_BROKEN[b])return '⚠️ الرابط ده ميت (404 يوم 27/11/2026) حتى في مكتبة مستندات الشركة نفسها. الخطوات من نسخة الدليل القديم ولسه مش متأكد منها';if(SRC_THIRD[b])return '⚠️ نسخة مستضافة عند طرف تالت، والنسخة الرسمية لسه ما اتأكدتش';if(SRC_UNCL[b])return '⚠️ الاستضافة مش واضح إنها موقع الشركة الرئيسي، لسه بتتراجع';return '✔️ الملف على دومين الشركة (ده مش معناه إن الكود اتجرب على جهاز)'}
+function whyAr(w){if(!w)return '';if(w.indexOf('code ')===0)return 'الكود '+w.slice(5);if(w==='name match')return 'مطابقة الاسم';return w}
+function stepAr(t){if(!t)return '';if(window.STEPAR&&window.STEPAR[t])return window.STEPAR[t];
+  var R=window.STEPAR_RULES||[];
+  for(var i=0;i<R.length;i++){var m=t.match(R[i][0]);if(m){try{return R[i][1](m)}catch(e){}}}
+  return ''}
 function card(f,why){
   var s=SRC[f.b],sv=SEV[f.k]||'m',isf=favs().indexOf(fkey(f))>=0;
   var shareTxt=s.name+' - '+(f.c?f.c+' - ':'')+f.n+'\n'+f.s.map(function(x,i){return (i+1)+'. '+x}).join('\n')+'\nالمصدر: '+s.url;
-  return '<div class="res cat-'+f.k+' sv-'+sv+'"><div class="rtop"><span class="bmark" style="'+bstyle(f.b)+'">'+esc(mono(f.b))+'</span><div class="rt"><h3>'+(f.c?'<span class="code">'+esc(f.c)+'</span> ':'')+esc(f.n)+'</h3><div class="rsub">'+esc(s.name)+'</div></div><button class="fav'+(isf?' on':'')+'" type="button" data-fk="'+esc(fkey(f))+'" aria-label="مفضلة">'+(isf?'★':'☆')+'</button></div>'+
-  '<div class="sevbar sev-'+sv+'"><b>'+SEVT[sv][0]+' '+SEVL[sv]+'</b> '+SEVT[sv][1]+' <small>(تقييم تقريبي من التطبيق مش من الشركة)</small></div>'+
-  '<span class="tag">'+esc(CATS[f.k]||CATS.other)+'</span>'+(why?'<span class="tag">'+esc(why)+'</span>':'')+
-  '<div class="qtag">الخطوات دي منقولة من دليل الشركة وموجّهة لفني مؤهل فقط — مش تعليمات تنفّذها بنفسك.</div><ol>'+f.s.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ol>'+
-  '<div class="acts"><a class="sharebtn" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(shareTxt)+'">📤 واتساب</a><button class="sharebtn2" type="button" data-sh="'+esc(shareTxt)+'">🔗 مشاركة / نسخ</button><button class="linkbtn" type="button" data-fk="'+esc(fkey(f))+'">🔖 لينك الكارت</button><button class="cmpbtn" type="button" data-fk="'+esc(fkey(f))+'">⚖️ قارن</button><button class="repbtn" type="button" data-fk="'+esc(fkey(f))+'">📄 تقرير PDF</button><button class="imgbtn" type="button" data-fk="'+esc(fkey(f))+'">🖼️ صورة الكارت</button><button class="printbtn" type="button">🖨️ طباعة / PDF</button></div>'+
-  '<div class="muted">المصدر: '+esc(s.doc)+'<br><b class="srcst">'+srcStatus(f.b)+'</b><br><a href="'+esc(s.url)+'" target="_blank" rel="noopener">'+esc(s.url)+'</a></div></div>';
+  var anyAr=false;
+  var steps=f.s.map(function(x){var ar=stepAr(x);if(ar)anyAr=true;
+    return '<li>'+(ar?'<div class="sar">'+esc(ar)+'</div><div class="sen" dir="ltr">'+esc(x)+'</div>':'<div class="sen only" dir="ltr">'+esc(x)+'</div>')+'</li>'}).join('');
+  return '<div class="res cat-'+f.k+' sv-'+sv+'"><div class="rtop"><span class="bmark" style="'+bstyle(f.b)+'">'+esc(mono(f.b))+'</span><div class="rt"><h3>'+(f.c?'<span class="code">'+esc(f.c)+'</span> ':'')+esc(f.n)+'</h3><div class="rsub"><b>'+esc(s.name)+'</b> <span class="sevpill sev-'+sv+'">'+SEVT[sv][0]+' '+SEVL[sv]+'</span> <span class="tag">'+esc(CATS[f.k]||CATS.other)+'</span>'+(why?'<span class="tag">'+esc(whyAr(why))+'</span>':'')+'</div></div><button class="fav'+(isf?' on':'')+'" type="button" data-fk="'+esc(fkey(f))+'" aria-label="مفضلة">'+(isf?'★':'☆')+'</button></div>'+
+  '<div class="sevnote">'+esc(SEVT[sv][1])+' <small>(تقدير التطبيق، مش من الشركة)</small></div>'+
+  '<ol class="steps">'+steps+'</ol>'+
+  (anyAr?'<div class="trnote">الترجمة العربية من عندي؛ النص الإنجليزي الأصلي من الدليل تحت كل خطوة.</div>':'')+
+  '<div class="cnote">⚠️ الخطوات دي منقولة من دليل الشركة، ولفني مؤهل بس — مش تعليمات تنفّذها بنفسك.</div>'+
+  '<div class="cacts"><a class="sharebtn" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(shareTxt)+'">📤 واتساب</a><button class="linkbtn" type="button" data-fk="'+esc(fkey(f))+'">🔖 لينك الكارت</button>'+
+  '<details class="more"><summary aria-label="خيارات أكتر">⋯</summary><div class="morebox"><button class="sharebtn2" type="button" data-sh="'+esc(shareTxt)+'">🔗 مشاركة / نسخ</button><button class="cmpbtn" type="button" data-fk="'+esc(fkey(f))+'">⚖️ قارن</button><button class="repbtn" type="button" data-fk="'+esc(fkey(f))+'">📄 تقرير PDF</button><button class="imgbtn" type="button" data-fk="'+esc(fkey(f))+'">🖼️ صورة الكارت</button><button class="printbtn" type="button">🖨️ طباعة</button></div></details></div>'+
+  '<details class="csrc"><summary>📄 المصدر والدليل</summary><div class="muted">'+esc(s.doc)+'<br><b class="srcst">'+srcStatus(f.b)+'</b><br><a href="'+esc(s.url)+'" target="_blank" rel="noopener">'+esc(s.url)+'</a></div></details></div>';
 }
 function mono(b){var n=(SRC[b].name||b).replace(/[^A-Za-z0-9 ]/g,'').trim().split(/\s+/);return (n[0]||b).slice(0,n.length>1&&n[0].length<3?3:2).toUpperCase()}
 function bstyle(b){var h=0;for(var i=0;i<b.length;i++)h=(h*31+b.charCodeAt(i))%360;return 'background:linear-gradient(135deg,hsl('+h+',65%,42%),hsl('+((h+40)%360)+',70%,32%))'}

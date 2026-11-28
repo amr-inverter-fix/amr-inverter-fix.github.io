@@ -26,7 +26,7 @@
   <button id="aiv" class="btn" type="button" hidden>🤖 اقراها بالذكاء الاصطناعي (أدق)</button>
   <label class="btn alt" for="cam">🖼️ اختار صورة من الجهاز</label>
   <input id="cam" type="file" accept="image/*" hidden>
-  <div class="muted" style="font-size:.78rem;margin-top:6px">القراءة بالـAI بتبعت الصورة لخدمة Puter المجانية. الـOCR العادي بيشتغل على جهازك بعد أول تحميل.</div>
+  <div class="muted" style="font-size:.78rem;margin-top:6px">القراءة بالـAI بتبعت الصورة لخدمة Google Gemini (عن طريق سيرفر وسيط). الـOCR العادي بيشتغل على جهازك بعد أول تحميل.</div>
 <div id="camerr" class="muted"></div>
   <div id="camwrap" hidden><video id="vid" autoplay playsinline muted></video><div class="row"><button id="snap" class="btn" type="button">📸 التقط</button><button id="stopcam" class="btn alt" type="button">إلغاء</button></div></div>
   <img id="prev" alt="" hidden>
@@ -63,7 +63,7 @@
 </section>
 <section class="card" id="aisec" data-tab="ask">
   <h2>🤖 مساعد ذكي (تجريبي)</h2>
-  <div class="muted" style="margin-top:-6px">بيرد على أي سؤال في الإنفرترات بالذكاء الاصطناعي (Puter، مجاني). الجزء الرسمي بيتاخد من الكروت بس، وأي معلومة عامة بتتعلّم "غير رسمي". الأسئلة بتتبعت لخدمة Puter وممكن تطلب تسجيل دخول مجاني.</div>
+  <div class="muted" style="margin-top:-6px">بيرد على أي سؤال في الإنفرترات بالذكاء الاصطناعي (Gemini). الجزء الرسمي بيتاخد من الكروت بس، وأي معلومة عامة بتتعلّم "غير رسمي". الأسئلة بتتبعت لخدمة Google Gemini عن طريق سيرفر وسيط.</div>
   <div id="asugg"><button type="button" class="chip" data-q="إيه الفرق بين إنفرتر on-grid و hybrid؟">on-grid ولا hybrid؟</button><button type="button" class="chip" data-q="إنفرتر Kaco بيطلع E36 يعني إيه وأعمل إيه؟">E36 كاكو</button><button type="button" class="chip" data-q="ليه الإنفرتر بيسخن في الصيف؟">ليه بيسخن؟</button></div>
   <div id="aichat" aria-live="polite"></div>
   <form id="aform" class="cform" autocomplete="off"><input id="aq" placeholder="اسأل أي سؤال عن الإنفرتر..." aria-label="سؤالك للمساعد الذكي"><button type="submit" class="btn" id="asend">إرسال</button></form>

@@ -365,7 +365,7 @@ async function handleFile(f){
   if(f.size>15*1024*1024){$('ocrstat').textContent='الصورة كبيرة قوي (أكتر من 15 ميجا). صغّرها أو صوّر تاني.';return}
   window.__busy=true;
   var url=URL.createObjectURL(f),img=$('prev');img.src=url;img.hidden=false;
-  lastImg=f;aiWanted=false;var myTok=++ocrSeq;var ab=$('aiv');if(ab)ab.hidden=false;
+  lastImg=f;aiWanted=false;aivBusy=false;var myTok=++ocrSeq;var ab=$('aiv');if(ab)ab.hidden=false;
   var loaded=await new Promise(function(r){img.onload=function(){r(true)};img.onerror=function(){r(false)}});
   if(!loaded){window.__busy=false;img.hidden=true;try{URL.revokeObjectURL(url)}catch(e){}$('ocrstat').textContent='الصورة دي تالفة أو مش بتتفتح. جرّب صورة تانية.';return}
   $('ocrstat').textContent='بقرا الصورة... (أول مرة بتاخد ثواني)';

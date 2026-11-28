@@ -246,7 +246,7 @@ function prep(img,invert){
   var max=1800,sc=Math.min(2,max/Math.max(img.naturalWidth,img.naturalHeight));
   if(img.naturalWidth*sc<1000) sc=Math.min(3,1000/img.naturalWidth);
   var c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*sc);c.height=Math.round(img.naturalHeight*sc);
-  var x=c.getContext('2d');if(enh&&'filter' in x)x.filter='grayscale(1) contrast(1.5) brightness(1.1)';x.drawImage(img,0,0,c.width,c.height);
+  var x=c.getContext('2d');x.drawImage(img,0,0,c.width,c.height);
   var d=x.getImageData(0,0,c.width,c.height),p=d.data,lo=255,hi=0,i,g;
   for(i=0;i<p.length;i+=4){g=.299*p[i]+.587*p[i+1]+.114*p[i+2];p[i]=g;if(g<lo)lo=g;if(g>hi)hi=g}
   var r=Math.max(1,hi-lo);
@@ -262,7 +262,7 @@ function shrinkForAI(f,enh){
         try{
           var max=enh?1600:1280,sc=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
           var c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*sc);c.height=Math.round(img.naturalHeight*sc);
-          var x=c.getContext('2d');x.drawImage(img,0,0,c.width,c.height);
+          var x=c.getContext('2d');if(enh&&'filter' in x)x.filter='grayscale(1) contrast(1.5) brightness(1.1)';x.drawImage(img,0,0,c.width,c.height);
           c.toBlob(function(b){try{URL.revokeObjectURL(u)}catch(e){};if(!b){res(f);return}res(new File([b],'shot.jpg',{type:'image/jpeg'}))},'image/jpeg',0.88);
         }catch(e){res(f)}
       };

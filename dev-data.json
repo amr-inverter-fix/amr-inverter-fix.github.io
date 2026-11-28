@@ -1,10 +1,10 @@
 {
- "version": "Release 1.2",
- "build": "2026-11-28-r22",
- "updated": "2026-11-28T19:40:00+02:00",
+ "version": "Release 1.3",
+ "build": "2026-11-28-r23",
+ "updated": "2026-11-28T19:42:00+02:00",
  "last_test_run": "2026-11-28",
- "tests_run": 7,
- "tests_passed": 7,
+ "tests_run": 6,
+ "tests_passed": 6,
  "tests_failed": 0,
  "last_full_pass": "2026-11-28 (r22 checks)",
  "open_issues": [
@@ -12,7 +12,8 @@
   "Deye W-codes: not in any of 5 official Deye manuals checked; nothing added",
   "1 possible real duplicate: SolarEdge 2xE (two different texts); 237 records without code are named faults, not a defect",
   "Verification statuses (Phase 3) not started",
-  "Daily AI read limit is 150 (temporary, restore to 30 when the owner says)"
+  "Daily AI read limit is 150 (temporary, restore to 30 when the owner says)",
+  "870 records not yet checked against their official document (fresh automatic check planned)"
  ],
  "improvements_done": [
   "Camera/gallery flow inside the Capture tab",
@@ -24,7 +25,8 @@
   "Database validation script",
   "Anonymous usage counter (random device ID, counts only) on this dashboard",
   "Deye SG01HP3-US-AM2 series added (28 codes, official manual)",
-  "db_check separates Fault/Warning pairs from real duplicates"
+  "db_check separates Fault/Warning pairs from real duplicates",
+  "Verification-state badge on every fault card (5 states + not yet checked)"
  ],
  "db": {
   "records": 1810,
@@ -35,11 +37,18 @@
   "fault_warning_pairs": 5
  },
  "next": [
+  "Fresh automatic check of all brands against their official PDFs to shrink the 870 not-yet-checked",
   "Verification statuses per record (Phase 3)",
   "Official-manual check of fault 39 on Axpert",
   "Re-run the 18-photo regression after any Worker change"
  ],
  "releases": [
+  {
+   "v": "Release 1.3",
+   "date": "2026-11-28",
+   "build": "r23",
+   "note": "Verification-state badge on cards"
+  },
   {
    "v": "Release 1.2",
    "date": "2026-11-28",
@@ -58,5 +67,15 @@
    "build": "r20",
    "note": "First numbered release. See RELEASE_NOTES.md"
   }
- ]
+ ],
+ "verification": {
+  "V": 142,
+  "A": 615,
+  "T": 138,
+  "C": 12,
+  "B": 33,
+  "N": 870,
+  "checked_by_text": 757,
+  "source": "verif.js (db_quality_report.json 2026-11-27 + deyeus check)"
+ }
 }

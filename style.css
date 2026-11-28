@@ -342,3 +342,8 @@ html[data-theme=dark] .cnote{color:#ffd58a}
 #rep .rfoot{margin-top:20px;border-top:2px solid #0b3d2e;padding-top:8px;text-align:center;font-weight:700}}
 
 @page{size:A4;margin:14mm}
+
+.vrf{margin:6px 0;padding:7px 11px;border-radius:12px;font-size:.82rem;border:1px solid rgba(120,140,130,.35);background:rgba(120,140,130,.10)}
+.vrf-V,.vrf-A{background:rgba(15,122,85,.10);border-color:rgba(15,122,85,.35)}
+.vrf-T,.vrf-B,.vrf-C{background:rgba(245,165,36,.14);border-color:rgba(245,165,36,.45)}
+html[data-theme=dark] .vrf-V,html[data-theme=dark] .vrf-A{background:rgba(43,191,138,.12)}

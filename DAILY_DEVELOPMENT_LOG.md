@@ -2,6 +2,9 @@
 
 One entry per cycle: analysis, plan, what was done, tests, review. Honest numbers only.
 
+## 2026-11-28 cycle 1b (Release 1.3, build r23)
+- Done: verification-state badge (verif.js). Tests: 6 run, 6 passed. Next: fresh automatic check of all brands against official PDFs.
+
 ## 2026-11-28 cycle 1 (Release 1.2, build r22)
 - Analysis: 237 without code = named faults; 6 duplicates = 5 Fault/Warning pairs + 1; Deye W-codes absent from official manuals; Deye US/AM2 manual has 28 codes not modelled as a series.
 - Done: data5.js (Deye US/AM2, 28 codes), db_check pair logic, dev.html note. Not done: verification statuses (large, needs owner decision), decimal-point bug (no description found).

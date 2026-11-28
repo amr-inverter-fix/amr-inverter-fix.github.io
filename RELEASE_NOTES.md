@@ -1,5 +1,10 @@
 # Release notes
 
+## Release 1.3 - 2026-11-28 (build 2026-11-28-r23)
+1. New: "حالة التحقق" badge on every fault card with 6 states (manual check 142, automatic text match 615, third-party copy 138, conflict 12, dead link 33, not yet checked 870). Evidence: db_quality_report.json (audit of 2026-11-27) plus the Deye US/AM2 PDF check. Records added after the audit and not checked show "not yet checked", never a guess.
+2. Limit: the audit matched 867 of its 967 rows to current records (names changed since); the rest fall back to the brand source class. A fresh full check of all brands against their official PDFs is the next step to shrink the 870.
+3. Tests: 6 checks, 6 passed. Not tested: real phone, real inverter, print report with the badge.
+
 ## Release 1.2 - 2026-11-28 (build 2026-11-28-r22)
 1. New: Deye US/AM2 series (SUN-8/10/12/15K-SG01HP3-US-AM2), 28 codes F01 to F64 from the official manual (2025-08-15), Chart 7-1. Source: https://www.deyeinverter.com/deyeinverter/2025/08/15/sun-8-15k-sg01hp3-us-am2_20250815.pdf . Added as a separate series; existing Deye records are not changed.
 2. Changed: db_check separates Fault/Warning pairs (Axpert 01,02,03,04,07) from real duplicates. Now 1 real duplicate group (SolarEdge 2xE, two different texts, not merged) and 5 pairs.
@@ -26,6 +31,7 @@ First numbered release. Versioning rule: Release 1.N, N goes up only when a day 
 7. Next: see ROADMAP.md.
 
 ## Stable branches
-- stable-r22: to be created after Release 1.2 is verified live.
+- stable-r23: to be created after Release 1.3 is verified live.
+- stable-r22: Release 1.2, build r22.
 - stable-r21: Release 1.1, build r21.
 - stable-r20: Release 1.0, build 2026-11-28-r20 (rollback point).

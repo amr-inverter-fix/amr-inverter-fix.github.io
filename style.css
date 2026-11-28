@@ -302,3 +302,21 @@ html[data-theme=dark] .cnote{color:#ffd58a}
 @media (max-width:430px){.sar{font-size:.97rem}.res .steps li{padding-right:32px}.warn{font-size:.8rem}}
 
 [hidden]{display:none!important}
+
+/* r15 mobile layout fixes */
+html,body{overflow-x:hidden;max-width:100%}
+.res,.res *{min-width:0}
+.cacts{flex-wrap:wrap}
+.cacts .sharebtn,.cacts .linkbtn{flex:1 1 140px;white-space:nowrap}
+.cacts .more{flex:0 0 auto}
+.cacts .more[open]{flex:1 1 100%;order:5}
+.cacts .more[open] summary{width:100%}
+.morebox{display:flex;flex-wrap:wrap;gap:6px}
+.morebox>button{flex:1 1 45%;min-width:0;white-space:normal}
+.csrc .muted,.csrc .muted a{overflow-wrap:anywhere;word-break:break-word;line-height:1.7}
+.csrc .muted a{display:block;margin-top:4px}
+.res{overflow-wrap:anywhere}
+.steps .sen{overflow-wrap:anywhere}
+.trbtn{display:block;width:100%;margin:8px 0;min-height:42px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface2);color:var(--text);font-weight:700}
+.trout{margin:6px 0;padding:8px 10px;border-radius:10px;background:var(--surface2);font-size:.9rem;white-space:pre-wrap;line-height:1.7}
+.trout.bad{color:#b45309}

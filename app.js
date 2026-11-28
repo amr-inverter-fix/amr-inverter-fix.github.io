@@ -218,7 +218,7 @@ function ocrConfirm(txt,bs,src,meta){
     h+='<div class="'+(cf==='high'?'okline':'warn')+'">ثقة القراءة: '+cfT+(cf==='high'?'':' — مش متأكد، راجع النص على الشاشة قبل التشخيص')+(meta&&meta.model?' · الموديل: '+esc(String(meta.model).replace('google/','')):'')+'</div>';
     var mc=codeMatch(meta&&meta.code);
     if(meta&&meta.code){
-      if(mc)h+='<div class="okline">الكود <span dir="ltr">'+esc(meta.code)+'</span> موجود في قاعدة الأدلة ('+esc(SRC[mc.b].name)+').</div>';
+      if(mc){if(bs&&bs.value&&mc.b===bs.value)h+='<div class="okline">الكود <span dir="ltr">'+esc(meta.code)+'</span> موجود في قاعدة الأدلة للماركة اللي اخترتها ('+esc(SRC[mc.b].name)+'). الموديل لسه محتاج تأكيد.</div>';else h+='<div class="warn">الكود <span dir="ltr">'+esc(meta.code)+'</span> موجود بالرقم في قاعدة ماركة '+esc(SRC[mc.b].name)+'، لكن الماركة والموديل على الشاشة مش متأكد منهم: تطابق بالرقم بس (NEEDS_VERIFICATION). اختار الماركة الصح قبل التشخيص.</div>'}
       else{
         var nr=codeNear(meta.code);
         if(nr.length)h+='<div class="warn">الكود <span dir="ltr">'+esc(meta.code)+'</span> مش موجود بالحرف في القاعدة. فيه كود برقم قريب في ماركات تانية (مش بالضرورة نفس عطل ماركتك، ما تعتمدش عليه كتشخيص): <span dir="ltr">'+nr.map(function(x){return esc(x.c)}).join(' ، ')+'</span> ('+nr.map(function(x){return esc(SRC[x.b].name)}).join(' ، ')+'). راجع الشاشة وعدّل النص.</div>';
@@ -226,6 +226,7 @@ function ocrConfirm(txt,bs,src,meta){
       }
     }
   }
+  if(src==='ai'&&meta&&meta.others&&meta.others.length){meta.others.forEach(function(x){var m2=codeMatch(x.code);h+='<div class="'+(m2?'okline':'warn')+'">كود تاني على الشاشة: <span dir="ltr">'+esc(x.code)+'</span> '+(m2?'موجود بالرقم في قاعدة '+esc(SRC[m2.b].name)+' (NEEDS_VERIFICATION لحد ما تتأكد من الماركة)':'مش موجود في القاعدة')+'.</div>'})}
   h+='<div class="muted">'+(src==='ai'?'الذكاء الاصطناعي بيقرا الكود من الصورة وممكن يغلط. النص اللي تحت هو اللي هيتم التشخيص عليه — صحّحه لو مش مطابق للشاشة، ولو الكود مش موجود في القاعدة اكتبه يدويًا.':'القراءة الآلية ممكن تغلط. صحّح النص لو فيه غلط، وبعدين اضغط تأكيد. مفيش حرف بيتغيّر تلقائيًا.')+'</div>';
   if(amb.length)h+='<div class="warn">حروف/أرقام ممكن تتلخبط (O/0، I/1، S/5، B/8، Z/2) في: <span dir="ltr">'+amb.map(esc).join(' ، ')+'</span>. اتأكد منها على الشاشة.</div>';
   h+='<textarea id="ocrfix" dir="ltr" rows="4" style="width:100%;text-align:left">'+esc(txt.trim())+'</textarea><button id="ocrok" class="btn" type="button">✅ النص صح، شخّص</button></div>';
@@ -287,7 +288,8 @@ function aiParse(raw){
   var conf=cf.indexOf('high')>=0||cf.indexOf('عالي')>=0?'high':(cf.indexOf('low')>=0||cf.indexOf('منخفض')>=0?'low':'medium');
   if(c.length>40)c=c.slice(0,40);
   if(m.length>200)m=m.slice(0,200);
-  return {readable:o.readable!==false,code:c,message:m,conf:conf};
+  var oth=[];if(Array.isArray(o.others))o.others.slice(0,5).forEach(function(x){if(x&&x.code){oth.push({code:String(x.code).replace(/["'`]/g,'').trim().slice(0,40),message:String(x.message||'').replace(/["'`]/g,'').trim().slice(0,200)})}});
+  return {readable:o.readable!==false,code:c,message:m,conf:conf,others:oth};
 }
 function normCode(x){return String(x||'').toUpperCase().replace(/[^A-Z0-9]/g,'')}
 function codeMatch(code){
@@ -320,7 +322,7 @@ function aiVisionRead(f,enh,retried){
           var e=new Error(j.error||('HTTP '+res.status));e.detail=j.message||'';throw e;
         }
         used=j.model||'gemini';
-        return {message:{content:JSON.stringify({readable:j.readable,code:j.code,message:j.message,confidence:j.confidence})}};
+        return {message:{content:JSON.stringify({readable:j.readable,code:j.code,message:j.message,confidence:j.confidence,others:j.others})}};
       });
     });
   }).then(function(r){
@@ -333,7 +335,8 @@ function aiVisionRead(f,enh,retried){
       return;
     }
     var txt=((j.code||'')+' '+(j.message||'')).replace(/\s+/g,' ').trim();
-    ocrConfirm(txt,bs,'ai',{conf:j.conf,code:j.code,model:used});
+    (j.others||[]).forEach(function(x){txt+='\n'+(x.code+' '+(x.message||'')).trim()});
+    ocrConfirm(txt,bs,'ai',{conf:j.conf,code:j.code,model:used,others:j.others||[]});
   }).catch(function(e){
     aivBusy=false;
     var m=(e&&(e.message||(e.error&&e.error.message)))||'';

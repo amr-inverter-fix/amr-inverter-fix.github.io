@@ -208,7 +208,7 @@ function renderList(q){
 }
 var fbs=$('fbrand'),fcs=$('fcat');Object.keys(SRC).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=SRC[k].name;fbs.appendChild(op)});Object.keys(CATS).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=CATS[k];fcs.appendChild(op)});
 $('filter').oninput=function(){renderList(this.value)};fbs.onchange=fcs.onchange=($('fsort')||{}).onchange=function(){renderList($('filter').value)};renderList('');
-(function(){var f=$('foot'),n=Object.keys(SRC).map(function(k){return SRC[k].name});f.textContent='';var bm=document.createElement('p');bm.textContent='build 2026-11-28-r6 (sw inv-v64)';bm.className='muted';var p=document.createElement('p');p.textContent='القاعدة: '+F.length+' عطل من '+n.length+' شركات. البحث بالكود بيشتغل من غير إنترنت بعد أول فتح. قراءة الصورة (OCR) بتحتاج إنترنت.';var d=document.createElement('details');d.className='brl';var sm=document.createElement('summary');sm.textContent='📋 الشركات والمصادر الرسمية ('+n.length+')';d.appendChild(sm);var q=document.createElement('div');q.className='srclist';Object.keys(SRC).forEach(function(k){var r=document.createElement('div');r.className='srow';var b=document.createElement('b');b.textContent=SRC[k].name+' ('+F.filter(function(x){return x.b===k}).length+')';var m=document.createElement('div');m.className='muted';m.textContent=SRC[k].doc;var a=document.createElement('a');a.href=SRC[k].url;a.target='_blank';a.rel='noopener';a.textContent='فتح الدليل الرسمي';r.appendChild(b);r.appendChild(m);r.appendChild(a);q.appendChild(r)});d.appendChild(q);f.appendChild(p);f.appendChild(bm);f.appendChild(d)})();
+(function(){var f=$('foot'),n=Object.keys(SRC).map(function(k){return SRC[k].name});f.textContent='';var bm=document.createElement('p');bm.textContent='build 2026-11-28-r7 (sw inv-v66)';bm.className='muted';var p=document.createElement('p');p.textContent='القاعدة: '+F.length+' عطل من '+n.length+' شركات. البحث بالكود بيشتغل من غير إنترنت بعد أول فتح. قراءة الصورة (OCR) بتحتاج إنترنت.';var d=document.createElement('details');d.className='brl';var sm=document.createElement('summary');sm.textContent='📋 الشركات والمصادر الرسمية ('+n.length+')';d.appendChild(sm);var q=document.createElement('div');q.className='srclist';Object.keys(SRC).forEach(function(k){var r=document.createElement('div');r.className='srow';var b=document.createElement('b');b.textContent=SRC[k].name+' ('+F.filter(function(x){return x.b===k}).length+')';var m=document.createElement('div');m.className='muted';m.textContent=SRC[k].doc;var a=document.createElement('a');a.href=SRC[k].url;a.target='_blank';a.rel='noopener';a.textContent='فتح الدليل الرسمي';r.appendChild(b);r.appendChild(m);r.appendChild(a);q.appendChild(r)});d.appendChild(q);f.appendChild(p);f.appendChild(bm);f.appendChild(d)})();
 
 function ocrAmb(t){var out=[];(t.match(/[A-Za-z0-9]{2,}/g)||[]).forEach(function(w){if(/[0-9]/.test(w)&&/[A-Za-z]/.test(w)||/^[0-9OIlSBZ]{2,}$/.test(w)&&/[OIlSBZ]/.test(w)){var m=w.match(/[OoIlSsBZz01258]/g);if(m)out.push(w)}});return out.filter(function(v,i,a){return a.indexOf(v)===i}).slice(0,8)}
 function ocrConfirm(txt,bs,src,meta){
@@ -236,13 +236,6 @@ function ocrConfirm(txt,bs,src,meta){
 }
 // OCR
 var worker=null;
-function getWorker(){
-  if(worker) return worker;
-  var L=window.LITE,o={workerPath:'./worker.min.js',corePath:L?'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.0/':'./',langPath:L?'https://tessdata.projectnaptha.com/4.0.0_fast':'./',gzip:true,workerBlobURL:L?true:false,
-    logger:function(m){if(m.status&&!aiWanted)$('ocrstat').textContent='OCR: '+m.status+(m.progress?' '+Math.round(m.progress*100)+'%':'')}};
-  worker=Tesseract.createWorker('eng',1,o);
-  return worker;
-}
 function prep(img,invert){
   var max=1800,sc=Math.min(2,max/Math.max(img.naturalWidth,img.naturalHeight));
   if(img.naturalWidth*sc<1000) sc=Math.min(3,1000/img.naturalWidth);
@@ -256,7 +249,7 @@ function prep(img,invert){
 }
 var lastImg=null,aivBusy=false,aiWanted=false,ocrSeq=0;
 function shrinkForAI(f,enh){
-  return new Promise(function(res){
+  return new Promise(function(res0){var done=false;var tmr=setTimeout(function(){if(!done){done=true;dbg('shrink timeout, sending original');res0(f)}},15000);var res=function(v){if(!done){done=true;clearTimeout(tmr);res0(v)}};
     try{
       var img=new Image(),u=URL.createObjectURL(f);
       img.onload=function(){
@@ -320,12 +313,12 @@ function aiPanelChooser(p,bs){
 }
 function aiVisionRead(f,enh,retried){
   if(aivBusy||!f)return;
-  aivBusy=true;aiWanted=true;$('ocrstat').textContent='🤖 بجهّز الصورة وببعتها لـGemini...';
+  aivBusy=true;aiWanted=true;$('ocrstat').textContent='🤖 جاري القراءة بـGemini... (ممكن ياخد لحد 30 ثانية)';dbg('ai start '+Math.round(f.size/1024)+'KB');
   var used='';
   shrinkForAI(f,enh).then(function(small){
     return blobToB64(small).then(function(b64){
       var ac=(typeof AbortController!=='undefined')?new AbortController():null;
-      var tm=setTimeout(function(){if(ac)ac.abort()},45000);
+      var tm=setTimeout(function(){if(ac)ac.abort()},30000);
       return fetch(AIW_URL,{method:'POST',headers:{'Content-Type':'application/json'},signal:ac?ac.signal:undefined,
         body:JSON.stringify({image:b64,mime:small.type||'image/jpeg'})}).then(function(r){clearTimeout(tm);return r},function(e){clearTimeout(tm);var x=new Error((e&&e.name==='AbortError')?'TIMEOUT':'NETFAIL');x.detail=String(e&&e.message||e);throw x});
     }).then(function(res){
@@ -354,40 +347,31 @@ function aiVisionRead(f,enh,retried){
     aivBusy=false;
     var m=(e&&(e.message||(e.error&&e.error.message)))||'';
     if(m==='rate_limited'){$('ocrstat').textContent='طلبات كتير ورا بعض من نفس الشبكة. استنى 10 ثواني وجرّب تاني (ده مش معناه إن الصورة مش واضحة).';return}
-    if(m==='daily_limit'){$('ocrstat').textContent='وصلت لحد قراءة الصور بالذكاء الاصطناعي لليوم على الشبكة دي (الحد بيتحسب على عنوان الشبكة، وشبكات الموبايل بتتشارك). استخدم الـOCR العادي أو اكتب الكود يدويًا، وجرّب بكرة. (ده مش معناه إن الصورة مش واضحة).';return}
-    if(m==='too_large'||m==='bad_image'||m==='bad_type'){$('ocrstat').textContent='الصورة كبيرة أو نوعها مش مدعوم للقراءة بالـAI. جرّب صورة أصغر أو استخدم الـOCR العادي.';return}
-    if(m==='not_configured'){$('ocrstat').textContent='خدمة قراءة الصور لسه مش متظبطة على السيرفر. استخدم الـOCR العادي أو اكتب الكود يدويًا.';return}
-    if(m==='NETFAIL'){$('ocrstat').textContent='مش قادر أوصل لسيرفر قراءة الصور (الشبكة ممكن تكون بتحجبه أو النت ضعيف). جرّب واي فاي أو داتا تانية، أو استخدم الـOCR العادي أو اكتب الكود يدويًا. (تفصيل: '+((e&&e.detail)||'')+')';return}
-    if(m==='bad_reply'||/^HTTP /.test(m)||/^upstream_/.test(m)||m==='unparsable_reply'||m==='empty_reply'){$('ocrstat').textContent='خدمة Gemini ردّت برد مش مفهوم أو مشغولة ('+m+'). جرّب تاني بعد شوية، أو استخدم الـOCR العادي أو اكتب الكود يدويًا.';return}
-    if(m==='TIMEOUT'){$('ocrstat').textContent='القراءة بالـAI خدت وقت طويل (أكتر من 30 ثانية) ووقفت. جرّب تاني، أو استخدم الـOCR العادي، أو اكتب الكود يدويًا.';return}
-    $('ocrstat').textContent='القراءة بالـAI مش متاحة دلوقتي ('+(m||'خطأ في الاتصال')+'). جرّب الـOCR العادي أو اكتب الكود يدويًا.';
+    if(m==='daily_limit'){$('ocrstat').textContent='وصلت لحد قراءة الصور بالذكاء الاصطناعي لليوم على الشبكة دي (الحد بيتحسب على عنوان الشبكة، وشبكات الموبايل بتتشارك). اكتب الكود يدويًا، وجرّب بكرة. (ده مش معناه إن الصورة مش واضحة).';return}
+    if(m==='too_large'||m==='bad_image'||m==='bad_type'){$('ocrstat').textContent='الصورة كبيرة أو نوعها مش مدعوم للقراءة بالـAI. جرّب صورة أصغر .';return}
+    if(m==='not_configured'){$('ocrstat').textContent='خدمة قراءة الصور لسه مش متظبطة على السيرفر. اكتب الكود يدويًا.';return}
+    if(m==='NETFAIL'){$('ocrstat').textContent='مش قادر أوصل لسيرفر قراءة الصور (الشبكة ممكن تكون بتحجبه أو النت ضعيف). جرّب واي فاي أو داتا تانية، أو اكتب الكود يدويًا. (تفصيل: '+((e&&e.detail)||'')+')';return}
+    if(m==='bad_reply'||/^HTTP /.test(m)||/^upstream_/.test(m)||m==='unparsable_reply'||m==='empty_reply'){$('ocrstat').textContent='خدمة Gemini ردّت برد مش مفهوم أو مشغولة ('+m+'). جرّب تاني بعد شوية، أو اكتب الكود يدويًا.';return}
+    if(m==='TIMEOUT'){$('ocrstat').textContent='القراءة بالـAI خدت وقت طويل (أكتر من 30 ثانية) ووقفت. جرّب تاني، ، أو اكتب الكود يدويًا.';return}
+    $('ocrstat').textContent='القراءة بالـAI مش متاحة دلوقتي ('+(m||'خطأ في الاتصال')+'). اكتب الكود يدويًا.';
   });
 }
+var __dbgl=[];
+function dbg(m){try{__dbgl.push(((performance.now()/1000)|0)+'s '+m);if(__dbgl.length>12)__dbgl.shift();var d=document.getElementById('dbg');if(!d){d=document.createElement('pre');d.id='dbg';d.style.cssText='font-size:.7rem;opacity:.8;white-space:pre-wrap;direction:ltr;text-align:left;margin:6px 0';var o=document.getElementById('ocrstat');o.parentNode.insertBefore(d,o.nextSibling)}d.textContent='تشخيص: '+__dbgl.join(' | ')}catch(e){}}
+window.addEventListener('error',function(e){dbg('JS error: '+(e.message||'?')+' @'+(e.lineno||'')+':'+(e.colno||''))});
+window.addEventListener('unhandledrejection',function(e){dbg('promise error: '+((e.reason&&e.reason.message)||e.reason||'?'))});
+function withTO(p,ms,tag){return new Promise(function(ok,no){var t=setTimeout(function(){no(new Error('TO_'+tag))},ms);p.then(function(v){clearTimeout(t);ok(v)},function(e){clearTimeout(t);no(e)})})}
 async function handleFile(f){
   if(!f)return;
-  var ok=/^image\/(jpeg|png|webp|gif|bmp)$/.test(f.type||'');
-  if(!ok){$('ocrstat').textContent='نوع الملف مش مدعوم. اختار صورة JPG أو PNG أو WebP.';return}
-  if(f.size>15*1024*1024){$('ocrstat').textContent='الصورة كبيرة قوي (أكتر من 15 ميجا). صغّرها أو صوّر تاني.';return}
+  $('ocrstat').textContent='⏳ استلمت الصورة...';dbg('file '+(f.type||'no-type')+' '+Math.round((f.size||0)/1024)+'KB');
+  var ok=/^image\/(jpeg|png|webp|gif|bmp)$/.test(f.type||'')||(!f.type&&/\.(jpe?g|png|webp)$/i.test(f.name||''));
+  if(!ok){$('ocrstat').textContent='نوع الملف مش مدعوم ('+(f.type||'غير معروف')+'). اختار صورة JPG أو PNG أو WebP. (صور HEIC غيّر إعداد الكاميرا لـJPEG أو خد لقطة شاشة).';return}
+  if(f.size>25*1024*1024){$('ocrstat').textContent='الصورة كبيرة قوي (أكتر من 25 ميجا). صوّر تاني.';return}
   window.__busy=true;
-  var url=URL.createObjectURL(f),img=$('prev');img.src=url;img.hidden=false;
-  lastImg=f;aiWanted=false;aivBusy=false;var myTok=++ocrSeq;var ab=$('aiv');if(ab)ab.hidden=false;
-  if(aiAuto){aiAuto=false;aiWanted=true;aiConsent().then(function(ok){if(ok)aiVisionRead(f);else{aiWanted=false;$('ocrstat').textContent='اتلغت قراءة الـAI. استخدم الـOCR العادي أو اكتب الكود يدويًا.'}})}
-  var loaded=await new Promise(function(r){img.onload=function(){r(true)};img.onerror=function(){r(false)}});
-  if(!loaded){window.__busy=false;img.hidden=true;try{URL.revokeObjectURL(url)}catch(e){}$('ocrstat').textContent='الصورة دي تالفة أو مش بتتفتح. جرّب صورة تانية.';return}
-  $('ocrstat').textContent='بقرا الصورة... (أول مرة بتاخد ثواني)';
-  try{
-    var w=await getWorker(),txt='',best=null;
-    for(var k=0;k<2;k++){
-      var r=await w.recognize(prep(img,k==1));txt=r.data.text;
-      var d=diagnose(txt,bs.value,'');
-      if(!best||d.res.length>best.d.res.length) best={d:d,t:txt};
-      if(d.res.length) break;
-    }
-    if(aiWanted||myTok!==ocrSeq)return;
-    if(!best||!String(best.t||'').trim()){$('ocrstat').textContent='مقدرتش أقرا أي نص في الصورة. صوّر الشاشة أوضح (قريبة، بدون انعكاس)، أو اكتب الكود يدويًا.';return}
-    $('ocrstat').textContent='خلص.';
-    ocrConfirm(best.t,bs);
-  }catch(e){if(!aiWanted&&myTok===ocrSeq)$('ocrstat').textContent='فشل الـ OCR: '+(e&&e.message||e)+'\nاكتب الكود يدويًا.'}
+  try{var url=URL.createObjectURL(f),img=$('prev');img.src=url;img.hidden=false}catch(e){dbg('preview fail '+e)}
+  lastImg=f;aiWanted=true;aivBusy=false;ocrSeq++;var ab=$('aiv');if(ab)ab.hidden=false;aiAuto=false;
+  window.__busy=false;
+  aiVisionRead(f);
 }
 var aiAuto=false;
 var aivb=$('aiv');if(aivb)aivb.onclick=function(){if(!lastImg){aiAuto=true;$('ocrstat').textContent='اختار أو صوّر الصورة، وهقراها بالذكاء الاصطناعي على طول...';$('shot').click();return}aiConsent().then(function(ok){if(ok)aiVisionRead(lastImg)})};
@@ -482,7 +466,7 @@ function aiCheck(reply,hits,q){
 var AIC_URL=AIW_URL.replace(/\/read$/,'/chat');
 function aiChatCall(system,messages){
   var ac=(typeof AbortController!=='undefined')?new AbortController():null;
-  var tm=setTimeout(function(){if(ac)ac.abort()},45000);
+  var tm=setTimeout(function(){if(ac)ac.abort()},30000);
   return fetch(AIC_URL,{method:'POST',headers:{'Content-Type':'application/json'},signal:ac?ac.signal:undefined,body:JSON.stringify({system:system,messages:messages})})
   .then(function(r){clearTimeout(tm);return r.json().catch(function(){return {error:'bad_reply'}}).then(function(j){if(!r.ok||j.error){var e=new Error(j.error||('HTTP '+r.status));throw e}return j.text||''})},
   function(e){clearTimeout(tm);throw new Error((e&&e.name==='AbortError')?'TIMEOUT':'NETFAIL')});

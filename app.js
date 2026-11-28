@@ -77,7 +77,8 @@ function diagnose(text,brandSel,codeSel){
     else if(pre.length>5&&pre!==nn&&nt.indexOf(' '+pre+' ')>=0) add(f,'name match',2.8);
     else if(main.length>6&&nt.indexOf(' '+main+' ')>=0) add(f,'name match',2.5);
   });
-  if(!res.length&&nt.trim().length>6){
+  var codeTok=(full.match(/\b[A-Za-z]{0,3}-?\d{2,4}\b/g)||[]).length>0;
+  if(!res.length&&!codeTok&&nt.trim().length>6){
     var tk=nt.trim().split(' ').filter(function(w){return w.length>3});
     if(tk.length>=2){F.forEach(function(f){
       if(brands.length&&brands.indexOf(f.b)<0) return;
@@ -313,7 +314,7 @@ var AIV_MODELS=['google/gemini-3.1-pro-preview','google/gemini-3.8-flash'];
 var AIV_PROMPT='You read photos of solar inverter display screens. Reply with JSON only, no prose, no code fences. Schema: {"readable":true or false,"code":"the exact fault or error code shown, or an empty string","message":"the exact message text shown, or an empty string","confidence":"high" or "medium" or "low"}. Rules: copy the characters exactly as displayed, character by character. Never guess, complete or correct a code from your own knowledge. If any character of the code is unclear, or the image is not an inverter display, set readable to false. No translation, no commentary.';
 function aivTimeout(p,ms){return Promise.race([p,new Promise(function(_,no){setTimeout(function(){no(new Error('TIMEOUT'))},ms)})])}
 function aivSignCard(f){
-  var o=$('out');
+  var o=$('out');$('ocrstat').textContent='';
   o.innerHTML='<div class="card"><b>محتاج تسجيل دخول مجاني في Puter</b><div class="muted" style="margin-top:6px">القراءة بالذكاء الاصطناعي (Gemini) شغالة على حساب Puter مجاني — كل مستخدم بيدفع استهلاكه. سجّل دخول مرة واحدة، وبعدها القراءة تشتغل على طول. إحنا مش بنطلب كلمة سر هنا: الدخول بيتم في نافذة Puter الرسمية.</div><div class="row" style="margin-top:10px"><button type="button" class="btn" id="aivsign">سجّل دخول Puter</button><button type="button" class="btn alt" id="aivocr">استخدم الـOCR العادي بدلًا منه</button></div></div>';
   $('aivsign').onclick=function(){
     $('ocrstat').textContent='فاتح نافذة تسجيل الدخول...';
@@ -378,6 +379,7 @@ async function handleFile(f){
       if(d.res.length) break;
     }
     if(aiWanted||myTok!==ocrSeq)return;
+    if(!best||!String(best.t||'').trim()){$('ocrstat').textContent='مقدرتش أقرا أي نص في الصورة. صوّر الشاشة أوضح (قريبة، بدون انعكاس)، أو اكتب الكود يدويًا.';return}
     $('ocrstat').textContent='خلص.';
     ocrConfirm(best.t,bs);
   }catch(e){if(!aiWanted&&myTok===ocrSeq)$('ocrstat').textContent='فشل الـ OCR: '+(e&&e.message||e)+'\nاكتب الكود يدويًا.'}

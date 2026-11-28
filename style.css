@@ -253,11 +253,9 @@ html[dir=ltr] body{text-align:left}html[dir=ltr] .warn,html[dir=ltr] .camtips,ht
 .srclist .srow{padding:8px 0;border-bottom:1px solid var(--line,#ddd);font-size:.85rem;text-align:start}.srclist .srow a{font-size:.8rem}
 
 #rep{display:none}.repbtn{display:inline-block;margin:8px 6px 0 0;padding:9px 12px;border-radius:12px;background:#fff;color:#0b3d2e;border:1.5px solid #0f7a55;font:inherit;font-size:.84rem;font-weight:700;cursor:pointer}
-@media print{body.printrep>*:not(#rep){display:none!important}body.printrep #rep{display:block!important;color:#000;font:14px/1.5 sans-serif;padding:16px}#rep h1{font-size:20px}#rep h2{font-size:16px;margin:14px 0 4px}#rep .rsec{break-inside:avoid;border-top:1px solid #999;padding-top:6px}#rep .rwarn{margin-top:16px;border:1px solid #000;padding:8px;font-weight:700}#rep .rmeta{color:#444}}
 
 .offst{font-size:.82rem;color:#44564e;margin:6px 0}
 
-@media print{#rep .rbrand{background:#0b3d2e;color:#fff;padding:8px 12px;font-weight:700;margin-bottom:10px}#rep .rimg{max-width:320px;max-height:240px;border:1px solid #999}}
 
 /* Arabic symptom chips inside the home search card (v56) */
 #symp{flex-wrap:wrap;gap:7px;margin-top:12px}
@@ -323,3 +321,22 @@ html[data-theme=dark] .cnote{color:#ffd58a}
 
 /* r17: single-path capture buttons */
 #aiv,#hping{display:none!important}
+
+@media print{body.printrep>*:not(#rep){display:none!important}}
+/* r18: professional report */
+@page rep{size:A4;margin:16mm 14mm 18mm;@bottom-center{content:"Inverter Fix · صفحة " counter(page) " من " counter(pages);font:10px sans-serif;color:#555}}
+@media print{body.printrep #rep{display:block!important;page:rep;direction:rtl;text-align:right;font:13px/1.7 'Noto Naskh Arabic','Noto Sans Arabic','Segoe UI',Tahoma,Arial,sans-serif;color:#111;padding:0}
+#rep .rhead{border-bottom:3px solid #0b3d2e;padding-bottom:10px;margin-bottom:12px}
+#rep .rbrand{background:#0b3d2e;color:#fff;padding:8px 12px;font-weight:700;border-radius:6px;margin-bottom:12px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#rep h1{font-size:26px;margin:4px 0 0;color:#0b3d2e}#rep .rsubt{color:#555;text-align:right;margin-bottom:8px}
+#rep table{border-collapse:collapse;width:100%}#rep td{border:1px solid #bbb;padding:5px 9px;vertical-align:top}#rep td:first-child{width:34%;background:#eef3f0;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#rep h2{font-size:18px;margin:18px 0 6px;color:#0b3d2e;break-after:avoid}#rep h3{font-size:14px;margin:12px 0 4px;border-right:4px solid #0b3d2e;padding-right:8px;break-after:avoid}
+#rep .rcode{display:inline-block;background:#0b3d2e;color:#fff;padding:0 8px;border-radius:5px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#rep .rsec{border-top:0;break-before:auto}#rep .rsteps{list-style:none;margin:0;padding:0}#rep .rsteps li{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid #ddd;break-inside:avoid}
+#rep .rn{flex:0 0 22px;height:22px;border-radius:50%;background:#0b3d2e;color:#fff;text-align:center;line-height:22px;font-size:12px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#rep .rar{font-weight:600}#rep .rtag{font-weight:400;color:#666;font-size:11px}#rep .ren{color:#222;font:12px/1.5 Arial,sans-serif;text-align:left}
+#rep .rwarn{border:2px solid #b45309;background:#fff7ed;padding:8px 10px;border-radius:6px;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#rep .rsmall,#rep small{color:#555;font-size:11px}#rep .rurl{font:11px Arial,sans-serif;word-break:break-all}
+#rep .rnote{background:#eef3f0;padding:6px 10px;border-radius:6px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#rep .rimgbox{margin:8px 0}#rep .rlbl{font-weight:700}#rep .rimg{max-width:260px;max-height:200px;border:1px solid #999}
+#rep .rfoot{margin-top:20px;border-top:2px solid #0b3d2e;padding-top:8px;text-align:center;font-weight:700}}

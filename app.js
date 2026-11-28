@@ -186,7 +186,7 @@ function show(d,ocrText){
   o.innerHTML=h;
   if($('wa')){$('wa').onclick=function(){window.open('https://wa.me/?text='+encodeURIComponent(lastText),'_blank')};$('cp').onclick=function(){var b=this;(navigator.clipboard?navigator.clipboard.writeText(lastText):Promise.reject()).then(function(){b.textContent='✅ اتنسخ'},function(){b.textContent='النسخ مش متاح في المتصفح ده'})}}
   bindCards(o);
-  try{window.__setTab('home',true)}catch(e){}o.scrollIntoView({behavior:'smooth'});
+  try{window.__placeOut()}catch(e){}o.scrollIntoView({behavior:'smooth'});
 }
 // UI
 var bs=$('brand');Object.keys(SRC).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=SRC[k].name;bs.appendChild(op)});
@@ -208,7 +208,7 @@ function renderList(q){
 }
 var fbs=$('fbrand'),fcs=$('fcat');Object.keys(SRC).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=SRC[k].name;fbs.appendChild(op)});Object.keys(CATS).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=CATS[k];fcs.appendChild(op)});
 $('filter').oninput=function(){renderList(this.value)};fbs.onchange=fcs.onchange=($('fsort')||{}).onchange=function(){renderList($('filter').value)};renderList('');
-(function(){var f=$('foot'),n=Object.keys(SRC).map(function(k){return SRC[k].name});f.textContent='';var bm=document.createElement('p');bm.textContent='build 2026-11-28-r11 (sw inv-v70)';bm.className='muted';var p=document.createElement('p');p.textContent='القاعدة: '+F.length+' عطل من '+n.length+' شركات. البحث بالكود بيشتغل من غير إنترنت بعد أول فتح. قراءة الصورة (OCR) بتحتاج إنترنت.';var d=document.createElement('details');d.className='brl';var sm=document.createElement('summary');sm.textContent='📋 الشركات والمصادر الرسمية ('+n.length+')';d.appendChild(sm);var q=document.createElement('div');q.className='srclist';Object.keys(SRC).forEach(function(k){var r=document.createElement('div');r.className='srow';var b=document.createElement('b');b.textContent=SRC[k].name+' ('+F.filter(function(x){return x.b===k}).length+')';var m=document.createElement('div');m.className='muted';m.textContent=SRC[k].doc;var a=document.createElement('a');a.href=SRC[k].url;a.target='_blank';a.rel='noopener';a.textContent='فتح الدليل الرسمي';r.appendChild(b);r.appendChild(m);r.appendChild(a);q.appendChild(r)});d.appendChild(q);f.appendChild(p);f.appendChild(bm);f.appendChild(d)})();
+(function(){var f=$('foot'),n=Object.keys(SRC).map(function(k){return SRC[k].name});f.textContent='';var bm=document.createElement('p');bm.textContent='build 2026-11-28-r12 (sw inv-v71)';bm.className='muted';var p=document.createElement('p');p.textContent='القاعدة: '+F.length+' عطل من '+n.length+' شركات. البحث بالكود بيشتغل من غير إنترنت بعد أول فتح. قراءة الصورة (OCR) بتحتاج إنترنت.';var d=document.createElement('details');d.className='brl';var sm=document.createElement('summary');sm.textContent='📋 الشركات والمصادر الرسمية ('+n.length+')';d.appendChild(sm);var q=document.createElement('div');q.className='srclist';Object.keys(SRC).forEach(function(k){var r=document.createElement('div');r.className='srow';var b=document.createElement('b');b.textContent=SRC[k].name+' ('+F.filter(function(x){return x.b===k}).length+')';var m=document.createElement('div');m.className='muted';m.textContent=SRC[k].doc;var a=document.createElement('a');a.href=SRC[k].url;a.target='_blank';a.rel='noopener';a.textContent='فتح الدليل الرسمي';r.appendChild(b);r.appendChild(m);r.appendChild(a);q.appendChild(r)});d.appendChild(q);f.appendChild(p);f.appendChild(bm);f.appendChild(d)})();
 
 function ocrAmb(t){var out=[];(t.match(/[A-Za-z0-9]{2,}/g)||[]).forEach(function(w){if(/[0-9]/.test(w)&&/[A-Za-z]/.test(w)||/^[0-9OIlSBZ]{2,}$/.test(w)&&/[OIlSBZ]/.test(w)){var m=w.match(/[OoIlSsBZz01258]/g);if(m)out.push(w)}});return out.filter(function(v,i,a){return a.indexOf(v)===i}).slice(0,8)}
 function ocrConfirm(txt,bs,src,meta){
@@ -229,10 +229,12 @@ function ocrConfirm(txt,bs,src,meta){
   if(src==='ai'&&meta&&meta.others&&meta.others.length){meta.others.forEach(function(x){var m2=codeMatch(x.code);h+='<div class="'+(m2?'okline':'warn')+'">كود تاني على الشاشة: <span dir="ltr">'+esc(x.code)+'</span> '+(m2?'موجود بالرقم في قاعدة '+esc(SRC[m2.b].name)+' (NEEDS_VERIFICATION لحد ما تتأكد من الماركة)':'مش موجود في القاعدة')+'.</div>'})}
   h+='<div class="muted">'+(src==='ai'?'الذكاء الاصطناعي بيقرا الكود من الصورة وممكن يغلط. النص اللي تحت هو اللي هيتم التشخيص عليه — صحّحه لو مش مطابق للشاشة، ولو الكود مش موجود في القاعدة اكتبه يدويًا.':'القراءة الآلية ممكن تغلط. صحّح النص لو فيه غلط، وبعدين اضغط تأكيد. مفيش حرف بيتغيّر تلقائيًا.')+'</div>';
   if(amb.length)h+='<div class="warn">حروف/أرقام ممكن تتلخبط (O/0، I/1، S/5، B/8، Z/2) في: <span dir="ltr">'+amb.map(esc).join(' ، ')+'</span>. اتأكد منها على الشاشة.</div>';
+  h+='<div class="muted" style="margin-top:8px">الماركة / نوع الإنفرتر (اختارها من الملصق أو الشاشة، مش بتتحدد تلقائيًا):</div><select id="ocrbrand" style="width:100%;margin:4px 0"><option value="">مش عارف / مش متأكد</option>'+Object.keys(SRC).map(function(k){return '<option value="'+k+'"'+(bs.value===k?' selected':'')+'>'+esc(SRC[k].name)+'</option>'}).join('')+'</select>';
   h+='<textarea id="ocrfix" dir="ltr" rows="4" style="width:100%;text-align:left">'+esc(txt.trim())+'</textarea><button id="ocrok" class="btn" type="button">✅ النص صح، شخّص</button></div>';
-  try{window.__setTab('home',true)}catch(e){}o.innerHTML=h;
-  $('ocrok').onclick=function(){var t=$('ocrfix').value;saveHist(bs.value,'',t.replace(/\s+/g,' ').trim().slice(0,60));show(diagnose(t,bs.value,''),t)};
-  try{window.__setTab('home',true)}catch(e){}try{o.scrollIntoView({behavior:'smooth'})}catch(e){}
+  try{window.__placeOut()}catch(e){}o.innerHTML=h;
+  $('ocrbrand').onchange=function(){bs.value=this.value;ocrConfirm($('ocrfix').value,bs,src,meta)};
+  $('ocrok').onclick=function(){bs.value=$('ocrbrand').value;var t=$('ocrfix').value;saveHist(bs.value,'',t.replace(/\s+/g,' ').trim().slice(0,60));show(diagnose(t,bs.value,''),t)};
+  try{window.__placeOut()}catch(e){}try{o.scrollIntoView({behavior:'smooth'})}catch(e){}
 }
 // OCR
 var worker=null;
@@ -309,7 +311,7 @@ function aiPanelChooser(p,bs){
   h+='</div></div>';
   var o=$('out');o.innerHTML=h;$('ocrstat').textContent='';
   Array.prototype.forEach.call(o.querySelectorAll('[data-pv]'),function(b){b.onclick=function(){var v=p.fields[+b.getAttribute('data-pv')].value;ocrConfirm(v,bs,'ai',{conf:'low',code:v,model:'gemini (اختيار المستخدم)',others:[]})}});
-  try{window.__setTab('home',true)}catch(e){}try{o.scrollIntoView({behavior:'smooth'})}catch(e){}
+  try{window.__placeOut()}catch(e){}try{o.scrollIntoView({behavior:'smooth'})}catch(e){}
 }
 function aiVisionRead(f,enh,retried){
   if(aivBusy||!f)return;
@@ -356,6 +358,9 @@ function aiVisionRead(f,enh,retried){
     $('ocrstat').textContent='القراءة بالـAI مش متاحة دلوقتي ('+(m||'خطأ في الاتصال')+'). اكتب الكود يدويًا.';
   });
 }
+var __oh=null;
+window.__placeOut=function(){var o=$('out');if(!o)return;if(!__oh)__oh={p:o.parentNode,n:o.nextSibling};var cam=document.body.getAttribute('data-tab')==='cam';
+if(cam){var host=$('ocrstat').parentNode;if(o.parentNode!==host)host.appendChild(o);o.setAttribute('data-tab','cam')}else{if(o.parentNode!==__oh.p)__oh.p.insertBefore(o,__oh.n);o.setAttribute('data-tab','home')}};
 var __dbgl=[];
 function dbg(m){try{__dbgl.push(((performance.now()/1000)|0)+'s '+m);if(__dbgl.length>12)__dbgl.shift();var d=document.getElementById('dbg');if(!d){d=document.createElement('pre');d.id='dbg';d.style.cssText='font-size:.7rem;opacity:.8;white-space:pre-wrap;direction:ltr;text-align:left;margin:6px 0';var o=document.getElementById('ocrstat');o.parentNode.insertBefore(d,o.nextSibling)}d.textContent='تشخيص: '+__dbgl.join(' | ')}catch(e){}}
 window.addEventListener('error',function(e){dbg('JS error: '+(e.message||'?')+' @'+(e.lineno||'')+':'+(e.colno||''))});
@@ -633,7 +638,7 @@ var ca=$('cats');if(ca){var ic={grid:'🔌',insulation:'⚡',pvdc:'☀️',temp:
 var nv=$('chips');if(nv)nv.addEventListener('click',function(e){if(e.target.closest('.chipb')&&document.body.getAttribute('data-tab')==='home')setTab('browse')});
 var q1=$('qcam'),q2=$('qupl');if(q1)q1.addEventListener('click',function(){setTab('cam',true)});if(q2)q2.addEventListener('click',function(){setTab('cam',true)});
 var hf=$('hform');if(hf)hf.addEventListener('submit',function(){setTab('home',true)});
-var g=$('go');if(g)g.addEventListener('click',function(){setTab('home',true)});
+var g=$('go');if(g)g.addEventListener('click',function(){if(document.body.getAttribute('data-tab')!=='cam')setTab('home',true);else try{window.__placeOut()}catch(e){}});
 var m=/[#&]t=([a-z]+)/.exec(location.hash);if(m)setTab(m[1],true);
 var mb=/[#&]b=([^&]+)/.exec(location.hash);if(mb){var bk=decodeURIComponent(mb[1]);if(SRC[bk]){var fb3=$('fbrand');if(fb3){fb3.value=bk;$('fcat').value='';$('filter').value='';renderList('');setTab('browse',true)}}}
 })()}catch(e){}

@@ -208,7 +208,7 @@ function renderList(q){
 }
 var fbs=$('fbrand'),fcs=$('fcat');Object.keys(SRC).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=SRC[k].name;fbs.appendChild(op)});Object.keys(CATS).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=CATS[k];fcs.appendChild(op)});
 $('filter').oninput=function(){renderList(this.value)};fbs.onchange=fcs.onchange=($('fsort')||{}).onchange=function(){renderList($('filter').value)};renderList('');
-(function(){var f=$('foot'),n=Object.keys(SRC).map(function(k){return SRC[k].name});f.textContent='';var bm=document.createElement('p');bm.textContent='build 2026-11-28-r13 (sw inv-v72)';bm.className='muted';var p=document.createElement('p');p.textContent='القاعدة: '+F.length+' عطل من '+n.length+' شركات. البحث بالكود بيشتغل من غير إنترنت بعد أول فتح. قراءة الصورة (OCR) بتحتاج إنترنت.';var d=document.createElement('details');d.className='brl';var sm=document.createElement('summary');sm.textContent='📋 الشركات والمصادر الرسمية ('+n.length+')';d.appendChild(sm);var q=document.createElement('div');q.className='srclist';Object.keys(SRC).forEach(function(k){var r=document.createElement('div');r.className='srow';var b=document.createElement('b');b.textContent=SRC[k].name+' ('+F.filter(function(x){return x.b===k}).length+')';var m=document.createElement('div');m.className='muted';m.textContent=SRC[k].doc;var a=document.createElement('a');a.href=SRC[k].url;a.target='_blank';a.rel='noopener';a.textContent='فتح الدليل الرسمي';r.appendChild(b);r.appendChild(m);r.appendChild(a);q.appendChild(r)});d.appendChild(q);f.appendChild(p);f.appendChild(bm);f.appendChild(d)})();
+(function(){var f=$('foot'),n=Object.keys(SRC).map(function(k){return SRC[k].name});f.textContent='';var bm=document.createElement('p');bm.textContent='build 2026-11-28-r14 (sw inv-v73)';bm.className='muted';var p=document.createElement('p');p.textContent='القاعدة: '+F.length+' عطل من '+n.length+' شركات. البحث بالكود بيشتغل من غير إنترنت بعد أول فتح. قراءة الصورة (OCR) بتحتاج إنترنت.';var d=document.createElement('details');d.className='brl';var sm=document.createElement('summary');sm.textContent='📋 الشركات والمصادر الرسمية ('+n.length+')';d.appendChild(sm);var q=document.createElement('div');q.className='srclist';Object.keys(SRC).forEach(function(k){var r=document.createElement('div');r.className='srow';var b=document.createElement('b');b.textContent=SRC[k].name+' ('+F.filter(function(x){return x.b===k}).length+')';var m=document.createElement('div');m.className='muted';m.textContent=SRC[k].doc;var a=document.createElement('a');a.href=SRC[k].url;a.target='_blank';a.rel='noopener';a.textContent='فتح الدليل الرسمي';r.appendChild(b);r.appendChild(m);r.appendChild(a);q.appendChild(r)});d.appendChild(q);f.appendChild(p);f.appendChild(bm);f.appendChild(d)})();
 
 function ocrAmb(t){var out=[];(t.match(/[A-Za-z0-9]{2,}/g)||[]).forEach(function(w){if(/[0-9]/.test(w)&&/[A-Za-z]/.test(w)||/^[0-9OIlSBZ]{2,}$/.test(w)&&/[OIlSBZ]/.test(w)){var m=w.match(/[OoIlSsBZz01258]/g);if(m)out.push(w)}});return out.filter(function(v,i,a){return a.indexOf(v)===i}).slice(0,8)}
 function matchBrand(b){b=String(b||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ');if(!b.trim())return '';var GEN={solar:1,inverter:1,power:1,energy:1,new:1,electric:1,technology:1,tech:1,mpp:0};var hit=[];Object.keys(SRC).forEach(function(k){var t=(String(SRC[k].name)+' '+k).toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(function(w){return w.length>=3&&!GEN[w]});if(t.some(function(w){return (' '+b+' ').indexOf(' '+w+' ')>=0}))hit.push(k)});return hit.length===1?hit[0]:''}
@@ -332,7 +332,7 @@ function aiVisionRead(f,enh,retried){
         if(!res.ok||j.error){
           var e=new Error(j.error||('HTTP '+res.status));e.detail=j.message||'';throw e;
         }
-        used=j.model||'gemini';
+        used='ai';
         return {message:{content:JSON.stringify({readable:j.readable,code:j.code,message:j.message,confidence:j.confidence,others:j.others,panel:j.panel&&j.panel.fields&&{fault_lit:j.panel.fault_lit,fields:j.panel.fields},device:j.device})}};
       });
     });
@@ -485,7 +485,7 @@ function aiErrText(e){var m=(e&&e.message)||'';
   if(m==='NETFAIL')return 'مش قادر أوصل لسيرفر الذكاء الاصطناعي (النت ضعيف أو الشبكة بتحجبه).';
   if(m==='TIMEOUT')return 'الرد اتأخر أكتر من 45 ثانية ووقف.';
   if(m==='daily_limit'||m==='rate_limited')return 'وصلت للحد المسموح مؤقتًا. جرّب بعد شوية.';
-  return 'خدمة Gemini مشغولة أو ردّت برد مش مفهوم ('+(m||'خطأ')+').'}
+  return 'الخدمة مشغولة أو ردّت برد مش مفهوم ('+(m||'خطأ')+').'}
 async function aiExplain(box,q,hits){
   var out=box.querySelector('.aiout'),btn=box.querySelector('.aibtn');
   if(!out.dataset.agreed){var okc=await aiConsent();if(!okc)return}
@@ -506,7 +506,7 @@ async function aiExplain(box,q,hits){
 $('cform').onsubmit=function(e){e.preventDefault();var v=$('cq').value;$('cq').value='';chatAsk(v)};
 Array.prototype.forEach.call(document.querySelectorAll('#sugg .chip'),function(b){b.onclick=function(){chatAsk(b.getAttribute('data-q'))}});
 
-// ===== conversational AI assistant (Gemini via Worker) =====
+// ===== conversational AI assistant (AI via Worker) =====
 var aiHist=[];var aiLastHits=[];var aiBusy=false;
 var SAFE_BAD=/افتح\s*(ال)?(جهاز|انفرتر|إنفرتر|الغطاء)|فك\s|افصل\s*(ال)?(كابل|كابلات|سلك|اسلاك|أسلاك)|(لا)?مس\s*(ال)?(كابل|سلك|اسلاك|أسلاك)|تخطى|تجاوز\s*(ال)?(حماية|فيوز)|شغل\s*(ال)?(جهاز)?\s*بدون|open the (inverter|cover|case)|unplug|disconnect the|bypass|jumper|short[- ]?circuit the/i;
 function aiSplit(t){

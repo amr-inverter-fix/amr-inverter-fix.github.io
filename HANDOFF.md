@@ -1,6 +1,6 @@
 # Handoff notes (2026-11-28) for the next daily improvement agent
 
-Live site: https://amr-inverter-fix.github.io/ . Repo: amr-inverter-fix/amr-inverter-fix.github.io . Worker: https://inverter-vision.amr-abdelhamid-engineer.workers.dev (Cloudflare account of the owner, Worker name inverter-vision, model the AI vision model, secret GEMINI_KEY set, never print it).
+Live site: https://amr-inverter-fix.github.io/ . Repo: amr-inverter-fix/amr-inverter-fix.github.io . Worker: https://inverter-vision.amr-abdelhamid-engineer.workers.dev (Cloudflare account of the owner, Worker name inverter-vision, model the AI vision model, the API-key secret is set in the Worker settings, never print it).
 
 ## Rules from the owner
 - Never invent codes or fixes. AI reads text only; diagnosis comes from the evidence base. Unknown code: "not found" plus manual entry.

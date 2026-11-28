@@ -42,6 +42,9 @@
   <textarea id="txt" aria-label="أو الصق/اكتب نص الخطأ زي: Grid Overvoltage، PV Isolation Low" rows="3" placeholder="أو الصق/اكتب نص الخطأ زي: Grid Overvoltage، PV Isolation Low"></textarea>
   <button id="go" class="btn" type="button">🔍 شخّص</button>
   <div id="hist"></div>
+  <div id="symp" class="quick" aria-label="أعراض بالعربي"><button type="button" class="q" data-s="تسرب أرضي">⚡ تسرب أرضي</button><button type="button" class="q" data-s="جهد الشبكة عالي">🔌 جهد عالي</button><button type="button" class="q" data-s="حرارة عالية">🌡️ حرارة عالية</button><button type="button" class="q" data-s="مشكلة في البطارية">🔋 البطارية</button><button type="button" class="q" data-s="حمل زائد">📈 حمل زائد</button><button type="button" class="q" data-s="قوس كهربي">🔥 قوس</button></div>
+  <div class="muted" style="margin-top:6px">تقدر تكتب بالعربي عادي: "تسرب أرضي"، "الإنفرتر سخن"، "جهد الشبكة واطي".</div>
+
 </section>
 
 <section id="out" data-tab="home"></section>
@@ -68,13 +71,14 @@
   <div class="row"><select id="fbrand" aria-label="الشركات"><option value="">كل الشركات</option></select><select id="fcat" aria-label="أنواع الأعطال"><option value="">كل الأنواع</option></select></div>
   <div class="row"><select id="fsort" aria-label="ترتيب"><option value="">الترتيب: زي القاعدة</option><option value="sev">الترتيب: الأخطر أولاً (تقدير تقريبي)</option></select></div>
   <input id="filter" aria-label="ابحث في القاعدة (كود أو اسم)" placeholder="ابحث في القاعدة (كود أو اسم)">
+  <div class="row"><button type="button" class="btn alt" id="bcopy">🔖 لينك كل أعطال الشركة</button></div>
   <div id="lcount" class="muted"></div>
   <div id="list"></div>
 </section>
 <div id="iosHint" class="warn" hidden data-tab="home">📲 على الآيفون: دوس زر المشاركة في Safari ← "إضافة إلى الشاشة الرئيسية".</div><div id="offbar" class="offbar" hidden>📴 أنت أوفلاين. التطبيق شغال من النسخة المحفوظة.</div><footer id="foot"></footer>
 </main>
 <nav id="tabbar" class="tabbar" aria-label="التنقل"><button type="button" data-go="home" class="on"><i>🏠</i><span>الرئيسية</span></button><button type="button" data-go="cam"><i>📷</i><span>صوّر</span></button><button type="button" data-go="ask"><i>💬</i><span>اسأل</span></button><button type="button" data-go="browse"><i>📚</i><span>تصفح</span></button><button type="button" data-go="fav"><i>⭐</i><span>مفضلة</span></button></nav>
-<script>window.LITE=true</script><script src="data.js"></script><script src="data2.js"></script><script src="data3.js"></script>
+<script>window.LITE=true</script><script src="data.js"></script><script src="data2.js"></script><script src="data3.js"></script><script src="data4.js"></script>
 <script src="tesseract.min.js"></script>
 <script src="app.js"></script>
 </body>

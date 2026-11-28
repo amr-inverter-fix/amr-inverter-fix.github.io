@@ -5,13 +5,49 @@ var CATS={grid:'الشبكة (جهد/تردد/فصل)',insulation:'عزل / تس
 var SEV={arc:'h',insulation:'h',pvdc:'m',internal:'m',temp:'m',fan:'m',battery:'m',load:'m',grid:'l',comm:'l',other:'m'};
 var SEVL={h:'خطورة عالية',m:'خطورة متوسطة',l:'خطورة منخفضة'};
 var SEVT={h:['🔴','أولوية عالية: ممكن يكون فيه خطر كهرباء أو حريق. ما تلمسش الجهاز، وكلّم فني مؤهل.'],m:['🟠','محتاج فني يفحصه. لو العطل متكرر سيب الجهاز مفصول.'],l:['🟢','غالبًا مؤقت أو من الشبكة. راقب الجهاز، ولو استمر كلّم فني.']};
-var BRAND_KW={sofarep:['sofar','hyd-ep','hyd 3000-ep','hyd3000-ep','hyd 3-6k','hyd3-6k','hyd 5000-ep','hyd 6000-ep','3-6k-ep'],solaxg2:['solax','x3-pro g2','x3 pro g2','x3-pro','x3 pro','x3pro','tzfault','gridlostfault'],afore:['afore'],steca:['steca','stecagrid'],kaco:['kaco','blueplanet'],refusol:['refusol','refu sol'],solplanet:['solplanet','aiswei'],sunsynk:['sunsynk','sun synk'],invt:['invt','imars','xg100','xg110','xg125'],solark:['sol-ark','solark','sol ark','12k-2p'],fronius:['fronius','symo','primo','eco 25','gen24','tauro'],abb:['abb','fimer','power-one','power one','aurora','uno-dm','uno dm'],must:['must','pv1800','ph1800','pv3500','ph3000'],schneider:['schneider','conext','xantrex'],felicity:['felicity','ivem','ivpm','ivgm'],sungrow:['sungrow','sg2','sg5','sg8','sg10','sg110','sh5','sh10'],huawei:['huawei','sun2000','fusionsolar','fusion solar'],epever:['epever','ipower','ip350','ip500','ip1000','ip1500','ip2000'],studer:['studer','xtender','xth-','xtm-','xts-','rcc-02'],cps:['cps ','chint','sca36','sca50','sca100','sca25'],apsystems:['apsystems','aps ','ds3','ds3-l','ds3-s','ds3d','ecu','ema manager'],epeverup:['epever','upower','up-hi','up hi','up2000','up3000','up5000','hm6021','hm5041','hm8041','hm10021'],enphase:['enphase','iq7','iq 7','iq7+','iq7x','iq7a','envoy','microinverter','micro inverter'],growattsph:['growatt','sph','sph 3000','sph 3600','sph 4000','sph 4600','sph 5000','sph 6000','tl-hu','tl-hub','hub','shinewilan'],growattxh:['growatt','tl-xh','min 2500','min 3000','min 3600','min 4200','min 4600','min 5000','min 6000','xh2'],growattspf:['growatt','spf 3500','spf 5000','spf3500','spf5000','spf 3000','growatt spf'],growatt:['growatt','shinebus','shine','mod ','mic ','min '],axpert:['axpert','voltronic','mppsolar','mpp solar','vm iii','infini'],solax:['solax','x1-hyb','x3-hyb','x1 hybrid','x3 hybrid','x1-boost','x3-pro','x3 pro'],sma:['sma','sunny boy','sunny tripower','sunnyboy','tripower'],goodwe:['goodwe','good we','sems portal','gw4000','gw5000','gw6000','gw8000','gw10k','gw12k','gw15k','gw17k','gw20k'],deye:['deye','sun-12k','sun-10k','sun-8k','sun-6k','sun-5k','sg04lp3'],solis:['solis','ginlong','soliscloud'],kostal:['kostal','piko','plenticore'],hoymiles:['hoymiles','hms-','hmt-'],sofar:['sofar','hyd-es','hyd3000','hyd3600','hyd4000','hyd5000','hyd6000','hyd 5000','hyd 6000'],lux:['luxpower','lux power','luxpowertek','lxp'],foxess:['fox ess','foxess','fox-ess','h1-','ac1-'],solaredge:['solaredge','solar edge','se5000','se7600','se10k','se8k','se6k','se3000','se3500','se4000'],delta:['delta','rpi-m','rpi m','m15a','m20a','m30a','m50a','soliveus'],victron:['victron','multiplus','quattro','ve.bus','vebus','easysolar']};
+var BRAND_KW={sofarep:['sofar','hyd-ep','hyd 3000-ep','hyd3000-ep','hyd 3-6k','hyd3-6k','hyd 5000-ep','hyd 6000-ep','3-6k-ep'],solaxg2:['solax','x3-pro g2','x3 pro g2','x3-pro','x3 pro','x3pro','tzfault','gridlostfault'],afore:['afore'],steca:['steca','stecagrid'],kaco:['kaco','blueplanet'],refusol:['refusol','refu sol'],solplanet:['solplanet','aiswei'],sunsynk:['sunsynk','sun synk'],invt:['invt','imars','xg100','xg110','xg125'],solark:['sol-ark','solark','sol ark','12k-2p'],fronius:['fronius','symo','primo','eco 25','gen24','tauro'],abb:['abb','fimer','power-one','power one','aurora','uno-dm','uno dm'],must:['must','pv1800','ph1800','pv3500','ph3000'],schneider:['schneider','conext','xantrex'],felicity:['felicity','ivem','ivpm','ivgm'],sungrow:['sungrow','sg2','sg5','sg8','sg10','sg110','sh5','sh10'],huawei:['huawei','sun2000','fusionsolar','fusion solar'],epever:['epever','ipower','ip350','ip500','ip1000','ip1500','ip2000'],studer:['studer','xtender','xth-','xtm-','xts-','rcc-02'],cps:['cps ','chint','sca36','sca50','sca100','sca25'],apsystems:['apsystems','aps ','ds3','ds3-l','ds3-s','ds3d','ecu','ema manager'],epeverup:['epever','upower','up-hi','up hi','up2000','up3000','up5000','hm6021','hm5041','hm8041','hm10021'],enphase:['enphase','iq7','iq 7','iq7+','iq7x','iq7a','envoy','microinverter','micro inverter'],growattsph:['growatt','sph','sph 3000','sph 3600','sph 4000','sph 4600','sph 5000','sph 6000','tl-hu','tl-hub','hub','shinewilan'],growattxh:['growatt','tl-xh','min 2500','min 3000','min 3600','min 4200','min 4600','min 5000','min 6000','xh2'],growattspf:['growatt','spf 3500','spf 5000','spf3500','spf5000','spf 3000','growatt spf'],growatt:['growatt','shinebus','shine','mod ','mic ','min '],axpert:['axpert','voltronic','mppsolar','mpp solar','vm iii','infini'],solax:['solax','x1-hyb','x3-hyb','x1 hybrid','x3 hybrid','x1-boost','x3-pro','x3 pro'],sma:['sma','sunny boy','sunny tripower','sunnyboy','tripower'],goodwe:['goodwe','good we','sems portal','gw4000','gw5000','gw6000','gw8000','gw10k','gw12k','gw15k','gw17k','gw20k'],deye:['deye','sun-12k','sun-10k','sun-8k','sun-6k','sun-5k','sg04lp3'],solis:['solis','ginlong','soliscloud'],kostal:['kostal','piko','plenticore'],hoymiles:['hoymiles','hms-','hmt-'],sofar:['sofar','hyd-es','hyd3000','hyd3600','hyd4000','hyd5000','hyd6000','hyd 5000','hyd 6000'],lux:['luxpower','lux power','luxpowertek','lxp'],foxess:['fox ess','foxess','fox-ess','h1-','ac1-'],solaredge:['solaredge','solar edge','se5000','se7600','se10k','se8k','se6k','se3000','se3500','se4000'],delta:['delta','rpi-m','rpi m','m15a','m20a','m30a','m50a','soliveus'],victron:['victron','multiplus','quattro','ve.bus','vebus','easysolar'],srne:['srne','srne solar','hesp48160','hesp48180','hesp48200','hesp series'],megarevo:['megarevo','mega revo','klna','r12klna','r16klna','p6 series']};
+var ARSYN=[
+[/جهد.{0,8}الشبك|الشبكه|شبكة|شبكه|grid/i,'grid over under voltage','grid'],
+[/عالي|عاليه|عالية|زياد|ارتفاع|أوفر|اوفر|over/i,'over high',''],
+[/واطي|واطى|واطية|منخفض|نقص|under|low/i,'under low',''],
+[/تردد|هرتز|frequency|hz/i,'frequency','grid'],
+[/عزل|تسرب|ارضى|أرضى|ارضي|تأريض|تاريض|جراوند|ground|earth|insulation|leakage/i,'insulation leakage ground earth','insulation'],
+[/حرار|سخن|سخون|ساخن|حرارة|حراره|temperature|temp/i,'temperature temp over','temp'],
+[/مروح|فان|fan/i,'fan','fan'],
+[/بطاري|بطارية|بطاريه|battery/i,'battery','battery'],
+[/حمل|زايد|زائد|اوفرلود|أوفرلود|overload/i,'overload load','load'],
+[/قوس|شرار|شرارة|arc/i,'arc','arc'],
+[/الواح|ألواح|لوح|بانل|panel|pv/i,'pv panel input','pvdc'],
+[/اتصال|تواصل|communication|comm/i,'communication comm','comm'],
+[/قصير|شورت|short/i,'short circuit','internal'],
+[/باص|bus/i,'bus','internal'],
+[/انفرتر|إنفرتر|عاكس|inverter/i,'inverter',''],
+[/اكواد|كود|code/i,'',''],
+[/عطل|اعطال|أعطال|مشكلة|مشكله|error|fault/i,'','']
+];
+function arDigits(t){return String(t||'').replace(/[\u0660-\u0669]/g,function(d){return String(d.charCodeAt(0)-1632)}).replace(/[\u06F0-\u06F9]/g,function(d){return String(d.charCodeAt(0)-1776)})}
+function isAr(t){return /[\u0600-\u06FF]/.test(String(t||''))}
+function arScore(q){
+  var terms=[],cats={},ok=0;
+  ARSYN.forEach(function(m){if(m[0].test(q)){ok++;m[1].split(' ').forEach(function(w){if(w&&terms.indexOf(w)<0)terms.push(w)});if(m[2])cats[m[2]]=1}});
+  if(!ok)return [];
+  var out=[];
+  F.forEach(function(f){
+    var nt=' '+norm(f.c+' '+f.n+' '+(CATS[f.k]||''))+' ',sc=0;
+    terms.forEach(function(w){if(nt.indexOf(' '+w)>=0)sc+=1.2});
+    if(cats[f.k])sc+=1.5;
+    if(sc>=2.4)out.push({f:f,sc:sc});
+  });
+  out.sort(function(a,b){return b.sc-a.sc});
+  return out.slice(0,10);
+}
 var $=function(i){return document.getElementById(i)};
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function norm(s){return s.toLowerCase().replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim()}
 function inRange(code,n){ if(!code) return false; if(code.indexOf(',')>=0) return code.split(',').some(function(c){return inRange(c.trim(),n)}); var p=code.split('-'); if(p.length==2) return n>=+p[0]&&n<=+p[1]; return +code===n; }
 function detectBrands(t){var l=' '+t.toLowerCase()+' ',r=[];for(var b in BRAND_KW){if(BRAND_KW[b].some(function(k){return l.indexOf(k)>=0}))r.push(b)}return r}
 function diagnose(text,brandSel,codeSel){
+  text=arDigits(text||'');codeSel=arDigits(codeSel||'');
   var full=(text||'')+' '+(codeSel||'');
   var brands=brandSel?[brandSel]:detectBrands(full);
   var nums=(full.match(brands.length?/\b\d{2,4}\b/g:/\b\d{3,4}\b/g)||[]).map(Number);
@@ -55,6 +91,7 @@ function diagnose(text,brandSel,codeSel){
     var fx=full.replace(/\b([A-Za-z]{1,3})([0-9OoIl@|]{1,4})\b/g,function(m,a,b){if(!/[0-9@]/.test(b))return m;return a+b.replace(/[Oo@]/g,'0').replace(/[Il|]/g,'1')});
     if(fx!==full){diagnose._r=1;try{var rr=diagnose(fx,brandSel,'');if(rr.res.length){rr.res.forEach(function(x){x.why='قراءة مصحّحة'});return rr}}finally{diagnose._r=0}}
   }
+  if(isAr(text)){arScore(text).forEach(function(x){add(x.f,'مطابقة بالكلمات العربية',x.sc)})}
   res.sort(function(a,b){return b.score-a.score});
   return {res:res.slice(0,8),brands:brands,nums:nums,total:res.length};
 }
@@ -151,8 +188,10 @@ $('go').onclick=function(){saveHist(bs.value,$('code').value.trim(),$('txt').val
 renderHist();
 $('code').addEventListener('keydown',function(e){if(e.key==='Enter')$('go').click()});
 function renderList(q){
-  q=norm(q||'');var fb=$('fbrand').value,fk=$('fcat').value;
-  var items=F.filter(function(f){return (!fb||f.b===fb)&&(!fk||f.k===fk)&&(!q||norm(f.c+' '+f.n+' '+SRC[f.b].name).indexOf(q)>=0)}); if($('fsort')&&$('fsort').value==='sev'){var o={h:0,m:1,l:2};items=items.map(function(f,i){return [f,i]}).sort(function(a,b){return (o[SEV[a[0].k]||'m']-o[SEV[b[0].k]||'m'])||(a[1]-b[1])}).map(function(x){return x[0]})} items=items.slice(0,400);
+  var raw=q||'',arList=isAr(raw)?arScore(raw).map(function(x){return x.f}):null;
+  q=norm(raw);var fb=$('fbrand').value,fk=$('fcat').value;
+  var items=F.filter(function(f){return (!fb||f.b===fb)&&(!fk||f.k===fk)&&(arList?(arList.indexOf(f)>=0):(!q||norm(f.c+' '+f.n+' '+SRC[f.b].name).indexOf(q)>=0))});
+  if(arList)items=arList.filter(function(f){return (!fb||f.b===fb)&&(!fk||f.k===fk)}); if($('fsort')&&$('fsort').value==='sev'){var o={h:0,m:1,l:2};items=items.map(function(f,i){return [f,i]}).sort(function(a,b){return (o[SEV[a[0].k]||'m']-o[SEV[b[0].k]||'m'])||(a[1]-b[1])}).map(function(x){return x[0]})} items=items.slice(0,400);
   $('lcount').textContent=items.length+' نتيجة'+(items.length>=400?' (أول 400)':'');
   $('list').innerHTML=items.map(function(f){return '<details class="sv-'+(SEV[f.k]||'m')+'"><summary><span class="svdot">'+SEVT[SEV[f.k]||'m'][0]+'</span> <b>'+esc(SRC[f.b].name)+'</b> '+(f.c?esc(f.c)+' · ':'')+esc(f.n)+'</summary><div class="qtag">الخطوات دي منقولة من دليل الشركة وموجّهة لفني مؤهل فقط — مش تعليمات تنفّذها بنفسك.</div><ol>'+f.s.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ol></details>'}).join('')||'<div class="muted">مفيش نتائج</div>';
 }
@@ -260,7 +299,7 @@ $('qcam').onclick=function(){$('live').click();$('live').scrollIntoView({behavio
 $('qupl').onclick=function(){$('cam').click()};
 
 // ===== chat (database only) + optional AI explain =====
-var ARM=[[/جهد.{0,6}الشبك|الشبكه|شبكة/,'grid','grid'],[/عالي|عاليه|زياد|ارتفاع|اوفر|over/i,'over high',''],[/واطي|واطى|منخفض|نقص|under|low/i,'under low',''],[/تردد/,'frequency','grid'],[/عزل|تسرب|ارضي|أرضي|تأريض|ارضى|جراوند|ground/i,'insulation isolation leakage ground earth','insulation'],[/حرار|سخن|سخونه|ساخن|temperature/i,'temperature over temp','temp'],[/مروح|فان/,'fan','fan'],[/بطاري|بطاريه|battery/i,'battery','battery'],[/حمل زائد|حمل زايد|اوفر لود|overload/i,'overload','load'],[/قوس|شرار|arc/i,'arc','arc'],[/الواح|ألواح|بانل|panel|pv/i,'pv input','pvdc'],[/اتصال|communication/i,'communication','comm']];
+var ARM=ARSYN;
 function chatSearch(q){
   var kset={},extra='';ARM.forEach(function(m){if(m[0].test(q)){extra+=' '+m[1];if(m[2])kset[m[2]]=1}});
   var full=q+' '+extra,brands=detectBrands(full);
@@ -465,9 +504,14 @@ var q1=$('qcam'),q2=$('qupl');if(q1)q1.addEventListener('click',function(){setTa
 var hf=$('hform');if(hf)hf.addEventListener('submit',function(){setTab('home',true)});
 var g=$('go');if(g)g.addEventListener('click',function(){setTab('home',true)});
 var m=/[#&]t=([a-z]+)/.exec(location.hash);if(m)setTab(m[1],true);
+var mb=/[#&]b=([^&]+)/.exec(location.hash);if(mb){var bk=decodeURIComponent(mb[1]);if(SRC[bk]){var fb3=$('fbrand');if(fb3){fb3.value=bk;$('fcat').value='';$('filter').value='';renderList('');setTab('browse',true)}}}
 })()}catch(e){}
 if(window.addEventListener)window.addEventListener('afterprint',function(){document.body.classList.remove('printone')});
 try{(function(){var m=/[#&]f=([^&]+)/.exec(location.hash);if(!m)return;var k=decodeURIComponent(m[1]),f=F.filter(function(x){return fkey(x)===k})[0],o=$('out');if(!f||!o){if(o)o.innerHTML='<div class="none">اللينك ده مش لاقي الكارت المطلوب في القاعدة.</div>';return}o.innerHTML='<div class="muted">كارت مفتوح من لينك مشاركة:</div>'+card(f,'');bindCards(o);setTimeout(function(){try{o.scrollIntoView()}catch(e){}},100)})()}catch(e){}
+try{(function(){
+var bc=$('bcopy');if(bc)bc.onclick=function(){var b=$('fbrand').value;if(!b){toast('اختار شركة الأول');return}var u=location.href.split('#')[0]+'#b='+encodeURIComponent(b);if(navigator.clipboard){navigator.clipboard.writeText(u).then(function(){toast('اتنسخ لينك الشركة ✅')},function(){toast(u)})}else toast(u)};
+Array.prototype.forEach.call(document.querySelectorAll('#symp [data-s]'),function(b){b.onclick=function(){var t=$('txt');if(!t)return;t.value=b.getAttribute('data-s');var g2=$('go');if(g2)g2.click()}});
+})()}catch(e){}
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){document.addEventListener('visibilitychange',function(){if(!document.hidden)r.update().catch(function(){})})}).catch(function(){});var rl=false;navigator.serviceWorker.addEventListener('controllerchange',function(){if(rl)return;rl=true;if(!window.__busy)location.reload()})}
 })();
 

@@ -1,11 +1,14 @@
 # Inverter Fix: development progress
 
-Last updated: 2026-11-27 04:55 (Cairo). Live: https://amr-inverter-fix.github.io/ . Static site (GitHub Pages), no backend, free hosting only.
+Last updated: 2026-11-28 15:30 (Cairo). Live: https://amr-inverter-fix.github.io/ . Static site (GitHub Pages), no backend, free hosting only.
 
 Status labels: COMPLETE AND TESTED / IMPLEMENTED NOT FULLY TESTED / PARTIAL / BLOCKED BY EXTERNAL DEPENDENCY / NOT IMPLEMENTED.
 
 ## Data
-- 1684 fault entries, 41 brand/series cards (new official cards: SolaX X3-PRO G2, SOFAR HYD 3-6K-EP). manufacturer_registry.json lists the document, URL and source class for each card. Each card lists the manual name and link. Entries come only from official manufacturer manual text; codes and steps are never invented.
+- 1782 fault entries, 43 brand/series cards. Two new cards added 2026-11-28, both read from the manufacturer's own PDF: SRNE HESP 16-20 kW three-phase hybrid (57 codes, section 7.1 Fault Codes and 7.2 Troubleshooting) and Megarevo R12-R16KLNA-P6 hybrid (41 codes, section 11 Fault diagnosis and solutions). Source URLs are on the company domains (srnesolar.com, megarevo.com).
+- SRNE codes 37 and 38 were left out: in the manual's PDF the fault-name and description columns are misaligned for those two rows, so the name cannot be paired with its meaning with confidence.
+- Entries come only from official manufacturer manual text; codes and steps are never invented. Where the manual gives no remedy for a code, the card says so and points to the manufacturer's service instead of inventing a step.
+- Before 2026-11-28: 1684 fault entries, 41 brand/series cards (new official cards then: SolaX X3-PRO G2, SOFAR HYD 3-6K-EP). manufacturer_registry.json lists the document, URL and source class for each card. Each card lists the manual name and link. Entries come only from official manufacturer manual text; codes and steps are never invented.
 - Per-brand source status is shown on every result card. Huawei, SolaX and SOFAR currently link to third-party hosted copies (official version NOT yet verified). Deye, Steca and Growatt (TL/MTL) hosts are unclear and under review. Source URL check on 2026-11-26: Sol-Ark legacy 12K link returned 404 to curl; Enphase, SolarEdge and Schneider returned 403 to curl (bot blocking, not verified in a browser).
 - Not in the data: per-fault manual page numbers and per-fault verification dates. The report says "page not recorded".
 
@@ -16,6 +19,9 @@ Status labels: COMPLETE AND TESTED / IMPLEMENTED NOT FULLY TESTED / PARTIAL / BL
 | OCR from camera/upload, file type and 15 MB validation, editable text with O/0 I/1 S/5 B/8 Z/2 warning, diagnosis only after the user confirms | IMPLEMENTED NOT FULLY TESTED | validation tested with fake files; the confirm step is live but not tried on a real photo; OCR accuracy not benchmarked on real inverter photos |
 | Fault cards with severity (app estimate, not manufacturer) and safety wording | COMPLETE AND TESTED | |
 | PDF report (print to PDF), card image export | IMPLEMENTED NOT FULLY TESTED | content built and print call verified; paper layout and phone print/share not checked |
+| Arabic symptom search (main search box and browse filter) | IMPLEMENTED, TESTED IN A NODE HARNESS | typing "تسرب أرضي", "جهد الشبكة عالي", "الإنفرتر سخن", "حمل زائد", "حرارة عالية", "مشكلة في البطارية" now returns matching cards from several brands. Arabic-Indic digits (٠٣) are converted to 0-9. Tested against the loaded database, not on a phone |
+| Arabic symptom chips on the home search card | IMPLEMENTED NOT FULLY TESTED | six chips fill the search box and run the diagnosis; verified in the browser, not on a phone |
+| Brand share link (#b=<brand>) | IMPLEMENTED NOT FULLY TESTED | the browse tab has a "لينك كل أعطال الشركة" button that copies a link opening the browse tab filtered to that brand |
 | Dashboard with real DB stats | COMPLETE AND TESTED | |
 | Local search analytics | IMPLEMENTED NOT FULLY TESTED | device-only log (500 entries), clearable; no server analytics |
 | Arabic / English toggle with RTL | PARTIAL | static UI strings only; fault text stays in the manual's English |
@@ -32,4 +38,6 @@ No test on a real phone, no real inverter, no accessibility audit, no formal sec
 Machine-readable: db_quality_report.json. 1684 records: 230 VERIFIED AGAINST OFFICIAL MANUAL (read from the official PDF by the developer, no independent second review), 587 TEXT FOUND IN OFFICIAL-DOMAIN DOCUMENT (AUTOMATIC CHECK: code and title words found on the same PDF page; weaker than a human read; page = PDF page index), 138 THIRD-PARTY COPY - OFFICIAL VERSION UNCONFIRMED, 12 DUPLICATE-CONFLICT (10 Axpert Fault/Warning numbers that share a code, 2 SolarEdge 2xE entries needing a manual check), 717 SOURCE NEEDS VERIFICATION. Nothing was deleted or edited. Scanned or HTML-only sources were not checked automatically. Printed page numbers and document versions are not recorded.
 
 ## Tests
+
+2026-11-28: node harness loading all four data files and app.js with a stub DOM: 1782 faults, 43 brands load with no error; code lookup for the new cards (SRNE 03, SRNE 21, Megarevo 11, Arabic-Indic ٠٣) returns the right card; six Arabic symptom queries each return cards from more than one brand; English queries and existing codes still resolve.
 Offline regression: 73/73. The one earlier failure was a badly written negative test (it expected a SolaX result for an unknown vendor and could never pass); it is now an explicit "must not return SolaX" check, not a data fix. The matching engine itself was not changed.

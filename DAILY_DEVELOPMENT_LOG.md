@@ -2,7 +2,7 @@
 
 One entry per cycle: analysis, plan, what was done, tests, review. Honest numbers only.
 
-## 2026-11-28 (Release 1.0, build r20)
+## 2026-11-28 (Release 1.1, build r21)
 - Analysis: owner reported no reaction on the Capture tab, then a frozen page, a broken card on a 360px phone, a poor PDF report and a print dialog printing the whole page.
 - Done: see CHANGELOG.md.
 - Tests: 23 run, 22 passed, 1 failed and fixed. Details in TEST_REPORT.md.

@@ -23,7 +23,7 @@ Run a real daily development cycle: Analyze, Plan, Develop, Test, Fix, Validate,
 - Reports to the owner: short, Arabic, real numbers, tested vs not tested, real phone / real inverter never claimed.
 
 ## Where things stand
-- Release 1.0, build 2026-11-28-r20 (service worker inv-v79). 23 checks run, 22 passed, 1 failed and fixed (TEST_REPORT.md).
+- Release 1.1, build 2026-11-28-r21 (service worker inv-v80). Usage counter: anonymous random device ID, counts only, no IP or personal data, stored in KV namespace inverter-stats (binding STATS on the Worker); read at Worker /stats, shown on dev.html. Worker code is worker_v8.js in the repo root (no secrets); rollback is the previous Worker version in the Cloudflare dashboard Deployments tab. 23 checks run, 22 passed, 1 failed and fixed (TEST_REPORT.md).
 - Database: 1782 records, 43 brands, 237 without a code, 6 duplicate groups (run node db_check.js). It must never drop below 1782 records.
 - GitHub Actions `checks` (.github/workflows/check.yml) exists and passed on its first run.
 - Reading: 18-photo regression 9 auto-correct, 0 wrong codes (INVERTER_FIX_TEST_REPORT.md).

@@ -186,6 +186,7 @@ window.addEventListener('beforeprint',function(){try{if(document.body.classList.
   buildReport(list,true,all>list.length?'(أول '+list.length+' من '+all+')':'')}catch(e){}});
 var lastText='';
 function show(d,ocrText){
+  try{ping('diag')}catch(e){}
   var o=$('out'),h='';
   if(ocrText!==undefined) h+='<div class="card"><b>النص اللي اتقرا:</b><div class="muted" dir="ltr" style="text-align:left">'+esc(ocrText.trim()||'(فاضي)')+'</div></div>';
   if(!d.res.length){
@@ -222,7 +223,7 @@ function renderList(q){
 }
 var fbs=$('fbrand'),fcs=$('fcat');Object.keys(SRC).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=SRC[k].name;fbs.appendChild(op)});Object.keys(CATS).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=CATS[k];fcs.appendChild(op)});
 $('filter').oninput=function(){renderList(this.value)};fbs.onchange=fcs.onchange=($('fsort')||{}).onchange=function(){renderList($('filter').value)};renderList('');
-(function(){var f=$('foot'),n=Object.keys(SRC).map(function(k){return SRC[k].name});f.textContent='';var bm=document.createElement('p');bm.textContent='build 2026-11-28-r20 (sw inv-v75)';bm.className='muted';var p=document.createElement('p');p.textContent='القاعدة: '+F.length+' عطل من '+n.length+' شركات. البحث بالكود بيشتغل من غير إنترنت بعد أول فتح. قراءة الصورة (OCR) بتحتاج إنترنت.';var d=document.createElement('details');d.className='brl';var sm=document.createElement('summary');sm.textContent='📋 الشركات والمصادر الرسمية ('+n.length+')';d.appendChild(sm);var q=document.createElement('div');q.className='srclist';Object.keys(SRC).forEach(function(k){var r=document.createElement('div');r.className='srow';var b=document.createElement('b');b.textContent=SRC[k].name+' ('+F.filter(function(x){return x.b===k}).length+')';var m=document.createElement('div');m.className='muted';m.textContent=SRC[k].doc;var a=document.createElement('a');a.href=SRC[k].url;a.target='_blank';a.rel='noopener';a.textContent='فتح الدليل الرسمي';r.appendChild(b);r.appendChild(m);r.appendChild(a);q.appendChild(r)});d.appendChild(q);f.appendChild(p);f.appendChild(bm);f.appendChild(d)})();
+(function(){var f=$('foot'),n=Object.keys(SRC).map(function(k){return SRC[k].name});f.textContent='';var bm=document.createElement('p');bm.textContent='build 2026-11-28-r21 (sw inv-v80)';bm.className='muted';var p=document.createElement('p');p.textContent='القاعدة: '+F.length+' عطل من '+n.length+' شركات. البحث بالكود بيشتغل من غير إنترنت بعد أول فتح. قراءة الصورة (OCR) بتحتاج إنترنت.';var d=document.createElement('details');d.className='brl';var sm=document.createElement('summary');sm.textContent='📋 الشركات والمصادر الرسمية ('+n.length+')';d.appendChild(sm);var q=document.createElement('div');q.className='srclist';Object.keys(SRC).forEach(function(k){var r=document.createElement('div');r.className='srow';var b=document.createElement('b');b.textContent=SRC[k].name+' ('+F.filter(function(x){return x.b===k}).length+')';var m=document.createElement('div');m.className='muted';m.textContent=SRC[k].doc;var a=document.createElement('a');a.href=SRC[k].url;a.target='_blank';a.rel='noopener';a.textContent='فتح الدليل الرسمي';r.appendChild(b);r.appendChild(m);r.appendChild(a);q.appendChild(r)});d.appendChild(q);f.appendChild(p);f.appendChild(bm);f.appendChild(d)})();
 
 function ocrAmb(t){var out=[];(t.match(/[A-Za-z0-9]{2,}/g)||[]).forEach(function(w){if(/[0-9]/.test(w)&&/[A-Za-z]/.test(w)||/^[0-9OIlSBZ]{2,}$/.test(w)&&/[OIlSBZ]/.test(w)){var m=w.match(/[OoIlSsBZz01258]/g);if(m)out.push(w)}});return out.filter(function(v,i,a){return a.indexOf(v)===i}).slice(0,8)}
 function matchBrand(b){b=String(b||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ');if(!b.trim())return '';var GEN={solar:1,inverter:1,power:1,energy:1,new:1,electric:1,technology:1,tech:1,mpp:0};var hit=[];Object.keys(SRC).forEach(function(k){var t=(String(SRC[k].name)+' '+k).toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(function(w){return w.length>=3&&!GEN[w]});if(t.some(function(w){return (' '+b+' ').indexOf(' '+w+' ')>=0}))hit.push(k)});return hit.length===1?hit[0]:''}
@@ -683,3 +684,9 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js',{updat
 })();
 
 try{(function(){var b=document.createElement('button');b.type='button';b.id='totop';b.setAttribute('aria-label','لأعلى');b.textContent='↑';document.body.appendChild(b);var on=false;window.addEventListener('scroll',function(){var s=window.scrollY>600;if(s!==on){on=s;b.className=s?'show':''}},{passive:true});b.onclick=function(){window.scrollTo({top:0,behavior:'smooth'})}})()}catch(e){}
+
+/* anonymous usage counter: random device id, counts only, no personal data */
+var PING_URL='https://inverter-vision.amr-abdelhamid-engineer.workers.dev/ping';
+function devId(){try{var k='inv_dev',v=localStorage.getItem(k);if(!v||!/^[0-9a-f]{32}$/.test(v)){var a=new Uint8Array(16);crypto.getRandomValues(a);v='';for(var i=0;i<16;i++)v+=('0'+a[i].toString(16)).slice(-2);localStorage.setItem(k,v)}return v}catch(e){return ''}}
+function ping(ev){try{var d=devId();if(!d)return;fetch(PING_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({d:d,e:ev}),keepalive:true}).catch(function(){})}catch(e){}}
+try{if(!sessionStorage.getItem('inv_s')){sessionStorage.setItem('inv_s','1');ping('open')}}catch(e){}

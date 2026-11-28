@@ -1,12 +1,12 @@
 {
- "version": "Release 1.0",
- "build": "2026-11-28-r20",
- "updated": "2026-11-28T19:00:00+02:00",
+ "version": "Release 1.1",
+ "build": "2026-11-28-r21",
+ "updated": "2026-11-28T19:30:00+02:00",
  "last_test_run": "2026-11-28",
- "tests_run": 23,
- "tests_passed": 22,
+ "tests_run": 7,
+ "tests_passed": 6,
  "tests_failed": 1,
- "last_full_pass": "2026-11-28 (r20 checks)",
+ "last_full_pass": "2026-11-28 (r21 checks)",
  "open_issues": [
   "Real-phone verification of print and capture not done",
   "Deye W-codes missing from the database",
@@ -21,7 +21,8 @@
   "Professional text report (PDF/print) with captured image",
   "Every print path goes to the report, A4",
   "Scroll/touch fix (r16)",
-  "Database validation script"
+  "Database validation script",
+  "Anonymous usage counter (random device ID, counts only) on this dashboard"
  ],
  "db": {
   "records": 1782,
@@ -37,6 +38,12 @@
   "Re-run the 18-photo regression after any Worker change"
  ],
  "releases": [
+  {
+   "v": "Release 1.1",
+   "date": "2026-11-28",
+   "build": "r21",
+   "note": "Anonymous usage counter. See RELEASE_NOTES.md"
+  },
   {
    "v": "Release 1.0",
    "date": "2026-11-28",

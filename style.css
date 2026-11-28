@@ -304,7 +304,7 @@ html[data-theme=dark] .cnote{color:#ffd58a}
 [hidden]{display:none!important}
 
 /* r15 mobile layout fixes */
-html,body{overflow-x:hidden;max-width:100%}
+/* r16: no overflow rule on html/body (it can break touch scrolling on Android Chrome); overflow is handled per element below */
 .res,.res *{min-width:0}
 .cacts{flex-wrap:wrap}
 .cacts .sharebtn,.cacts .linkbtn{flex:1 1 140px;white-space:nowrap}

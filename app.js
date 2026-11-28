@@ -333,8 +333,10 @@ function aiVisionRead(f){
   var used='';
   shrinkForAI(f).then(function(small){
     return blobToB64(small).then(function(b64){
-      return fetch(AIW_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({image:b64,mime:small.type||'image/jpeg'})});
+      var ac=(typeof AbortController!=='undefined')?new AbortController():null;
+      var tm=setTimeout(function(){if(ac)ac.abort()},45000);
+      return fetch(AIW_URL,{method:'POST',headers:{'Content-Type':'application/json'},signal:ac?ac.signal:undefined,
+        body:JSON.stringify({image:b64,mime:small.type||'image/jpeg'})}).then(function(r){clearTimeout(tm);return r},function(e){clearTimeout(tm);var x=new Error((e&&e.name==='AbortError')?'TIMEOUT':'NETFAIL');x.detail=String(e&&e.message||e);throw x});
     }).then(function(res){
       return res.json().catch(function(){return {error:'bad_reply'}}).then(function(j){
         if(!res.ok||j.error){
@@ -361,6 +363,8 @@ function aiVisionRead(f){
     if(m==='too_large'||m==='bad_image'||m==='bad_type'){$('ocrstat').textContent='الصورة كبيرة أو نوعها مش مدعوم للقراءة بالـAI. جرّب صورة أصغر أو استخدم الـOCR العادي.';return}
     if(m==='not_configured'){$('ocrstat').textContent='خدمة قراءة الصور لسه مش متظبطة على السيرفر. استخدم الـOCR العادي أو اكتب الكود يدويًا.';return}
     if(m==='NEEDSIGNIN'){aivSignCard(f);return}
+    if(m==='NETFAIL'){$('ocrstat').textContent='مش قادر أوصل لسيرفر قراءة الصور (الشبكة ممكن تكون بتحجبه أو النت ضعيف). جرّب واي فاي أو داتا تانية، أو استخدم الـOCR العادي أو اكتب الكود يدويًا. (تفصيل: '+((e&&e.detail)||'')+')';return}
+    if(m==='bad_reply'||/^HTTP /.test(m)||/^upstream_/.test(m)||m==='unparsable_reply'||m==='empty_reply'){$('ocrstat').textContent='خدمة Gemini ردّت برد مش مفهوم أو مشغولة ('+m+'). جرّب تاني بعد شوية، أو استخدم الـOCR العادي أو اكتب الكود يدويًا.';return}
     if(m==='TIMEOUT'){$('ocrstat').textContent='القراءة بالـAI خدت وقت طويل (أكتر من 30 ثانية) ووقفت. جرّب تاني، أو استخدم الـOCR العادي، أو اكتب الكود يدويًا.';return}
     if(m==='ALLMODELS'){$('ocrstat').textContent='موديلات Gemini مش متاحة دلوقتي. جرّب تاني بعد شوية، أو استخدم الـOCR العادي.';return}
     $('ocrstat').textContent='القراءة بالـAI مش متاحة دلوقتي ('+(m||'خطأ في الاتصال')+'). جرّب الـOCR العادي أو اكتب الكود يدويًا.';

@@ -8,7 +8,7 @@ The directive names `amr-inverter-fix/hybrid-energy-ai`. That repo is a differen
 ## 1. Code structure
 - `index.html` (88 lines), `app.js` (674), `style.css` (304), `sw.js` (6), `worker/worker.js` (222, Cloudflare Worker source, deployed separately), `data.js` to `data4.js` (database), `steps-ar.js` (Arabic step translations), `tesseract.min.js` + `worker.min.js` (OCR), `manifest.webmanifest`.
 - Offline: service worker is network-first with cache fallback (13 files cached, version `inv-v63`).
-- AI paths now: vision read and chat/explain both go to the Cloudflare Worker (`/read`, `/chat`) which calls Gemini with a secret key. Model in use: `gemini-3.5-flash-lite` (3.8-flash returned 503 overload during testing; 2.5-flash returns 404 for new users).
+- AI paths now: vision read and chat/explain both go to the Cloudflare Worker (`/read`, `/chat`) which calls the AI vision service with a secret key. Model in use: the AI vision model (3.8-flash returned 503 overload during testing; 2.5-flash returns 404 for new users).
 - Dead code still in `app.js`: Puter loader and sign-in card (`loadPuter`, `puterText`, `aivSignCard`, `AIV_MODELS`). Not reachable from the UI. To remove in Phase 2.
 
 ## 2. Database audit (computed from data.js..data4.js)
@@ -25,7 +25,7 @@ The directive names `amr-inverter-fix/hybrid-energy-ai`. That repo is a differen
 2. Report and database are out of sync (98 records).
 3. Puter dead code remains.
 4. Tests so far are the developer's own (retrieval_metrics.json says so). No real-photo OCR accuracy exists. Real images are needed from Amr; none were available.
-5. Privacy: the UI says images go to Gemini through a relay. It does not yet say that Google may use free-tier inputs to improve products, nor ask for explicit consent per session in both languages.
+5. Privacy: the UI says images go to the AI vision service through a relay. It does not yet say that the external service may use free-tier inputs to improve its products, nor ask for explicit consent per session in both languages.
 
 ## 4. Next phases
 Phase 2 (AI + OCR), Phase 3 (engine + source status), Phase 4 (local AI architecture only, not tested on Amr's machine), Phase 5 (PDF report + knowledge base), Phase 6 (security, performance, mobile), Phase 7 (regression + deployment).

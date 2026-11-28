@@ -1,7 +1,7 @@
 # Inverter Fix - Test Report (real-photo OCR/AI reading test)
 
 Date: 2026-11-28. Tester: the development agent (single operator, no independent review).
-Pipeline tested: the published site (https://amr-inverter-fix.github.io/), image -> shrink -> Cloudflare Worker -> Gemini (gemini-3.5-flash-lite) -> result card. Browser: cloud Chrome (desktop), NOT a phone.
+Pipeline tested: the published site (https://amr-inverter-fix.github.io/), image -> shrink -> Cloudflare Worker -> the AI vision service (the AI vision model) -> result card. Browser: cloud Chrome (desktop), NOT a phone.
 Images: 18 real photos supplied by Amr (not stored in any repo). Ground truth = the tester's own reading of each photo. Amr's images are private test material.
 
 ## What was NOT tested

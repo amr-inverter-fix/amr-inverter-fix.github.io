@@ -41,3 +41,14 @@ Same 18 photos, same operator, desktop Chrome, published site. Results vary slig
 - Not rerun after the last Worker change: 12, 15, 17 (earlier runs: no code returned).
 - Code match is by number only and is labeled NEEDS_VERIFICATION unless the user picked a matching brand. Image 3 code "2" matched a Victron record by number: the warning is shown, but the match itself is meaningless.
 - Still untested: real phone camera, 108 MP phone photos, other brands, other languages on the display, night/low light.
+
+## Addendum 2 - Worker 5f288ebc + app.js with the "panel chooser" (all 18 rerun, desktop Chrome, published site)
+Reason: the owner's phone showed a wrong note on the 52 photo (image 8): the v4 prompt made the model read "0" under the FAULT label and ignore the red-lit FAULT. v4 was a regression and was replaced.
+Change: the Worker now also returns every number on a multi-field 7-segment panel with its position and whether FAULT looks lit. If it cannot name one fault code, the app lists all numbers with positions and the user picks. Nothing is chosen automatically.
+Results (18 photos, one run each, so no repeatability claim):
+- Fault shown (12: 1, 2, 3, 4, 5, 7, 8, 9, 11, 14, 16, 18): 10 code read automatically and correctly (1, 2, 4, 5, 7, 8 = 52, 11, 14, 16, 18); 1 partial (3, table: codes extracted but the first one is not a real fault code); 1 handled by the chooser (9: FAULT looked unlit to the model, so it listed all numbers including 19 and the user picks). Wrong code picked automatically: 0.
+- No code or ambiguous (6, 10, 12, 13, 15, 17): 0 automatic codes. 6, 10, 12, 13, 15 show the chooser (image 13 lists 39 at top right), 17 (not an inverter) says no clear fault code found.
+- Known defects: number fields on the panel are sometimes misread with an invented decimal point (2592 read as 259.2 on image 12, 533 as 53.3 on image 13, 2018 as 201.8 on image 9). These are not fault codes but are shown in the chooser, so the owner may see wrong numbers there.
+- The brand label on number-only DB matches is still "NEEDS_VERIFICATION".
+- Image 16 was blocked once by the Worker's 1 request / 6 s limit during a batch run and passed on a rerun; that block was a test-harness artifact, not a read failure.
+- Still NOT tested: owner's real phone with this build (the owner's own screenshots from 17:26 and 17:36 are what showed the earlier defects), phone camera capture, 108 MP photos, other brands, night photos.

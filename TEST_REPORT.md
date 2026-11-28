@@ -50,3 +50,6 @@ Run: 7 checks, 6 passed, 1 failed and fixed (the open ping was skipped by an onL
 
 ## r22 Deye US/AM2 series (local, 2026-11-28)
 7 run, 7 passed, 0 failed: db_check OK (1810 records, 44 brands, 1 real duplicate group); syntax check app.js and sw.js; 28 codes in data5.js equal the 28 codes in the manual table (none missing, none extra); headless Chrome: US/AM2 + F55 gives BAT1_VoltHigh_Fault, Deye (EU) + F55 unchanged, Deye (EU) + F52 not found and suggests the US/AM2 entry, US/AM2 + F99 shows not found. Not tested: real phone, real inverter, text translation to Arabic for the new steps.
+
+## r23 verification badge (local, 2026-11-28)
+6 run, 6 passed, 0 failed: headless Chrome shows the badge with the right state for Sungrow 002 (automatic), Deye US/AM2 F55 (automatic), Huawei 2001 (third-party), Axpert 01 (conflict), Sol-Ark (dead link), Must (not yet checked); state counts over all 1810 records = V 142, A 615, T 138, C 12, B 33, N 870 (sum 1810); syntax checks pass. Not tested: real phone, print report with the badge, manual state V rendering on a card.

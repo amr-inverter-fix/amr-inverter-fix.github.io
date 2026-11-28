@@ -11,6 +11,7 @@ A.innerHTML='<div class="g"><div class="c"><div class="k">الإصدار الح�
 '<div class="c"><div class="k">الاختبارات (آخر جلسة)</div><div class="v">'+d.tests_passed+' / '+d.tests_run+'</div><div class="k">نجحت '+rate+'% · فشلت '+d.tests_failed+'</div></div>'+
 '<div class="c"><div class="k">آخر اختبار ناجح</div><div class="v">'+d.last_full_pass+'</div></div>'+
 '<div class="c"><div class="k">قاعدة البيانات</div><div class="v">'+d.db.records+' عطل / '+d.db.brands+' شركة</div><div class="k">بدون كود: '+d.db.records_without_code+' (أعطال ليها اسم بس في الدليل) · أزواج Fault/Warning: '+d.db.fault_warning_pairs+' · مكرر حقيقي: '+d.db.duplicate_groups+'</div></div>'+
+'<div class="c"><div class="k">حالة التحقق (1810 سجل)</div><div class="v">'+d.verification.checked_by_text+' بتطابق نص</div><div class="k">يدوي '+d.verification.V+' · آلي '+d.verification.A+' · طرف تالت '+d.verification.T+' · تعارض '+d.verification.C+' · رابط ميت '+d.verification.B+' · لسه '+d.verification.N+'</div></div>'+
 '<div class="c"><div class="k">خدمة القراءة</div><div class="v" id="ai">جارٍ الفحص...</div></div></div>'+
 '<div class="c"><b>الاستخدام (عدّاد مجهول)</b><div class="k">جهاز = رقم عشوائي بيتولد في المتصفح، من غير اسم أو إيميل أو IP. بيتصفّر لو العميل مسح بيانات المتصفح.</div><div class="g" id="us"><div class="k">جارٍ التحميل...</div></div><div id="ud"></div></div>'+
 '<div class="c"><b>مشاكل مفتوحة ('+d.open_issues.length+')</b>'+li(d.open_issues)+'</div>'+

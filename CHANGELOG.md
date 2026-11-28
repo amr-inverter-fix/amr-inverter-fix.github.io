@@ -2,6 +2,9 @@
 
 Newest first. A line is added only for a real change that was tested. Older session notes: INVERTER_FIX_CHANGELOG.md.
 
+## Release 1.3 (2026-11-28, build r23)
+- r23: verification-state badge on every fault card (verif.js, new). States: checked by hand against the official manual (142), text found automatically in an official-domain document (615), third-party copy (138), conflict: same code with two texts (12), dead source link (33), not yet checked (870). Built from db_quality_report.json (2026-11-27) matched by brand+code+name, plus a text check of the Deye US/AM2 series against its PDF. The badge says automatic checks are not tests on a device. dev.html shows the counts.
+
 ## Release 1.2 (2026-11-28, build r22)
 - r22: new brand series "Deye US/AM2 (SG01HP3-US-AM2)": 28 fault codes (F01 to F64) from the official Deye manual, Chart 7-1 (new data5.js). Existing Deye records unchanged: codes differ between Deye series (for example F55). db_check now separates Fault/Warning pairs from real duplicates (6 groups became 1 real group plus 5 pairs). dev.html explains the 237 records without code (named faults, no number in the manual). Deye W-codes: not found in any of 5 official Deye manuals checked, nothing added.
 

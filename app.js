@@ -289,7 +289,8 @@ function aiParse(raw){
   if(c.length>40)c=c.slice(0,40);
   if(m.length>200)m=m.slice(0,200);
   var oth=[];if(Array.isArray(o.others))o.others.slice(0,5).forEach(function(x){if(x&&x.code){oth.push({code:String(x.code).replace(/["'`]/g,'').trim().slice(0,40),message:String(x.message||'').replace(/["'`]/g,'').trim().slice(0,200)})}});
-  return {readable:o.readable!==false,code:c,message:m,conf:conf,others:oth};
+  var pn=null;if(o.panel&&Array.isArray(o.panel.fields)&&o.panel.fields.length){pn={lit:String(o.panel.fault_lit||'unclear'),fields:o.panel.fields.slice(0,6).map(function(x){return {pos:String(x.pos||'').slice(0,20),value:String(x.value||'').replace(/[<>"'`]/g,'').slice(0,20)}}).filter(function(x){return x.value})}}
+  return {readable:o.readable!==false,code:c,message:m,conf:conf,others:oth,panel:pn};
 }
 function normCode(x){return String(x||'').toUpperCase().replace(/[^A-Z0-9]/g,'')}
 function codeMatch(code){
@@ -306,6 +307,16 @@ function codeNear(code){
 function aiConsent(){return Promise.resolve(true)}
 var AIW_URL='https://inverter-vision.amr-abdelhamid-engineer.workers.dev/read';
 function blobToB64(b){return new Promise(function(ok,no){var r=new FileReader();r.onload=function(){ok(String(r.result).split(',')[1]||'')};r.onerror=function(){no(new Error('read_failed'))};r.readAsDataURL(b)})}
+var PPOS={top_left:'أعلى يسار',top_center:'أعلى وسط',top_right:'أعلى يمين',bottom_left:'أسفل يسار',bottom_center:'أسفل وسط',bottom_right:'أسفل يمين'};
+function aiPanelChooser(p,bs){
+  var lit=p.lit==='yes'?'مؤشر FAULT شكله منوّر':(p.lit==='no'?'مؤشر FAULT شكله مش منوّر':'مش متأكد لو مؤشر FAULT منوّر');
+  var h='<div class="card"><b>قريت الأرقام دي من الشاشة (الذكاء الاصطناعي)</b><div class="warn">'+lit+'. مش متأكد أنهي رقم هو كود العطل ومش هخمّن. على لوحات Axpert-style كود العطل غالبًا بيظهر أسفل اليمين لما FAULT منوّر. اختار الرقم اللي إنت شايفه كود عطل، أو تجاهل لو دي قياسات.</div><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">';
+  p.fields.forEach(function(x,i){h+='<button type="button" class="btn alt" data-pv="'+i+'"><span dir="ltr">'+esc(x.value)+'</span> <small>('+esc(PPOS[x.pos]||x.pos)+')</small></button>'});
+  h+='</div></div>';
+  var o=$('out');o.innerHTML=h;$('ocrstat').textContent='';
+  Array.prototype.forEach.call(o.querySelectorAll('[data-pv]'),function(b){b.onclick=function(){var v=p.fields[+b.getAttribute('data-pv')].value;$('code').value=v;$('txt').value='';$('go').click()}});
+  try{o.scrollIntoView({behavior:'smooth'})}catch(e){}
+}
 function aiVisionRead(f,enh,retried){
   if(aivBusy||!f)return;
   aivBusy=true;aiWanted=true;$('ocrstat').textContent='🤖 بجهّز الصورة وببعتها لـGemini...';
@@ -322,7 +333,7 @@ function aiVisionRead(f,enh,retried){
           var e=new Error(j.error||('HTTP '+res.status));e.detail=j.message||'';throw e;
         }
         used=j.model||'gemini';
-        return {message:{content:JSON.stringify({readable:j.readable,code:j.code,message:j.message,confidence:j.confidence,others:j.others})}};
+        return {message:{content:JSON.stringify({readable:j.readable,code:j.code,message:j.message,confidence:j.confidence,others:j.others,panel:j.panel&&j.panel.fields&&{fault_lit:j.panel.fault_lit,fields:j.panel.fields}})}};
       });
     });
   }).then(function(r){
@@ -330,8 +341,9 @@ function aiVisionRead(f,enh,retried){
     aivBusy=false;$('ocrstat').textContent='';
     var j=aiParse(raw);
     if(!j||j.readable===false||(!j.code&&!j.message)){
+      if(j&&j.panel&&j.panel.fields.length&&!j.code){aivBusy=false;aiPanelChooser(j.panel,bs);return}
       if(!retried){aivBusy=false;$('ocrstat').textContent='🔁 مش واضحة، بحاول تاني بتحسين التباين...';setTimeout(function(){aiVisionRead(f,true,true)},7000);return}
-      $('ocrstat').innerHTML='<b>'+esc(j&&j.readable===false?(j.message&&/FAULT/i.test(j.message)?'مفيش مؤشر FAULT منوّر على الشاشة، لكن فيه رقم تحت كلمة FAULT ('+j.message.replace(/[^0-9A-Za-z .()\-]/g,'').replace(/^.*label\s*/i,'').slice(0,30)+'). مش متأكد إنه كود عطل ومش هشخّص من تخمين. لو إنت شايفه عطل اكتبه في خانة الكود وشخّص.':'ما لقيتش كود عطل واضح على الشاشة (ممكن مفيش عطل ظاهر، أو الرقم مش واضح، أو دي مش شاشة إنفرتر). لو شايف كود اكتبه يدويًا في خانة الكود.'):'مقدرتش أقرا كود واضح في الصورة. جرّب صورة أوضح، أو اكتب الكود يدويًا.')+'</b>';
+      $('ocrstat').innerHTML='<b>'+esc(j&&j.readable===false?('ما لقيتش كود عطل واضح على الشاشة (ممكن مفيش عطل ظاهر، أو الرقم مش واضح، أو دي مش شاشة إنفرتر). لو شايف كود اكتبه يدويًا في خانة الكود.'):'مقدرتش أقرا كود واضح في الصورة. جرّب صورة أوضح، أو اكتب الكود يدويًا.')+'</b>';
       return;
     }
     var txt=((j.code||'')+' '+(j.message||'')).replace(/\s+/g,' ').trim();

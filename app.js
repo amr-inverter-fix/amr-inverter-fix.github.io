@@ -304,12 +304,14 @@ function codeNear(code){
 function aiConsent(){
   try{if(localStorage.getItem('aivconsent')==='1')return Promise.resolve(true)}catch(e){}
   return new Promise(function(res){
-    var o=$('out');o.innerHTML='<div class="card"><b>🤖 قراءة الصورة بالذكاء الاصطناعي</b><div class="muted" style="margin-top:6px">هيتبعت الصورة لخدمة Puter (مجانية، وممكن تطلب تسجيل دخول مجاني أول مرة) عشان تقرا الكود اللي على الشاشة. الصورة مش بتتخزن عندنا. القراءة بترجع نص بس، والتشخيص بيتعمل من قاعدة الأدلة.</div><div class="row" style="margin-top:10px"><button type="button" class="btn" id="aivok">موافق، اقرا الصورة</button><button type="button" class="btn alt" id="aivno">إلغاء</button></div></div>';
+    var o=$('out');o.innerHTML='<div class="card"><b>🤖 قراءة الصورة بالذكاء الاصطناعي</b><div class="muted" style="margin-top:6px">هيتبعت الصورة لخدمة Google Gemini (عن طريق سيرفر وسيط خاص بالتطبيق، من غير تسجيل دخول) عشان تقرا الكود اللي على الشاشة. الصورة مش بتتخزن عندنا. القراءة بترجع نص بس، والتشخيص بيتعمل من قاعدة الأدلة.</div><div class="row" style="margin-top:10px"><button type="button" class="btn" id="aivok">موافق، اقرا الصورة</button><button type="button" class="btn alt" id="aivno">إلغاء</button></div></div>';
     $('aivok').onclick=function(){try{localStorage.setItem('aivconsent','1')}catch(e){}res(true)};
     $('aivno').onclick=function(){res(false)};
     try{o.scrollIntoView({behavior:'smooth'})}catch(e){}
   });
 }
+var AIW_URL='https://inverter-vision.amr-abdelhamid-engineer.workers.dev/read';
+function blobToB64(b){return new Promise(function(ok,no){var r=new FileReader();r.onload=function(){ok(String(r.result).split(',')[1]||'')};r.onerror=function(){no(new Error('read_failed'))};r.readAsDataURL(b)})}
 var AIV_MODELS=['google/gemini-3.1-pro-preview','google/gemini-3.8-flash'];
 var AIV_PROMPT='You read photos of solar inverter display screens. Reply with JSON only, no prose, no code fences. Schema: {"readable":true or false,"code":"the exact fault or error code shown, or an empty string","message":"the exact message text shown, or an empty string","confidence":"high" or "medium" or "low"}. Rules: copy the characters exactly as displayed, character by character. Never guess, complete or correct a code from your own knowledge. If any character of the code is unclear, or the image is not an inverter display, set readable to false. No translation, no commentary.';
 function aivTimeout(p,ms){return Promise.race([p,new Promise(function(_,no){setTimeout(function(){no(new Error('TIMEOUT'))},ms)})])}
@@ -327,18 +329,20 @@ function aivSignCard(f){
 }
 function aiVisionRead(f){
   if(aivBusy||!f)return;
-  aivBusy=true;aiWanted=true;$('ocrstat').textContent='🤖 بجهّز الصورة وببعتها لـGemini (عبر Puter)...';
+  aivBusy=true;aiWanted=true;$('ocrstat').textContent='🤖 بجهّز الصورة وببعتها لـGemini...';
   var used='';
   shrinkForAI(f).then(function(small){
-    return loadPuter().then(function(){
-      if(!puter.auth.isSignedIn())throw new Error('NEEDSIGNIN');
-      var tryModel=function(i){
-        if(i>=AIV_MODELS.length)throw new Error('ALLMODELS');
-        used=AIV_MODELS[i];
-        return aivTimeout(puter.ai.chat(AIV_PROMPT,small,{model:AIV_MODELS[i],temperature:0,max_tokens:200}),30000)
-          .catch(function(err){if(err&&err.message==='TIMEOUT')throw err;return tryModel(i+1)});
-      };
-      return tryModel(0);
+    return blobToB64(small).then(function(b64){
+      return fetch(AIW_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({image:b64,mime:small.type||'image/jpeg'})});
+    }).then(function(res){
+      return res.json().catch(function(){return {error:'bad_reply'}}).then(function(j){
+        if(!res.ok||j.error){
+          var e=new Error(j.error||('HTTP '+res.status));e.detail=j.message||'';throw e;
+        }
+        used=j.model||'gemini';
+        return {message:{content:JSON.stringify({readable:j.readable,code:j.code,message:j.message,confidence:j.confidence})}};
+      });
     });
   }).then(function(r){
     var raw=puterText(r).trim();
@@ -353,9 +357,12 @@ function aiVisionRead(f){
   }).catch(function(e){
     aivBusy=false;
     var m=(e&&(e.message||(e.error&&e.error.message)))||'';
+    if(m==='rate_limited'||m==='daily_limit'){$('ocrstat').textContent='عدد مرات قراءة الصور وصل الحد المسموح مؤقتًا. استخدم الـOCR العادي أو اكتب الكود يدويًا، وجرّب تاني بعد شوية.';return}
+    if(m==='too_large'||m==='bad_image'||m==='bad_type'){$('ocrstat').textContent='الصورة كبيرة أو نوعها مش مدعوم للقراءة بالـAI. جرّب صورة أصغر أو استخدم الـOCR العادي.';return}
+    if(m==='not_configured'){$('ocrstat').textContent='خدمة قراءة الصور لسه مش متظبطة على السيرفر. استخدم الـOCR العادي أو اكتب الكود يدويًا.';return}
     if(m==='NEEDSIGNIN'){aivSignCard(f);return}
     if(m==='TIMEOUT'){$('ocrstat').textContent='القراءة بالـAI خدت وقت طويل (أكتر من 30 ثانية) ووقفت. جرّب تاني، أو استخدم الـOCR العادي، أو اكتب الكود يدويًا.';return}
-    if(m==='ALLMODELS'){$('ocrstat').textContent='موديلات Gemini مش متاحة من Puter دلوقتي. جرّب تاني بعد شوية، أو استخدم الـOCR العادي.';return}
+    if(m==='ALLMODELS'){$('ocrstat').textContent='موديلات Gemini مش متاحة دلوقتي. جرّب تاني بعد شوية، أو استخدم الـOCR العادي.';return}
     $('ocrstat').textContent='القراءة بالـAI مش متاحة دلوقتي ('+(m||'خطأ في الاتصال')+'). جرّب الـOCR العادي أو اكتب الكود يدويًا.';
   });
 }

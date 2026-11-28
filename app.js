@@ -378,6 +378,7 @@ async function handleFile(f){
   window.__busy=true;
   var url=URL.createObjectURL(f),img=$('prev');img.src=url;img.hidden=false;
   lastImg=f;aiWanted=false;aivBusy=false;var myTok=++ocrSeq;var ab=$('aiv');if(ab)ab.hidden=false;
+  if(aiAuto){aiAuto=false;aiWanted=true;aiConsent().then(function(ok){if(ok)aiVisionRead(f);else{aiWanted=false;$('ocrstat').textContent='اتلغت قراءة الـAI. استخدم الـOCR العادي أو اكتب الكود يدويًا.'}})}
   var loaded=await new Promise(function(r){img.onload=function(){r(true)};img.onerror=function(){r(false)}});
   if(!loaded){window.__busy=false;img.hidden=true;try{URL.revokeObjectURL(url)}catch(e){}$('ocrstat').textContent='الصورة دي تالفة أو مش بتتفتح. جرّب صورة تانية.';return}
   $('ocrstat').textContent='بقرا الصورة... (أول مرة بتاخد ثواني)';
@@ -395,7 +396,8 @@ async function handleFile(f){
     ocrConfirm(best.t,bs);
   }catch(e){if(!aiWanted&&myTok===ocrSeq)$('ocrstat').textContent='فشل الـ OCR: '+(e&&e.message||e)+'\nاكتب الكود يدويًا.'}
 }
-var aivb=$('aiv');if(aivb)aivb.onclick=function(){if(!lastImg){$('ocrstat').textContent='اختار صورة الأول.';return}aiConsent().then(function(ok){if(ok)aiVisionRead(lastImg)})};
+var aiAuto=false;
+var aivb=$('aiv');if(aivb)aivb.onclick=function(){if(!lastImg){aiAuto=true;$('ocrstat').textContent='اختار أو صوّر الصورة، وهقراها بالذكاء الاصطناعي على طول...';$('shot').click();return}aiConsent().then(function(ok){if(ok)aiVisionRead(lastImg)})};
 $('cam').onchange=function(){var f=this.files[0];this.value='';handleFile(f)};
 $('shot').onchange=function(){var f=this.files[0];this.value='';handleFile(f)};
 var stream=null;

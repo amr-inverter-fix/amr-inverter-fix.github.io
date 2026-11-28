@@ -1,0 +1,13 @@
+name: checks
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 5 * * *'
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: for f in app.js sw.js data.js data2.js data3.js data4.js steps-ar.js; do node --check $f; done
+      - run: node db_check.js

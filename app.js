@@ -302,31 +302,22 @@ function codeNear(code){
   return out;
 }
 function aiConsent(){
-  try{if(localStorage.getItem('aivconsent')==='1')return Promise.resolve(true)}catch(e){}
+  try{if(localStorage.getItem('aivconsent2')==='1')return Promise.resolve(true)}catch(e){}
   return new Promise(function(res){
-    var o=$('out');o.innerHTML='<div class="card"><b>🤖 قراءة الصورة بالذكاء الاصطناعي</b><div class="muted" style="margin-top:6px">هيتبعت الصورة لخدمة Google Gemini (عن طريق سيرفر وسيط خاص بالتطبيق، من غير تسجيل دخول) عشان تقرا الكود اللي على الشاشة. الصورة مش بتتخزن عندنا. القراءة بترجع نص بس، والتشخيص بيتعمل من قاعدة الأدلة.</div><div class="row" style="margin-top:10px"><button type="button" class="btn" id="aivok">موافق، اقرا الصورة</button><button type="button" class="btn alt" id="aivno">إلغاء</button></div></div>';
-    $('aivok').onclick=function(){try{localStorage.setItem('aivconsent','1')}catch(e){}res(true)};
-    $('aivno').onclick=function(){res(false)};
-    try{o.scrollIntoView({behavior:'smooth'})}catch(e){}
+    var ov=document.createElement('div');ov.id='aicons';ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');
+    ov.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:14px';
+    ov.innerHTML='<div class="card" style="max-width:520px;max-height:90vh;overflow:auto;margin:0"><b>🤖 قبل ما تبعت لأي ذكاء اصطناعي / Before you send to AI</b>'
+    +'<div style="margin-top:8px;font-size:.92rem;line-height:1.7" dir="rtl">الصورة أو السؤال بيتبعت لخدمة Google Gemini عن طريق سيرفر وسيط. على النسخة المجانية، جوجل ممكن تستخدم المدخلات والمخرجات لتحسين منتجاتها، ومراجعين بشر ممكن يقروها. <b>متبعتش بيانات حساسة:</b> سيريال نمبر، اسم عميل أو موقع، أو أي شخص ظاهر في الصورة. التطبيق مش بيحتفظ بالصورة. الأفضل تصوّر شاشة العرض بس. بديل من غير ذكاء اصطناعي: الـOCR العادي على جهازك أو كتابة الكود يدويًا.</div>'
+    +'<div style="margin-top:8px;font-size:.88rem;line-height:1.6;opacity:.9" dir="ltr">Your image or question is sent to Google Gemini through a relay server. On the free tier Google may use inputs and outputs to improve its products, and human reviewers may read them. <b>Do not send sensitive data:</b> serial numbers, customer names or locations, or people visible in the photo. This app does not store the image. Photograph the display only. Alternative without AI: the on-device OCR or typing the code by hand.</div>'
+    +'<div class="row" style="margin-top:12px"><button type="button" class="btn" id="aivok">موافق / I agree</button><button type="button" class="btn alt" id="aivno">لا، استخدم OCR / No, use OCR</button></div></div>';
+    document.body.appendChild(ov);
+    function done(v){try{ov.remove()}catch(e){}if(v){try{localStorage.setItem('aivconsent2','1')}catch(e){}}res(v)}
+    $('aivok').onclick=function(){done(true)};$('aivno').onclick=function(){done(false)};
+    try{$('aivok').focus()}catch(e){}
   });
 }
 var AIW_URL='https://inverter-vision.amr-abdelhamid-engineer.workers.dev/read';
 function blobToB64(b){return new Promise(function(ok,no){var r=new FileReader();r.onload=function(){ok(String(r.result).split(',')[1]||'')};r.onerror=function(){no(new Error('read_failed'))};r.readAsDataURL(b)})}
-var AIV_MODELS=['google/gemini-3.1-pro-preview','google/gemini-3.8-flash'];
-var AIV_PROMPT='You read photos of solar inverter display screens. Reply with JSON only, no prose, no code fences. Schema: {"readable":true or false,"code":"the exact fault or error code shown, or an empty string","message":"the exact message text shown, or an empty string","confidence":"high" or "medium" or "low"}. Rules: copy the characters exactly as displayed, character by character. Never guess, complete or correct a code from your own knowledge. If any character of the code is unclear, or the image is not an inverter display, set readable to false. No translation, no commentary.';
-function aivTimeout(p,ms){return Promise.race([p,new Promise(function(_,no){setTimeout(function(){no(new Error('TIMEOUT'))},ms)})])}
-function aivSignCard(f){
-  var o=$('out');$('ocrstat').textContent='';
-  o.innerHTML='<div class="card"><b>محتاج تسجيل دخول مجاني في Puter</b><div class="muted" style="margin-top:6px">القراءة بالذكاء الاصطناعي (Gemini) شغالة على حساب Puter مجاني — كل مستخدم بيدفع استهلاكه. سجّل دخول مرة واحدة، وبعدها القراءة تشتغل على طول. إحنا مش بنطلب كلمة سر هنا: الدخول بيتم في نافذة Puter الرسمية.</div><div class="row" style="margin-top:10px"><button type="button" class="btn" id="aivsign">سجّل دخول Puter</button><button type="button" class="btn alt" id="aivocr">استخدم الـOCR العادي بدلًا منه</button></div></div>';
-  $('aivsign').onclick=function(){
-    $('ocrstat').textContent='فاتح نافذة تسجيل الدخول...';
-    loadPuter().then(function(){return puter.auth.signIn()}).then(function(){aiVisionRead(f)}).catch(function(){
-      $('ocrstat').textContent='تسجيل الدخول ما اتمش. جرّب تاني، أو استخدم الـOCR العادي.';
-    });
-  };
-  $('aivocr').onclick=function(){$('out').innerHTML='<div class="card muted">تمام. استخدم زرار الـOCR العادي تحت الصورة، أو اكتب الكود يدويًا.</div>'};
-  try{o.scrollIntoView({behavior:'smooth'})}catch(e){}
-}
 function aiVisionRead(f){
   if(aivBusy||!f)return;
   aivBusy=true;aiWanted=true;$('ocrstat').textContent='🤖 بجهّز الصورة وببعتها لـGemini...';
@@ -347,7 +338,7 @@ function aiVisionRead(f){
       });
     });
   }).then(function(r){
-    var raw=puterText(r).trim();
+    var raw=String(r&&r.message&&r.message.content||'').trim();
     aivBusy=false;$('ocrstat').textContent='';
     var j=aiParse(raw);
     if(!j||j.readable===false||(!j.code&&!j.message)){
@@ -362,11 +353,9 @@ function aiVisionRead(f){
     if(m==='rate_limited'||m==='daily_limit'){$('ocrstat').textContent='عدد مرات قراءة الصور وصل الحد المسموح مؤقتًا. استخدم الـOCR العادي أو اكتب الكود يدويًا، وجرّب تاني بعد شوية.';return}
     if(m==='too_large'||m==='bad_image'||m==='bad_type'){$('ocrstat').textContent='الصورة كبيرة أو نوعها مش مدعوم للقراءة بالـAI. جرّب صورة أصغر أو استخدم الـOCR العادي.';return}
     if(m==='not_configured'){$('ocrstat').textContent='خدمة قراءة الصور لسه مش متظبطة على السيرفر. استخدم الـOCR العادي أو اكتب الكود يدويًا.';return}
-    if(m==='NEEDSIGNIN'){aivSignCard(f);return}
     if(m==='NETFAIL'){$('ocrstat').textContent='مش قادر أوصل لسيرفر قراءة الصور (الشبكة ممكن تكون بتحجبه أو النت ضعيف). جرّب واي فاي أو داتا تانية، أو استخدم الـOCR العادي أو اكتب الكود يدويًا. (تفصيل: '+((e&&e.detail)||'')+')';return}
     if(m==='bad_reply'||/^HTTP /.test(m)||/^upstream_/.test(m)||m==='unparsable_reply'||m==='empty_reply'){$('ocrstat').textContent='خدمة Gemini ردّت برد مش مفهوم أو مشغولة ('+m+'). جرّب تاني بعد شوية، أو استخدم الـOCR العادي أو اكتب الكود يدويًا.';return}
     if(m==='TIMEOUT'){$('ocrstat').textContent='القراءة بالـAI خدت وقت طويل (أكتر من 30 ثانية) ووقفت. جرّب تاني، أو استخدم الـOCR العادي، أو اكتب الكود يدويًا.';return}
-    if(m==='ALLMODELS'){$('ocrstat').textContent='موديلات Gemini مش متاحة دلوقتي. جرّب تاني بعد شوية، أو استخدم الـOCR العادي.';return}
     $('ocrstat').textContent='القراءة بالـAI مش متاحة دلوقتي ('+(m||'خطأ في الاتصال')+'). جرّب الـOCR العادي أو اكتب الكود يدويًا.';
   });
 }
@@ -499,12 +488,9 @@ function aiErrText(e){var m=(e&&e.message)||'';
   if(m==='TIMEOUT')return 'الرد اتأخر أكتر من 45 ثانية ووقف.';
   if(m==='daily_limit'||m==='rate_limited')return 'وصلت للحد المسموح مؤقتًا. جرّب بعد شوية.';
   return 'خدمة Gemini مشغولة أو ردّت برد مش مفهوم ('+(m||'خطأ')+').'}
-function puterText(r){if(!r)return'';if(typeof r==='string')return r;var m=r.message||r;var c=m.content!==undefined?m.content:m;if(typeof c==='string')return c;if(Array.isArray(c))return c.map(function(x){return typeof x==='string'?x:(x&&x.text)||''}).join('');return String(c||'')}
-var puterP=null;
-function loadPuter(){if(window.puter)return Promise.resolve();if(puterP)return puterP;puterP=new Promise(function(ok,no){var s=document.createElement('script');s.src='https://js.puter.com/v2/';s.onload=ok;s.onerror=function(){puterP=null;no(new Error('load'))};document.head.appendChild(s)});return puterP}
 async function aiExplain(box,q,hits){
   var out=box.querySelector('.aiout'),btn=box.querySelector('.aibtn');
-  if(!out.dataset.agreed&&!confirm('الزرار ده بيبعت سؤالك ونص الكروت الظاهرة لخدمة Google Gemini (طرف تالت، عن طريق سيرفر وسيط) عشان تشرحهم. الشرح مش من دليل الشركة. تكمّل؟'))return;
+  if(!out.dataset.agreed){var okc=await aiConsent();if(!okc)return}
   out.dataset.agreed='1';btn.disabled=true;out.className='aiout wait';out.textContent='بجهّز الشرح...';
   var data=hits.map(function(f){return {brand:SRC[f.b].name,code:f.c,name:f.n,steps_from_official_manual:f.s,source:SRC[f.b].doc}});
   var prompt='You explain inverter faults to a non-expert in simple Egyptian Arabic, in at most 120 words.\nRules: use ONLY the DATA below. Never add any fault code, number, setting, step, brand or link that is not in DATA. If DATA does not answer the question, say so. Never tell the user to open the inverter or touch wiring or DC cables; repairs are for a qualified technician. Do not give a diagnosis beyond DATA.\nDATA: '+JSON.stringify(data)+'\nUSER QUESTION: '+q;
@@ -552,7 +538,7 @@ function aiCheck2(reply,hits,q,hist){
 function aiAdd(cls,html){var c=$('aichat'),e=document.createElement('div');e.className='cmsg '+cls;e.innerHTML=html;c.appendChild(e);e.scrollIntoView({block:'nearest',behavior:'smooth'});return e}
 async function aiAsk(q){
   q=q.trim();if(!q||aiBusy)return;
-  if(!sessionStorage.getItem('aiok')){if(!confirm('المساعد الذكي بيبعت سؤالك ونص الكروت الرسمية المرتبطة بيه لخدمة Google Gemini (طرف تالت، عن طريق سيرفر وسيط) عشان يرد. الرد مش من دليل الشركة وبيتعلّم لو غير رسمي. تكمّل؟'))return;sessionStorage.setItem('aiok','1')}
+  if(!(await aiConsent()))return;
   aiBusy=true;$('asend').disabled=true;
   aiAdd('me','<div class="bub"></div>').firstChild.textContent=q;
   var hits=chatSearch(q);var carry=false;if(!hits.length&&aiLastHits.length){hits=aiLastHits;carry=true}else if(hits.length)aiLastHits=hits;

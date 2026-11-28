@@ -2,6 +2,11 @@
 
 One entry per cycle: analysis, plan, what was done, tests, review. Honest numbers only.
 
+## 2026-11-28 cycle 1 (Release 1.2, build r22)
+- Analysis: 237 without code = named faults; 6 duplicates = 5 Fault/Warning pairs + 1; Deye W-codes absent from official manuals; Deye US/AM2 manual has 28 codes not modelled as a series.
+- Done: data5.js (Deye US/AM2, 28 codes), db_check pair logic, dev.html note. Not done: verification statuses (large, needs owner decision), decimal-point bug (no description found).
+- Tests: 7 run, 7 passed. Not tested: real phone, real inverter.
+
 ## 2026-11-28 (Release 1.1, build r21)
 - Analysis: owner reported no reaction on the Capture tab, then a frozen page, a broken card on a 360px phone, a poor PDF report and a print dialog printing the whole page.
 - Done: see CHANGELOG.md.

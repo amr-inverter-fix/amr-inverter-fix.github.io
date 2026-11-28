@@ -1,5 +1,13 @@
 # Release notes
 
+## Release 1.2 - 2026-11-28 (build 2026-11-28-r22)
+1. New: Deye US/AM2 series (SUN-8/10/12/15K-SG01HP3-US-AM2), 28 codes F01 to F64 from the official manual (2025-08-15), Chart 7-1. Source: https://www.deyeinverter.com/deyeinverter/2025/08/15/sun-8-15k-sg01hp3-us-am2_20250815.pdf . Added as a separate series; existing Deye records are not changed.
+2. Changed: db_check separates Fault/Warning pairs (Axpert 01,02,03,04,07) from real duplicates. Now 1 real duplicate group (SolarEdge 2xE, two different texts, not merged) and 5 pairs.
+3. Finding: the 237 records without a code are faults named but not numbered in the manuals (FoxESS, Delta, Solax G2, EPEVER UP and others). Not a defect.
+4. Finding: Deye W-codes are not in the 5 official Deye manuals checked (SG04LP3-EU 2024, SG04LP3-AU 2022, SG05LP1-AU 2025, SG01LP1-AU 2025, SG01HP3-US-AM2 2025). Nothing added. Third-party lists were not used.
+5. Tests: 7 checks, 7 passed. Not tested: real phone, real inverter, the full 18-photo regression (no Worker change).
+6. Database: 1810 records, 44 brands.
+
 ## Release 1.1 - 2026-11-28 (build 2026-11-28-r21)
 1. New: anonymous usage counter on dev.html: distinct devices, sessions (opens), diagnoses, photo reads, last 14 days. Random device ID only, counts only, no IP, no personal data, no visible change in the app.
 2. Storage: free Cloudflare KV namespace "inverter-stats" bound to the existing Worker as STATS. No new account, no key, no cost. Worker /ping (POST) and /stats (GET) added; photo reads are counted by the Worker on a successful /read.
@@ -18,5 +26,6 @@ First numbered release. Versioning rule: Release 1.N, N goes up only when a day 
 7. Next: see ROADMAP.md.
 
 ## Stable branches
-- stable-r21: to be created after Release 1.1 is verified live.
+- stable-r22: to be created after Release 1.2 is verified live.
+- stable-r21: Release 1.1, build r21.
 - stable-r20: Release 1.0, build 2026-11-28-r20 (rollback point).

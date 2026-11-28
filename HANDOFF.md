@@ -25,6 +25,7 @@ Run a real daily development cycle: Analyze, Plan, Develop, Test, Fix, Validate,
 ## Where things stand
 - Release 1.0, build 2026-11-28-r20 (service worker inv-v79). 23 checks run, 22 passed, 1 failed and fixed (TEST_REPORT.md).
 - Database: 1782 records, 43 brands, 237 without a code, 6 duplicate groups (run node db_check.js). It must never drop below 1782 records.
+- GitHub Actions `checks` (.github/workflows/check.yml) exists and passed on its first run.
 - Reading: 18-photo regression 9 auto-correct, 0 wrong codes (INVERTER_FIX_TEST_REPORT.md).
 - Capture tab: open camera or choose image, reading starts automatically, result and brand chooser inside the tab. Report (button, print, browser print) is one professional A4 text report.
 - Not verified: owner's real phone for print and capture.
@@ -32,6 +33,19 @@ Run a real daily development cycle: Analyze, Plan, Develop, Test, Fix, Validate,
 ## Priorities
 See ROADMAP.md. Next: verification statuses (Phase 3), database gaps from official manuals only, real-phone feedback from the owner, then Phases 4 to 7 of his upgrade directive and the final 12-point report.
 
-## How the pieces are published
-No dev branch yet: the site is served from main, so every publish is live. Rollback = re-publish the previous files (backups of each step are kept by the working agent) or revert the commit in the GitHub UI. Planned: a dev branch and pull-request review, which needs the owner's OK because it changes how publishing works.
-Method: cloud browser (config-h, saving cookies), github.com upload page, set files via DataTransfer script, fill "Commit summary", Commit changes, wait about 55 s, verify with fetch(..., {cache:'no-store'}), then test the published site. Worker: Cloudflare dashboard edit-code page, paste code, Deploy. Bump the service worker version and the build marker on every release.
+## Release workflow (approved by the owner 2026-11-28 19:07): dev branch, then merge to main after tests
+The live site is served from `main` only. Nothing reaches the live site except by a tested merge.
+1. Work on branch `dev` (the upload page for it: https://github.com/amr-inverter-fix/amr-inverter-fix.github.io/upload/dev). Small commits.
+2. On every push GitHub Actions runs `checks` (syntax check of all JS, `node db_check.js`; also daily 05:17 UTC). It must be green on the `dev` commit before merging. Read the result at /actions.
+3. Functional tests before merging, run locally on the dev files (headless Chrome on the files, print-to-PDF, layout at 360px, regression logic). The Worker only answers the live site origin, so real AI reading tests run on the live site right after the merge, and a failure there means rollback.
+4. Merge: open https://github.com/amr-inverter-fix/amr-inverter-fix.github.io/compare/main...dev, create a pull request (title = release and build), write the test numbers in the description, merge it. Never merge a red `checks` run or a change with a known critical bug.
+5. After the merge (wait about 55 s for Pages): verify with fetch(..., {cache:'no-store'}) that app.js, sw.js and style.css match, check the build marker, run the live checks (clean load, tabs, print paths, one real AI read if the daily limit allows). Bump the service worker version and the build marker on every release.
+6. Update DAILY_DEVELOPMENT_LOG.md, RELEASE_NOTES.md, TEST_REPORT.md, CHANGELOG.md, ROADMAP.md and dev-data.json on `dev` before the merge, with real numbers.
+
+### Rollback
+- Branch `stable-r20` is the frozen copy of the Release 1.0 / r20 state. After each good release, create a new `stable-<build>` branch from main (Branches page, New branch) and note it in RELEASE_NOTES.md.
+- To roll back: open the merged pull request and press Revert (creates a revert pull request), merge it, then verify the live site. If that is not possible, upload the files of the last stable branch to main through the upload page, bump the service worker version so phones reload.
+- Never force-push or delete `main`.
+
+### Other publishing notes
+Cloud browser (config-h, saving cookies), upload page of the branch, set files via DataTransfer script, fill "Commit summary", Commit changes. Worker: Cloudflare dashboard edit-code page, paste code, Deploy (Worker changes are live at once; keep the previous Worker file for rollback).

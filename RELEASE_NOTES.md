@@ -10,3 +10,6 @@ First numbered release. Versioning rule: Release 1.N, N goes up only when a day 
 5. Database: unchanged, 1782 records, 43 brands, 237 records without a code, 6 duplicate brand+code groups.
 6. Unresolved: Deye W-codes missing from the database; verification statuses not started; fault 39 on Axpert unknown.
 7. Next: see ROADMAP.md.
+
+## Stable branches
+- stable-r20: Release 1.0, build 2026-11-28-r20 (rollback point).

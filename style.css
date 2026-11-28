@@ -256,3 +256,9 @@ html[dir=ltr] body{text-align:left}html[dir=ltr] .warn,html[dir=ltr] .camtips,ht
 .offst{font-size:.82rem;color:#44564e;margin:6px 0}
 
 @media print{#rep .rbrand{background:#0b3d2e;color:#fff;padding:8px 12px;font-weight:700;margin-bottom:10px}#rep .rimg{max-width:320px;max-height:240px;border:1px solid #999}}
+
+/* Arabic symptom chips inside the home search card (v56) */
+#symp{flex-wrap:wrap;gap:7px;margin-top:12px}
+#symp .q{flex:0 0 auto;color:var(--text);background:var(--surface2);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:.85rem;font-weight:700;backdrop-filter:none}
+#symp .q:hover{background:var(--line)}
+#symp .q:active{transform:scale(.96)}

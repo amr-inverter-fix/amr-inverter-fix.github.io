@@ -32,3 +32,12 @@ Summary: code accuracy 9/11 = 82% (small sample, wide uncertainty); wrong-code r
 3. Image 9 (code 19 with glare) and 3 (GoodWe table) still fail to read.
 4. Multi-code screens (image 5) return only the first code.
 5. Rate limit: Worker allows 150 AI reads/day per IP during testing (temporary, was 30).
+
+## Addendum - rerun on the latest build (Worker 5a4a7f31 + v4 prompt, app.js with multi-code and brand warning)
+Same 18 photos, same operator, desktop Chrome, published site. Results vary slightly run to run (the model is not deterministic): image 9 failed in one run and read 19 in the next.
+- Fault images (11): 10 read fully correct (1, 2, 4, 5 with both F13 and F56, 7, 9, 11, 14, 16, 18), 1 partial (3: GoodWe error table, 2 of 3 codes returned and the first-row pick is the first one the model chose). Wrong code returned as a fault: 0.
+- Image 8 (Axpert-style, red FAULT glare): read "52". Ground truth is ambiguous to the tester, so it is not scored.
+- Images with no lit FAULT indicator (6, 10, 13): the app no longer says "image not clear". It says no FAULT indicator is lit and shows the number found under the FAULT label (204, 9.09, 39) as a note, "not sure it is a fault code, no diagnosis". Those numbers on 6 and 10 are measurements, so the note is noise there; no code is diagnosed. Image 13 is the photo from the owner's phone screenshot (39 under FAULT, indicator not lit): whether 39 is a fault code on that model is UNKNOWN and needs the manual.
+- Not rerun after the last Worker change: 12, 15, 17 (earlier runs: no code returned).
+- Code match is by number only and is labeled NEEDS_VERIFICATION unless the user picked a matching brand. Image 3 code "2" matched a Victron record by number: the warning is shown, but the match itself is meaningless.
+- Still untested: real phone camera, 108 MP phone photos, other brands, other languages on the display, night/low light.

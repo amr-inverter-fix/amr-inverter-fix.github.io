@@ -338,5 +338,5 @@ html[data-theme=dark] .cnote{color:#ffd58a}
 #rep .rwarn{border:2px solid #b45309;background:#fff7ed;padding:8px 10px;border-radius:6px;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 #rep .rsmall,#rep small{color:#555;font-size:11px}#rep .rurl{font:11px Arial,sans-serif;word-break:break-all}
 #rep .rnote{background:#eef3f0;padding:6px 10px;border-radius:6px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-#rep .rimgbox{margin:8px 0}#rep .rlbl{font-weight:700}#rep .rimg{max-width:260px;max-height:200px;border:1px solid #999}
+#rep .rimgbox{margin:8px 0}#rep .rlbl{font-weight:700}#rep .rimg{display:block;max-width:360px;max-height:260px;border:1px solid #999;border-radius:6px;margin:4px 0}#rep .rcap{font-size:12px;color:#333}
 #rep .rfoot{margin-top:20px;border-top:2px solid #0b3d2e;padding-top:8px;text-align:center;font-weight:700}}

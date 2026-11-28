@@ -161,7 +161,7 @@ function buildReport(list){
   var d=new Date(),p2=function(n){return (n<10?'0':'')+n},ds=d.getFullYear()+'/'+p2(d.getMonth()+1)+'/'+p2(d.getDate())+'  '+p2(d.getHours())+':'+p2(d.getMinutes()),ref='IF-'+d.getFullYear()+p2(d.getMonth()+1)+p2(d.getDate())+'-'+p2(d.getHours())+p2(d.getMinutes())+p2(d.getSeconds()),pv=$('prev');
   var h='<div class="rhead"><div class="rbrand">Inverter Fix · مشخّص أعطال الإنفرتر</div><h1>تقرير عطل إنفرتر</h1><div class="rsubt" dir="ltr">Inverter Fault Report</div>'+
    '<table class="rmeta"><tr><td>الرقم المرجعي</td><td dir="ltr">'+ref+'</td></tr><tr><td>التاريخ</td><td dir="ltr">'+ds+'</td></tr><tr><td>عدد الأعطال في التقرير</td><td>'+list.length+'</td></tr></table></div>';
-  if(pv&&!pv.hidden&&pv.src)h+='<div class="rimgbox"><div class="rlbl">الصورة المرفوعة (اختيارية)</div><img class="rimg" src="'+esc(pv.src)+'" alt=""></div>';
+  if(window.__repUse&&window.__repImg)h+='<div class="rimgbox"><div class="rlbl">صورة شاشة الإنفرتر (المصوّرة بواسطة المستخدم)</div><img class="rimg" src="'+window.__repImg+'" alt=""><div class="rcap">الكود المقروء من الصورة: <span dir="ltr">'+esc(window.__repCap||'غير محدد')+'</span></div></div>';
   h+='<p class="rnote">المطابقة من قاعدة بيانات التطبيق المبنية على أدلة الشركات المصنّعة. لا يوجد تقدير نسبة ثقة؛ راجع الدليل الأصلي قبل أي إجراء.</p>';
   list.forEach(function(f,i){var s=SRC[f.b],sv=SEV[f.k]||'m',st=(typeof srcStatus==='function')?srcStatus(f.b):'';
     var steps=f.s.map(function(x,j){var ar=stepAr(x);return '<li><span class="rn">'+(j+1)+'</span><div>'+(ar?'<div class="rar">'+esc(ar)+' <span class="rtag">(ترجمة تقريبية)</span></div>':'')+'<div class="ren" dir="ltr">'+esc(x)+'</div></div></li>'}).join('');
@@ -204,7 +204,7 @@ function saveHist(b,c,t){if(!(c||t))return;try{try{var lg=JSON.parse(localStorag
 function renderHist(){var h=hist(),e=$('hist');if(!h.length){e.innerHTML='';return}e.innerHTML='<div class="muted">آخر بحث (على جهازك بس):</div>'+h.map(function(x,i){return '<button class="chip" data-i="'+i+'" type="button">'+esc((x.b&&SRC[x.b]?SRC[x.b].name+' ':'')+(x.c||x.t).slice(0,24))+'</button>'}).join('')+'<button class="chip" id="clrh" type="button">مسح ✖</button>';
   Array.prototype.forEach.call(e.querySelectorAll('[data-i]'),function(b){b.onclick=function(){var x=h[+b.getAttribute('data-i')];bs.value=x.b||'';$('code').value=x.c||'';$('txt').value=x.t||'';$('go').click()}});
   $('clrh').onclick=function(){localStorage.removeItem('invhist');renderHist()}}
-$('go').onclick=function(){saveHist(bs.value,$('code').value.trim(),$('txt').value.trim());show(diagnose($('txt').value,bs.value,$('code').value),undefined)};
+$('go').onclick=function(){window.__repUse=false;saveHist(bs.value,$('code').value.trim(),$('txt').value.trim());show(diagnose($('txt').value,bs.value,$('code').value),undefined)};
 renderHist();
 $('code').addEventListener('keydown',function(e){if(e.key==='Enter')$('go').click()});
 function renderList(q){
@@ -217,7 +217,7 @@ function renderList(q){
 }
 var fbs=$('fbrand'),fcs=$('fcat');Object.keys(SRC).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=SRC[k].name;fbs.appendChild(op)});Object.keys(CATS).forEach(function(k){var op=document.createElement('option');op.value=k;op.textContent=CATS[k];fcs.appendChild(op)});
 $('filter').oninput=function(){renderList(this.value)};fbs.onchange=fcs.onchange=($('fsort')||{}).onchange=function(){renderList($('filter').value)};renderList('');
-(function(){var f=$('foot'),n=Object.keys(SRC).map(function(k){return SRC[k].name});f.textContent='';var bm=document.createElement('p');bm.textContent='build 2026-11-28-r18 (sw inv-v75)';bm.className='muted';var p=document.createElement('p');p.textContent='القاعدة: '+F.length+' عطل من '+n.length+' شركات. البحث بالكود بيشتغل من غير إنترنت بعد أول فتح. قراءة الصورة (OCR) بتحتاج إنترنت.';var d=document.createElement('details');d.className='brl';var sm=document.createElement('summary');sm.textContent='📋 الشركات والمصادر الرسمية ('+n.length+')';d.appendChild(sm);var q=document.createElement('div');q.className='srclist';Object.keys(SRC).forEach(function(k){var r=document.createElement('div');r.className='srow';var b=document.createElement('b');b.textContent=SRC[k].name+' ('+F.filter(function(x){return x.b===k}).length+')';var m=document.createElement('div');m.className='muted';m.textContent=SRC[k].doc;var a=document.createElement('a');a.href=SRC[k].url;a.target='_blank';a.rel='noopener';a.textContent='فتح الدليل الرسمي';r.appendChild(b);r.appendChild(m);r.appendChild(a);q.appendChild(r)});d.appendChild(q);f.appendChild(p);f.appendChild(bm);f.appendChild(d)})();
+(function(){var f=$('foot'),n=Object.keys(SRC).map(function(k){return SRC[k].name});f.textContent='';var bm=document.createElement('p');bm.textContent='build 2026-11-28-r19 (sw inv-v75)';bm.className='muted';var p=document.createElement('p');p.textContent='القاعدة: '+F.length+' عطل من '+n.length+' شركات. البحث بالكود بيشتغل من غير إنترنت بعد أول فتح. قراءة الصورة (OCR) بتحتاج إنترنت.';var d=document.createElement('details');d.className='brl';var sm=document.createElement('summary');sm.textContent='📋 الشركات والمصادر الرسمية ('+n.length+')';d.appendChild(sm);var q=document.createElement('div');q.className='srclist';Object.keys(SRC).forEach(function(k){var r=document.createElement('div');r.className='srow';var b=document.createElement('b');b.textContent=SRC[k].name+' ('+F.filter(function(x){return x.b===k}).length+')';var m=document.createElement('div');m.className='muted';m.textContent=SRC[k].doc;var a=document.createElement('a');a.href=SRC[k].url;a.target='_blank';a.rel='noopener';a.textContent='فتح الدليل الرسمي';r.appendChild(b);r.appendChild(m);r.appendChild(a);q.appendChild(r)});d.appendChild(q);f.appendChild(p);f.appendChild(bm);f.appendChild(d)})();
 
 function ocrAmb(t){var out=[];(t.match(/[A-Za-z0-9]{2,}/g)||[]).forEach(function(w){if(/[0-9]/.test(w)&&/[A-Za-z]/.test(w)||/^[0-9OIlSBZ]{2,}$/.test(w)&&/[OIlSBZ]/.test(w)){var m=w.match(/[OoIlSsBZz01258]/g);if(m)out.push(w)}});return out.filter(function(v,i,a){return a.indexOf(v)===i}).slice(0,8)}
 function matchBrand(b){b=String(b||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ');if(!b.trim())return '';var GEN={solar:1,inverter:1,power:1,energy:1,new:1,electric:1,technology:1,tech:1,mpp:0};var hit=[];Object.keys(SRC).forEach(function(k){var t=(String(SRC[k].name)+' '+k).toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(function(w){return w.length>=3&&!GEN[w]});if(t.some(function(w){return (' '+b+' ').indexOf(' '+w+' ')>=0}))hit.push(k)});return hit.length===1?hit[0]:''}
@@ -245,7 +245,7 @@ if(meta&&meta.device){var dk=matchBrand(meta.device.brand),dn=((meta.device.bran
   try{window.__placeOut()}catch(e){}o.innerHTML=h;
   if($('ocrdev'))$('ocrdev').onclick=function(){bs.value=matchBrand(meta.device.brand);ocrConfirm($('ocrfix').value,bs,src,meta)};
   $('ocrbrand').onchange=function(){bs.value=this.value;ocrConfirm($('ocrfix').value,bs,src,meta)};
-  $('ocrok').onclick=function(){bs.value=$('ocrbrand').value;var t=$('ocrfix').value;saveHist(bs.value,'',t.replace(/\s+/g,' ').trim().slice(0,60));show(diagnose(t,bs.value,''),t)};
+  $('ocrok').onclick=function(){bs.value=$('ocrbrand').value;var t=$('ocrfix').value;window.__repCap=t.replace(/\s+/g,' ').trim().slice(0,60);window.__repUse=true;saveHist(bs.value,'',t.replace(/\s+/g,' ').trim().slice(0,60));show(diagnose(t,bs.value,''),t)};
   try{window.__placeOut()}catch(e){}try{o.scrollIntoView({behavior:'smooth'})}catch(e){}
 }
 // OCR
@@ -387,6 +387,8 @@ async function handleFile(f){
   if(f.size>25*1024*1024){$('ocrstat').textContent='الصورة كبيرة قوي (أكتر من 25 ميجا). صوّر تاني.';return}
   window.__busy=true;
   try{var url=URL.createObjectURL(f),img=$('prev');img.src=url;img.hidden=false}catch(e){dbg('preview fail '+e)}
+  window.__repImg=null;window.__repUse=false;
+  try{createImageBitmap(f).then(function(bm){var m=900,k=Math.min(1,m/Math.max(bm.width,bm.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(bm.width*k));c.height=Math.max(1,Math.round(bm.height*k));c.getContext('2d').drawImage(bm,0,0,c.width,c.height);window.__repImg=c.toDataURL('image/jpeg',0.72);try{bm.close()}catch(_){}}).catch(function(e){dbg('rep img fail '+e)})}catch(e){}
   lastImg=f;aiWanted=true;aivBusy=false;ocrSeq++;var ab=$('aiv');if(ab)ab.hidden=false;aiAuto=false;
   window.__busy=false;
   aiVisionRead(f);

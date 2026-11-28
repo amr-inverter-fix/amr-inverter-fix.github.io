@@ -1,0 +1,47 @@
+{
+ "version": "Release 1.0",
+ "build": "2026-11-28-r20",
+ "updated": "2026-11-28T19:00:00+02:00",
+ "last_test_run": "2026-11-28",
+ "tests_run": 23,
+ "tests_passed": 22,
+ "tests_failed": 1,
+ "last_full_pass": "2026-11-28 (r20 checks)",
+ "open_issues": [
+  "Real-phone verification of print and capture not done",
+  "Deye W-codes missing from the database",
+  "237 records without a code, 6 duplicate brand+code groups",
+  "Verification statuses (Phase 3) not started",
+  "Daily AI read limit is 150 (temporary, restore to 30 when the owner says)"
+ ],
+ "improvements_done": [
+  "Camera/gallery flow inside the Capture tab",
+  "Mobile layout fixes at 360px",
+  "Approximate Arabic translation on demand",
+  "Professional text report (PDF/print) with captured image",
+  "Every print path goes to the report, A4",
+  "Scroll/touch fix (r16)",
+  "Database validation script"
+ ],
+ "db": {
+  "records": 1782,
+  "brands": 43,
+  "records_without_code": 237,
+  "duplicate_groups": 6,
+  "source": "db_check.js on 2026-11-28"
+ },
+ "next": [
+  "Verification statuses per record (Phase 3)",
+  "Official-manual check of fault 39 on Axpert",
+  "Add Deye W-codes only from an official manual",
+  "Re-run the 18-photo regression after any Worker change"
+ ],
+ "releases": [
+  {
+   "v": "Release 1.0",
+   "date": "2026-11-28",
+   "build": "r20",
+   "note": "First numbered release. See RELEASE_NOTES.md"
+  }
+ ]
+}

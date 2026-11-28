@@ -1,0 +1,22 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>لوحة تطوير Inverter Fix</title>
+<style>body{font:15px/1.7 system-ui,Tahoma,sans-serif;margin:0;padding:14px;background:#0f1a16;color:#e8f3ee}h1{font-size:20px}.c{background:#17261f;border:1px solid #2c4a3d;border-radius:12px;padding:10px 14px;margin:10px 0}.k{color:#8fb7a4;font-size:13px}.v{font-size:18px;font-weight:700}.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}ul{margin:4px 0;padding-inline-start:20px}a{color:#4ad9a0}.ok{color:#4ad9a0}.bad{color:#ff8a80}</style></head><body>
+<h1>لوحة تطوير Inverter Fix</h1><div class="k">البيانات من dev-data.json (يحدّثها وكيل التطوير بعد كل اختبار فعلي) وفحص حي لخدمة القراءة. مفيش أرقام ثابتة مكتوبة هنا.</div>
+<div id="app" class="k">جارٍ التحميل...</div>
+<script>
+(function(){var A=document.getElementById('app');function li(a){return '<ul>'+(a||[]).map(function(x){return '<li>'+x.replace(/[<>&]/g,'')+'</li>'}).join('')+'</ul>'}
+fetch('dev-data.json',{cache:'no-store'}).then(function(r){return r.json()}).then(function(d){
+var rate=d.tests_run?Math.round(100*d.tests_passed/d.tests_run):0;
+A.innerHTML='<div class="g"><div class="c"><div class="k">الإصدار الحالي</div><div class="v">'+d.version+'</div><div class="k">build '+d.build+'</div></div>'+
+'<div class="c"><div class="k">آخر تحديث</div><div class="v">'+d.updated.slice(0,10)+'</div></div>'+
+'<div class="c"><div class="k">الاختبارات (آخر جلسة)</div><div class="v">'+d.tests_passed+' / '+d.tests_run+'</div><div class="k">نجحت '+rate+'% · فشلت '+d.tests_failed+'</div></div>'+
+'<div class="c"><div class="k">آخر اختبار ناجح</div><div class="v">'+d.last_full_pass+'</div></div>'+
+'<div class="c"><div class="k">قاعدة البيانات</div><div class="v">'+d.db.records+' عطل / '+d.db.brands+' شركة</div><div class="k">بدون كود: '+d.db.records_without_code+' · مكرر: '+d.db.duplicate_groups+'</div></div>'+
+'<div class="c"><div class="k">خدمة القراءة</div><div class="v" id="ai">جارٍ الفحص...</div></div></div>'+
+'<div class="c"><b>مشاكل مفتوحة ('+d.open_issues.length+')</b>'+li(d.open_issues)+'</div>'+
+'<div class="c"><b>تحسينات منفذة ('+d.improvements_done.length+')</b>'+li(d.improvements_done)+'</div>'+
+'<div class="c"><b>المهام القادمة</b>'+li(d.next)+'</div>'+
+'<div class="c"><b>سجل الإصدارات</b>'+li(d.releases.map(function(r){return r.v+' · '+r.date+' · '+r.build+' · '+r.note}))+'</div>'+
+'<div class="c k">التقارير: TEST_REPORT.md · RELEASE_NOTES.md · DAILY_DEVELOPMENT_LOG.md · ROADMAP.md · CHANGELOG.md في المستودع.</div>';
+var t=Date.now();fetch('https://inverter-vision.amr-abdelhamid-engineer.workers.dev/health').then(function(r){return r.json()}).then(function(j){var e=document.getElementById('ai');e.textContent=j&&j.ok?'شغالة ('+(Date.now()-t)+'ms)':'مش متاحة';e.className='v '+(j&&j.ok?'ok':'bad')}).catch(function(){var e=document.getElementById('ai');e.textContent='مش متاحة';e.className='v bad'})
+}).catch(function(e){A.textContent='تعذر تحميل dev-data.json: '+e})})();
+</script></body></html>
